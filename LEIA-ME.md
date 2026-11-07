@@ -6,6 +6,8 @@ https://github.com/norbgt/arede.com
 
 - `manifesto.md`: o manifesto, construído aos poucos.
 - `analise-referencias.md`: análise de Facebook, Instagram, WhatsApp e Pinterest e proposta inicial da rede.
+- `prototipo/index.html`: protótipo navegável (abre direto no navegador).
+- `prototipo/ARQUITETURA.md`: princípios mobile first e organização do código.
 
 ## Quando publicar
 
