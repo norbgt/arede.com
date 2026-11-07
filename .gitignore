@@ -1,0 +1,3 @@
+# O painel de controle é só local: nunca vai para o GitHub nem para o link público
+painel/
+.DS_Store
