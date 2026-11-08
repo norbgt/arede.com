@@ -29,3 +29,8 @@ https://norbgt.github.io/arede.com/ (público; publicado pelo GitHub Pages a par
 - Amanda é admin de todos os ambientes: protótipo, link público, repositório norbgt/arede.com, painel de controle e prévia no Claude.
 - Ajustes são feitos a partir deste Mac: direto nos arquivos ou pelos consoles logados nele, como o Claude e o GitHub.
 - Detalhes no painel, em Permissões.
+
+## Versões publicadas
+- **v1.2 (8 nov 2026, 16h35):** contas reais com confirmação por e-mail e publicações originais guardadas no servidor (Supabase, projeto arede), abertas a quem acessa; feed com fotos das matérias, cartões de tamanhos variados e texto sempre completo; Agenda no perfil; logo com o ponto que se move e roxo da marca unificado. Publicada em https://norbgt.github.io/arede.com/
+- **v1.1 (8 nov 2026, 12h15):** notícias reais, Mobilizar a partir disto, novo manifesto e resumo do algoritmo. Publicada em https://norbgt.github.io/arede.com/
+- **v0.1 (7 nov 2026):** primeira versão.

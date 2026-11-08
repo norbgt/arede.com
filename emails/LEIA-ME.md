@@ -11,3 +11,9 @@ Authentication > Emails > Templates.
 Configuração de endereços (Authentication > URL Configuration):
 - Site URL: https://norbgt.github.io/arede.com/prototipo/
 - Redirect URLs: https://norbgt.github.io/arede.com/**
+
+## Situação em 08/11/2026
+- Site URL e Redirect URLs já configurados no Supabase (projeto arede).
+- Os modelos acima ainda não estão no Supabase: para editar os e-mails, o Supabase exige um serviço de envio próprio (SMTP).
+  Por enquanto a rede usa o e-mail padrão do Supabase, que só chega aos e-mails da equipe da organização norbgt.
+- Quando houver SMTP (Gmail da rede, Resend com domínio ou outro), colar os dois arquivos em Authentication > Emails > Templates.

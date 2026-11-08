@@ -207,3 +207,19 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - "Mobilizar a partir disto" em cada notícia: Evento, Chamado, Abaixo-assinado e Votação já ligados à matéria; a notícia mostra as mobilizações ligadas.
 - Dados em dados/conteudos.json (formato estável, o mesmo que o coletor em tempo real vai preencher). Organizações de exemplo marcadas "exemplo".
 - Limites da primeira carga: 43 notícias só com uma fonte (limite de buscas) e grande imprensa sub-representada (sites bloquearam a leitura). Ambos viraram tarefa no painel, junto com o coletor em tempo real, organizações reais e conteúdos internacionais.
+- (08/11 12:15) Publicada a **v1.1** no GitHub Pages (norbgt/arede.com, commit 5078012), sem o painel de controle.
+- (08/11 12:20) v1.1 atualizada online: barra inferior mais perto da borda (commit 5562e9d).
+
+## 08/11 · Cartões do Início: tamanhos, formatos, texto completo e fotos
+- Blocos de texto alternam 7 desenhos (4|2, 2|4, alta+média+curta, faixa de manchete, destaque) e espelham a cada bloco: nenhum par de cartões iguais lado a lado.
+- Tudo e Publicações alternam cartão com foto, só texto e vídeo. Imagens genéricas (ilustração gerada) saem do feed principal.
+- Texto sempre completo: título inteiro (a letra diminui se precisar) e, do resumo, só frases inteiras; se nenhuma cabe, entra o gancho; se nem ele, a foto ocupa o espaço.
+- 54 das 60 notícias têm a foto principal da matéria, com crédito, carregada da própria fonte (dados/conteudos.json, campo "imagem"). A foto com "proibida reprodução" (Reuters) ficou de fora.
+- Na prévia do Claude as fotos externas são bloqueadas: o cartão vira só texto, sem buraco.
+- Fotos embutidas: as 54 fotos foram reduzidas (560px, JPEG) e guardadas em dados/fotos/fotos.json; o build as embute no HTML, então aparecem também na prévia do Claude e no artefato.
+- Densidade de texto: só alguns cartões são de leitura longa (os grandes sem foto). Os demais mostram título e no máximo uma frase; cartões com foto ficam com título.
+
+## 08/11 · Contas reais (v1.2)
+- Banco: Supabase, projeto "arede" (São Paulo, plano gratuito). Tabelas perfis e publicacoes, imagens no bucket "midia"; regras RLS: leitura pública, publicação só por conta confirmada e em nome próprio, admin modera, papel não muda pelo app.
+- Site URL e Redirect URLs: https://norbgt.github.io/arede.com/prototipo/
+- E-mails da marca prontos (pasta emails); entram quando houver SMTP próprio. Decisão: por enquanto, e-mail padrão do Supabase.
