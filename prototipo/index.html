@@ -881,6 +881,19 @@ a.setting{color:var(--ink);text-decoration:none}
 .pw{display:flex;gap:8px;align-items:center}.pw input{flex:1;min-width:0}
 .hint{font-size:12px;color:var(--muted)}
 .cme{display:flex;gap:12px;align-items:center}.cme b{display:block;font-size:17px}.cme small{display:block;color:var(--muted);font-size:13px}
+.cur .tabs{margin:12px 0 10px}
+.curnota{font-size:13px;color:var(--muted);margin:0 0 12px}
+.curitem{display:flex;gap:12px;padding:12px;margin-bottom:10px;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow)}
+.curitem img{flex:none;width:88px;height:88px;object-fit:cover;border-radius:10px;background:var(--surface-2)}
+.curitem > div{display:flex;flex-direction:column;gap:6px;min-width:0}
+.curitem small{font-size:12px;color:var(--muted)} .curitem b{font-size:15px;line-height:1.3} .curitem p{margin:0;font-size:13.5px;color:var(--muted)}
+.curitem a{font-size:13px;display:inline-flex;gap:4px;align-items:center}
+.curfontes{display:flex;flex-direction:column;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow);margin-bottom:24px}
+.cfrow{display:flex;gap:10px;align-items:center;padding:10px 12px}.cfrow + .cfrow{border-top:1px solid var(--line)}
+.cfdot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--line)}
+.cfrow.ok .cfdot{background:var(--ok)} .cfrow.err .cfdot{background:var(--bad)} .cfrow.none .cfdot{background:var(--warn-dot)} .cfrow.off{opacity:.55}
+.cft{flex:1;min-width:0;display:flex;flex-direction:column}.cft b{font-size:14px;font-weight:600}.cft small{font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cfn{flex:none;text-align:right;font-size:12.5px;display:flex;flex-direction:column}.cfn small{color:var(--muted);font-size:11px}
 .note.okn{background:color-mix(in srgb,var(--ok) 12%,var(--surface));color:var(--ink)}
 /* cadastro (chamado e evento) */
 .ichk{display:flex;gap:10px;align-items:flex-start;font-size:var(--fs-sm);line-height:1.4;cursor:pointer}
@@ -3714,7 +3727,7 @@ function detailHTML(it, uid, mode, inline){
       ${podeApagar(it) ? `<button class="btn ghost block" type="button" data-act="apagarreal" data-uid="${uid}">${ME.user && it.autorId===ME.user.id ? "Apagar minha publicação" : "Remover publicação (moderação)"}</button>` : ""}
       ${it.foto && !isImg ? `<figure class="dfoto"><img src="${esc(it.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer">${it.credito ? `<figcaption>Foto: ${esc(it.credito)} · via ${esc(it.ext ? it.ext.dom : "fonte")}</figcaption>` : ""}</figure>` : ""}
       ${it.ext ? `<a class="btn block srcbtn" href="${it.ext.url}" target="_blank" rel="noopener">${ic("ext","sm")}<span>Ver na fonte original · ${esc(it.ext.dom)}</span></a>
-        <p class="srcnote">Resumo da curadoria da rede. Publicado originalmente por ${esc(o.nome)}, em ${dLabel(it.ext.data)}.</p>`
+        <p class="srcnote">${it.coletada ? `Chamada publicada por ${esc(o.nome)} em ${dLabel(it.ext.data)}, coletada automaticamente do feed da fonte. A matéria completa está no site original.` : `Resumo da curadoria da rede. Publicado originalmente por ${esc(o.nome)}, em ${dLabel(it.ext.data)}.`}</p>`
       : orig ? `<button class="btn block" type="button" data-act="toast" data-msg="No protótipo o link original não abre." style="min-height:50px">${ic("ext","sm")}<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Ver original · ${orig}</span></button>` : `<div class="native">${ic("check","sm")}<span>Publicado direto na rede por ${o.nome}</span></div>`}
       <div><span class="fkind" style="color:${it.tipo==="votacao"?"var(--ink)":o.cor}">${kindOf(it)}</span>
         <${TitleTag} class="pintitle">${esc(it.titulo)}</${TitleTag}>${text}</div>
@@ -3924,6 +3937,7 @@ function render(){
   else if (r.startsWith("pin-")){ main.innerHTML = screenPin(r.slice(4)); fillPin(r.slice(4)); }
   else if (r==="ate-depois") main.innerHTML = screenBye();
   else if (r==="conta") main.innerHTML = screenConta();
+  else if (r==="curadoria"){ main.innerHTML = screenCuradoria(); curadoriaCarrega(); }
   else if (r==="nova-senha") main.innerHTML = screenNovaSenha();
   else if (r==="manifesto") main.innerHTML = screenManifesto();
   else if (r==="funciona") main.innerHTML = screenFunciona();
@@ -3985,13 +3999,14 @@ async function contaInicia(){
     if (erroUrl) toast("O link do e-mail expirou ou já foi usado. Entre com e-mail e senha ou peça outro link.");
     else if (ME.user) toast("E-mail confirmado. Sua conta está ativa.");
   }
-  await perfilCarrega(); ME.pronto = true; await publicacoesCarrega(); contaAtualiza();
+  await perfilCarrega(); ME.pronto = true; await publicacoesCarrega(); await noticiasCarrega(); contaAtualiza();
+  setInterval(()=>{ if (document.visibilityState==="visible") noticiasCarrega(); }, 15 * 60000);
 }
 async function perfilCarrega(){ if (!SB || !ME.user){ ME.perfil = null; return; }
   const {data} = await SB.from("perfis").select("*").eq("id", ME.user.id).maybeSingle(); ME.perfil = data || null; }
 /* depois de qualquer mudança na conta: redesenha só o que mostra a conta */
 function contaAtualiza(){ const r = route();
-  if (r==="conta" || r==="nova-senha" || r==="perfil") render(); }
+  if (r==="conta" || r==="nova-senha" || r==="perfil" || r==="curadoria") render(); }
 
 /* PUBLICAÇÕES REAIS → entram no feed junto com o resto, sempre primeiro */
 const CORES_CONTA = ["#2A3FD4","#1F7A4D","#B8430F","#7A3E9D","#0E7490","#C2185B","#5B6B00","#9A3412"];
@@ -4018,6 +4033,67 @@ async function publicacoesCarrega(){ if (!SB) return;
   for (let i = POOL.length - 1; i >= 0; i--) if (POOL[i].conta) POOL.splice(i, 1);
   data.slice().reverse().forEach(p=>POOL.unshift(itemDaPublicacao(p)));
   F.key = null; if (route()==="inicio" || route()==="") render(); }
+
+/* NOTÍCIAS DO COLETOR (servidor, atualizado a cada 15 minutos): entram no feed como as notícias da curadoria.
+   Uma entrada por notícia; as outras fontes que deram a mesma notícia aparecem em "A mesma notícia em outras fontes". */
+const COR_TIPO = {"Imprensa · grande":"#1F2937","Imprensa · alternativa e independente":"#9A3412","Imprensa pública":"#0E7490","Checagem de fatos":"#1F7A4D","Governo e diário oficial":"#2A3FD4","Justiça e eleições":"#4B5563","Dados públicos":"#5B6B00","Pesquisa e ciência":"#7A3E9D","Organização verificada":"#C2185B"};
+function orgDaFonte(f){ const dom = String(f.dominio||"").split("/")[0].replace(/^www\./,"");
+  const ex = Object.values(ORG).find(o=>o.fonte && o.site && hostOf(o.site)===dom); if (ex) return ex.id;
+  const id = "fx-" + f.id;
+  if (!ORG[id]) ORG[id] = {id, nome:f.nome, sigla:siglaDe(f.nome), cidade:f.ambito==="int" ? "Internacional" : "Nacional", natureza:f.tipo, site:"https://" + f.dominio,
+    sobre:"Fonte da base da rede, com selo " + f.nota + " de 100.", tema:"", fonte:true, nota:f.nota, real:true, cor:COR_TIPO[f.tipo] || "#4B5563", membros:0};
+  return id; }
+const isoDia = d => { const x = new Date(d); return x.getFullYear() + "-" + String(x.getMonth()+1).padStart(2,"0") + "-" + String(x.getDate()).padStart(2,"0"); };
+async function noticiasCarrega(){ if (!SB) return;
+  const {data, error} = await SB.from("noticias").select("id,url,titulo,chamada,imagem_url,publicada_em,grupo,tema,fonte_id,fontes(id,nome,dominio,tipo,ambito,nota)")
+    .eq("status","publicada").order("publicada_em", {ascending:false}).limit(200);
+  if (error || !data) return;
+  for (let i = POOL.length - 1; i >= 0; i--) if (POOL[i].coletada) POOL.splice(i, 1);
+  const urls = new Set(POOL.filter(p=>p.ext).map(p=>p.ext.url)), porGrupo = {}, vistos = new Set();
+  data.forEach(n=>{ (porGrupo[n.grupo] = porGrupo[n.grupo] || []).push(n); });
+  data.forEach(n=>{ if (urls.has(n.url) || vistos.has(n.grupo)) return; vistos.add(n.grupo);
+    const f = n.fontes || {id:n.fonte_id, nome:hostOf(n.url), dominio:hostOf(n.url), tipo:"", ambito:"br", nota:80};
+    const id = "n" + n.id.replace(/-/g,""), outras = porGrupo[n.grupo].filter(x=>x.id!==n.id);
+    const it = {id, tipo:"texto", org:orgDaFonte(f), tema:TEMAS.includes(n.tema) ? n.tema : "Geral", titulo:n.titulo, texto:n.chamada || "", cidade:"", coletada:true,
+      min:Math.max(1, Math.round((Date.now() - new Date(n.publicada_em)) / 60000)),
+      ext:{url:n.url, dom:hostOf(n.url), data:isoDia(n.publicada_em), verif:outras.map(x=>({fonte:(x.fontes||{}).nome || hostOf(x.url), url:x.url, papel:"cobertura da mesma notícia"})), motivo:"", obs:""}};
+    if (n.imagem_url){ it.foto = n.imagem_url; it.credito = f.nome; }
+    RESUMO[id] = n.chamada || ""; BODY[id] = n.chamada ? [n.chamada] : []; SEAL[id] = f.nota;
+    POOL.push(it); });
+  F.key = null; if (route()==="inicio" || route()==="") render(); }
+
+/* CURADORIA DO COLETOR (só administradoras): fila de revisão e saúde das fontes */
+function screenCuradoria(){
+  const topo = header(`<div class="toprow"><button class="iconbtn" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button><h1 class="pagehead">Curadoria do coletor</h1></div>`);
+  if (ME.offline) return topo + `<div class="container cform">${contaAviso()}</div>`;
+  if (!ME.pronto) return topo + `<div class="container"><p class="empty">Conectando…</p></div>`;
+  if (!ME.user || !ME.perfil || ME.perfil.papel!=="admin") return topo + `<div class="container cform"><div class="note">${ic("lock")}<span>Só administradoras da rede veem a curadoria. <a href="#conta">Entrar</a></span></div></div>`;
+  const t = S.curTab || "fila";
+  return topo + `<div class="container cur">
+    <div class="tabs" role="tablist" aria-label="Curadoria"><button class="tab" type="button" role="tab" data-act="curtab" data-t="fila" aria-selected="${t==="fila"}">Fila de revisão</button><button class="tab" type="button" role="tab" data-act="curtab" data-t="fontes" aria-selected="${t==="fontes"}">Saúde das fontes</button></div>
+    <div id="curbody"><p class="empty">Carregando…</p></div></div>`;
+}
+const quando = d => { if (!d) return "nunca"; const m = Math.round((Date.now() - new Date(d)) / 60000); return m < 60 ? "há " + m + " min" : m < 1440 ? "há " + Math.round(m/60) + " h" : "há " + Math.round(m/1440) + " dias"; };
+async function curadoriaCarrega(){ const box = $("#curbody"); if (!box || !SB || !ME.perfil || ME.perfil.papel!=="admin") return;
+  if ((S.curTab || "fila")==="fila"){
+    const {data, error} = await SB.from("noticias").select("id,url,titulo,chamada,imagem_url,publicada_em,tema,fontes(nome,nota,ambito)").eq("status","fila").order("coletada_em", {ascending:false}).limit(80);
+    if (error){ box.innerHTML = `<p class="empty">${esc(erroAuth(error))}</p>`; return; }
+    box.innerHTML = data.length ? `<p class="curnota">Entram aqui as notícias de fontes com selo abaixo de ${80} e as que não estão em português. As de selo 80 ou mais em português vão direto para o feed.</p>`
+      + data.map(n=>`<article class="curitem" data-id="${n.id}">${n.imagem_url ? `<img src="${esc(n.imagem_url)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ""}
+        <div><small>${esc((n.fontes||{}).nome || "")} · selo ${(n.fontes||{}).nota ?? "—"} · ${quando(n.publicada_em)} · ${esc(n.tema || "Geral")}</small>
+        <b>${esc(n.titulo)}</b>${n.chamada ? `<p>${esc(n.chamada)}</p>` : ""}<a href="${esc(n.url)}" target="_blank" rel="noopener">Abrir na fonte ${ic("ext","sm")}</a>
+        <div class="row"><button class="btn sm primary" type="button" data-act="curar" data-id="${n.id}" data-s="publicada">Publicar</button><button class="btn sm ghost" type="button" data-act="curar" data-id="${n.id}" data-s="recusada">Recusar</button></div></div></article>`).join("")
+      : `<p class="empty">A fila está vazia.</p>`;
+    return; }
+  const {data, error} = await SB.from("fontes").select("*").order("ativa", {ascending:false}).order("nota", {ascending:false});
+  if (error){ box.innerHTML = `<p class="empty">${esc(erroAuth(error))}</p>`; return; }
+  const at = data.filter(f=>f.ativa), comFeed = at.filter(f=>f.feed_url), comErro = at.filter(f=>f.ultimo_erro);
+  box.innerHTML = `<div class="facts"><div class="fact"><b>${comFeed.length} de ${at.length}</b>fontes com feed</div><div class="fact"><b>${comErro.length}</b>com problema</div><div class="fact"><b>15 min</b>entre coletas</div></div>
+    <p class="curnota">Fontes sem feed (dados públicos, tribunais, portais sem RSS) ficam de fora da coleta automática; seguem na curadoria manual.</p>
+    <div class="curfontes">${data.map(f=>`<div class="cfrow ${!f.ativa ? "off" : f.ultimo_erro ? "err" : f.feed_url ? "ok" : "none"}"><span class="cfdot" aria-hidden="true"></span>
+      <span class="cft"><b>${esc(f.nome)}</b><small>${f.feed_url ? esc(f.feed_url.replace(/^https?:\/\//,"")) : "sem feed"}${f.ultimo_erro ? " · " + esc(f.ultimo_erro) : ""}</small></span>
+      <span class="cfn">${f.ativa ? (f.feed_url ? quando(f.ultimo_ok) + (f.itens_ultima ? " · +" + f.itens_ultima : "") : "manual") : "suspensa"}<small>selo ${f.nota}</small></span></div>`).join("")}</div>`;
+}
 const minhasReais = () => ME.user ? POOL.filter(it=>it.conta && it.autorId===ME.user.id).map(it=>withUid(it)) : [];
 const podeApagar = it => it && it.conta && ME.user && (it.autorId===ME.user.id || (ME.perfil && ME.perfil.papel==="admin"));
 
@@ -4036,6 +4112,7 @@ function screenConta(){
       <p class="ferr" role="alert" hidden></p>
       <button class="btn primary block" type="button" data-act="perfilsalva">Salvar</button>
       <button class="btn block" type="button" data-act="create">${ic("plus","sm")} Criar uma publicação real</button>
+      ${pf.papel==="admin" ? `<a class="btn block" href="#curadoria">${ic("check","sm")} Curadoria do coletor</a>` : ""}
       <div class="note">${ic("lock")}<span>Seu e-mail não aparece para ninguém. O que você publica fica no servidor da rede e qualquer pessoa vê no site; você pode apagar quando quiser.</span></div>
       <button class="btn ghost block" type="button" data-act="sair">Sair da conta</button></div>`; }
   const t = S.contaTab || "entrar";
@@ -4238,6 +4315,11 @@ const A = {
   envexit: envExit,
   toast: b => toast(b.dataset.msg),
   create: sheetCreate,
+  curtab: b => { S.curTab = b.dataset.t; render(); },
+  curar: async b => { const id = b.dataset.id, st = b.dataset.s, row = b.closest(".curitem"); ocupado(b, true, "…");
+    const {error} = await SB.from("noticias").update({status:st, revisada_por:ME.user.id, revisada_em:new Date().toISOString()}).eq("id", id);
+    if (error){ ocupado(b, false); return toast(erroAuth(error)); }
+    if (row) row.remove(); toast(st==="publicada" ? "Publicada no feed." : "Recusada."); if (st==="publicada") noticiasCarrega(); },
   contatab: b => { S.contaTab = b.dataset.t; ME.pend = null; render(); },
   versenha: b => { const i = document.getElementById(b.dataset.for); if (!i) return; const v = i.type==="password"; i.type = v ? "text" : "password"; b.textContent = v ? "Esconder" : "Mostrar"; },
   cadastrar: async b => { const nome = $("#cnome").value.trim(), mail = $("#cmail").value.trim().toLowerCase(), sen = $("#csen").value, cid = $("#ccid").value.trim();
@@ -4483,7 +4565,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1.2 · 08/11 16:17";
+const VERSAO = "v1.2 · 08/11 17:00";
 console.info("a rede.com · protótipo · versão " + VERSAO);
 render();
 })();
