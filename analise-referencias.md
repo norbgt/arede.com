@@ -160,3 +160,50 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - **Aba Algoritmo no Perfil privado (7 nov, 19h31):** transparência sobre o algoritmo, com gráficos simples (rótulo + barra + número, nunca só cor): o que alimenta o feed (temas, organizações e equilíbrio), do que é feito o feed por tema, o tamanho da bolha (temas, cidades e organizações alcançados), a confiabilidade do que chega (por faixa do selo) com alerta de sinal de desinformação, e a confiabilidade das suas interações.
 - **Manifesto na barra superior (7 nov, 19h37):** o logo "a rede.com" do Início ganhou uma setinha e, ao toque, abre uma folha com Manifesto e Como a rede funciona (e a versão). Para caber no celular, o rótulo "Algoritmo" aparece a partir de 385px e o logo fica um ponto menor até 429px. Configurações › Sobre a rede.com continua como segundo caminho.
 - **Eventos e chamados numa aba só (7 nov, 19h46):** a aba "Eventos e chamados" é uma agenda única, ordenada pelo que acontece ou vence primeiro. Os cartões têm a mesma estrutura e o tipo se reconhece pelo destaque à esquerda: **evento** = folhinha com a data (com "às 9h" e local; ação "Vou"); **chamado** = quantos faltam, na cor da organização (com prazo, barra de progresso e "Quero ajudar"). A página da organização segue o mesmo agrupamento. O leiaute de metas em 2 colunas saiu.
+- **"Movimentos" (7 nov, 20h02):** a aba "Eventos e chamados" passa a se chamar **Movimentos**, no Início e nas organizações.
+- **Painel de controle local (7 nov, 20h02):** ambiente só nosso, em `painel/`, fora do GitHub e do link público. Seções: visão geral, fontes verificadas (base de fontes confiáveis para conteúdos e selo, com critérios, situação e cadastro), verificação do selo (faixas, pesos, contestações), denúncias e moderação (prazos, registro público), organizações e mandatos, parâmetros de governança, transparência e LGPD, e análise do produto (completude por área, gaps priorizados, evolução, receita e riscos).
+
+## 08/11 · Ambiente do manifesto (referência: artists4ceasefire.org)
+- Manifesto e "Como a rede funciona" viram um ambiente à parte: fundo escuro, tipografia grande, sem a navegação do app; barra própria com "← a rede.com" (volta à última tela do app).
+- Mantém marca (fonte do logo, ponto azul), destaque roxo e botões arredondados.
+- Manifesto: abertura com a frase inaugural, faixa "o poder emana do povo", Interlude em coluna de leitura com frases curtas em destaque, Estruturas em grade, Regras de governança, "Quem assina" (exemplo) e cartões para compartilhar. Texto sem alterações.
+- Como funciona: título grande, introdução simples, 6 regras numeradas 01–06.
+- Regra de trabalho: ao fim de cada ação, o HTML atualizado vai para o Mac (Dock) e também como arquivo na conversa.
+
+## 08/11 · Movimentos em 2 colunas irregulares
+- A aba Movimentos passa a usar grade de 2 colunas irregulares (encaixe pela altura real de cada cartão).
+- Evento = ingresso: data grande no topo, dia da semana na cor da organização, horário num selo, picote, local, "X vão" e Vou.
+- Chamado = meta: bloco na cor da organização com quanto falta, a barra e "X de Y", depois prazo, resumo maior e "Quero ajudar".
+- Nas colunas estreitas, as ações ficam embaixo do nome da organização.
+
+## 08/11 · Algoritmo: estado no botão, resumo no ajuste
+- Sai a linha "Ligado: 4 temas + suas organizações" do Início: o estado fica no botão Algoritmo; filtrar e ordenar sobem para a linha das abas.
+- O ícone de ajuste abre "Meu algoritmo": resumo (estado com o detalhe, equilíbrio organizações/temas, 3 temas mais presentes, alcance da bolha, sinal de desinformação) + ajustes (temas e equilíbrio).
+- "Saber mais sobre o meu algoritmo" leva ao painel completo, na aba Algoritmo do perfil.
+- (08/11 09:55) Ajuste: algoritmo + ajuste, filtrar e ordenar ficam numa mesma linha abaixo das abas e acima do feed; o topo fica só com a marca e mensagens.
+
+## 08/11 · Auditoria de fluxos
+- Clique automático em 65 tipos de botão (547 cliques), em 11 telas e nos 9 tipos de cartão aberto: 0 erros; todo botão responde.
+- Corrigido: marcador "Pastas salvas" do Explorar agora abre a aba Salvos; links para a própria tela voltam ao topo; removida ação sem uso.
+- 12 fluxos a criar foram para o painel (Análise do produto → Auditoria de fluxos). P0: criar por tipo (evento, enquete, chamado, documento), ver as fontes do selo, ler documentos.
+
+## 08/11 · Permissões
+- Amanda é admin de todos os ambientes (protótipo, link público, GitHub norbgt/arede.com, painel, prévia no Claude).
+- Ajustes são feitos a partir do Mac dela: direto nos arquivos ou pelos consoles em que ela está logada nele (Claude, GitHub). Publicações no GitHub pelo Claude valem, quando ela pedir.
+- O painel não é publicado (fora do GitHub e do link público). "Protótipo" no painel volta para ../prototipo/index.html quando aberto da pasta; fora dela, abre o link público.
+- No produto real: conta de admin, segundo fator, aparelhos autorizados e registro de cada ajuste.
+- (08/11 10:40) Painel ↔ protótipo pelo mesmo mecanismo: no painel, a marca "a rede.com ⌄" abre a mesma folha do protótipo (Protótipo, Manifesto, Como a rede funciona, Painel de controle · você está aqui). Saiu o link "← Protótipo" do fim do menu.
+
+## 08/11 · Base de fontes: imprensa como corroboração
+- Decisão da Amanda: imprensa (grande e alternativa) entra no selo como corroboração — ajuda a nota quando veículos independentes noticiam o mesmo fato, mas sozinha não confirma.
+- Mesmos critérios para grande e alternativa: responsável identificado, política pública de correções, separação notícia/opinião, apuração própria. Só reportagem conta.
+- Entraram em revisão: 9 da grande imprensa e 9 alternativas e independentes. Fontes primárias e checagem seguem como "prova".
+- (08/11 11:04) Fontes internacionais: 52 novas, em revisão, cobrindo todos os segmentos (organismos internacionais, cortes e eleições, dados abertos, checagem da rede IFCN, OMS/IPCC/FAO e afins, sociedade civil internacional, imprensa pública, grande e independente). Filtro Brasil / Internacionais no painel.
+- (08/11 11:07) Todas as fontes listadas ficam ativas por padrão (Amanda revisa uma a uma depois); só o exemplo sem responsáveis (cidadealerta) segue suspenso. Cada fonte ganhou selo próprio (nota 0–100 nas mesmas faixas do selo dos conteúdos) e o porquê: nota pelo tipo de fonte, nunca pela linha editorial; ajustes pontuais com motivo escrito.
+
+## 08/11 · Base de notícias reais + Mobilizar
+- Foco redefinido pela Amanda: a rede.com é rede social e rede de notícias amplas; a notícia acende a conversa e a conversa pode virar movimento. Não depender só de organizações que já existem.
+- 60 notícias reais (6 por tema), publicadas pelas próprias fontes da base (perfil da fonte, com o selo dela), resumo da curadoria, link da matéria original, cidade, cobertura em outras fontes e "gancho para mobilizar".
+- "Mobilizar a partir disto" em cada notícia: Evento, Chamado, Abaixo-assinado e Votação já ligados à matéria; a notícia mostra as mobilizações ligadas.
+- Dados em dados/conteudos.json (formato estável, o mesmo que o coletor em tempo real vai preencher). Organizações de exemplo marcadas "exemplo".
+- Limites da primeira carga: 43 notícias só com uma fonte (limite de buscas) e grande imprensa sub-representada (sites bloquearam a leitura). Ambos viraram tarefa no painel, junto com o coletor em tempo real, organizações reais e conteúdos internacionais.
