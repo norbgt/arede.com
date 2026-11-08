@@ -1,6 +1,6 @@
 {
  "versao": "2026-11-08",
- "descricao": "Base inicial de notícias reais: resumo da curadoria, link para a matéria original, cobertura em outras fontes da base e gancho para mobilização. Mesmo formato que a coleta automática vai preencher.",
+ "descricao": "Base inicial de notícias reais: resumo da curadoria, link para a matéria original, cobertura em outras fontes da base e gancho para mobilização. Mesmo formato que a coleta automática vai preencher. Foto principal de cada matéria carregada da própria fonte, com crédito.",
  "orgs": [
   {
    "id": "f-agencia-brasil",
@@ -159,7 +159,11 @@
    "nota_selo": 84,
    "motivo_nota": "Reportagem com regras de decreto e posições atribuídas, com o decreto confirmado por cobertura anterior.",
    "gancho": "Desde 7/11, trabalhadores podem tentar usar o vale em qualquer maquininha habilitada; comércios podem verificar se seus terminais estão aptos.",
-   "obs": "O texto no Brasil de Fato é republicação de matéria da Agência Brasil (Wellton Máximo). Não achei a URL original na Agência Brasil sem busca; por isso o item cita o Brasil de Fato. A cobertura é de nov/2025 e confirma o decreto, não o início em 7/11."
+   "obs": "O texto no Brasil de Fato é republicação de matéria da Agência Brasil (Wellton Máximo). Não achei a URL original na Agência Brasil sem busca; por isso o item cita o Brasil de Fato. A cobertura é de nov/2025 e confirma o decreto, não o início em 7/11.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/11/d6a9151-daa3b2ed.webp",
+    "credito": "Fernando Frazão/Agência Brasil"
+   }
   },
   {
    "id": 1016,
@@ -184,7 +188,11 @@
    "nota_selo": 88,
    "motivo_nota": "Reportagem com fontes identificadas, com os dados centrais confirmados pela Agência Câmara.",
    "gancho": "A MP precisa ser votada pela Câmara e pelo Senado; entidades de saúde dizem que vão pedir emendas para subir as taxas já em 2027.",
-   "obs": "A matéria da Câmara fala em 'bebidas açucaradas', sem citar refrigerantes pelo nome; a Pública diz que refrigerantes estão incluídos, citando o ministro. Ultraprocessados não aparecem na lista."
+   "obs": "A matéria da Câmara fala em 'bebidas açucaradas', sem citar refrigerantes pelo nome; a Pública diz que refrigerantes estão incluídos, citando o ministro. Ultraprocessados não aparecem na lista.",
+   "imagem": {
+    "url": "https://apublica.org/wp-content/uploads/2026/11/Capa2_Imposto-do-pecado-Governo-alivia-para-industrias-e-adia-protecao-popular-alma-da-reforma.jpg",
+    "credito": "FreePik"
+   }
   },
   {
    "id": 1020,
@@ -202,7 +210,11 @@
    "nota_selo": 88,
    "motivo_nota": "Fonte oficial do Legislativo que registra a votação; ainda sem cobertura de outros veículos.",
    "gancho": "O texto ainda passa por duas comissões e pelo Plenário; redes de ensino e famílias podem acompanhar a tramitação.",
-   "obs": "Cobertura vazia: não encontrei outra fonte da base sobre a votação (a busca web acabou durante a pesquisa). A notícia não traz valores de financiamento nem metas de matrícula."
+   "obs": "Cobertura vazia: não encontrei outra fonte da base sobre a votação (a busca web acabou durante a pesquisa). A notícia não traz valores de financiamento nem metas de matrícula.",
+   "imagem": {
+    "url": "https://www.camara.leg.br/midias/image/2026/11/img20260520151912978-768x473.jpg",
+    "credito": "Thiago Cristino/Câmara dos Deputados"
+   }
   },
   {
    "id": 1024,
@@ -220,7 +232,11 @@
    "nota_selo": 52,
    "motivo_nota": "Números informados pelo próprio projeto, em veículo coprodutor do filme, sem verificação independente.",
    "gancho": "O documentário está disponível em vídeo no YouTube, embutido na matéria.",
-   "obs": "Conflito de interesse: o Brasil de Fato é coprodutor do documentário. A matéria não traz dados oficiais de analfabetismo nem a duração do filme. Foi a única notícia local de educação em São Paulo que consegui verificar."
+   "obs": "Conflito de interesse: o Brasil de Fato é coprodutor do documentário. A matéria não traz dados oficiais de analfabetismo nem a duração do filme. Foi a única notícia local de educação em São Paulo que consegui verificar.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/11/dsc07185-e893b256-scaled.webp",
+    "credito": "Vitor Shimomura"
+   }
   },
   {
    "id": 1034,
@@ -245,7 +261,11 @@
    "nota_selo": 94,
    "motivo_nota": "Fonte oficial do Legislativo, confirmada por outra fonte da base.",
    "gancho": "Regra vale para ingressantes desde 19/06/2026; cursos com mau desempenho podem perder vagas.",
-   "obs": "A página da Câmara não informa o número da lei nem eventuais vetos. A matéria do Brasil de Fato é republicação de texto da Agência Brasil."
+   "obs": "A página da Câmara não informa o número da lei nem eventuais vetos. A matéria do Brasil de Fato é republicação de texto da Agência Brasil.",
+   "imagem": {
+    "url": "https://www.camara.leg.br/midias/image/2026/11/sano-enamed-e1793999926126-768x536.jpg",
+    "credito": "Ricardo Stuckert/Presidência da República"
+   }
   },
   {
    "id": 1035,
@@ -263,7 +283,11 @@
    "nota_selo": 80,
    "motivo_nota": "Projeção de consórcio científico identificado, com margem de incerteza informada; é previsão, não dado observado.",
    "gancho": "Pesquisadores recomendam eliminar água parada e buscar atendimento aos primeiros sintomas; gestores podem usar a previsão para planejar a rede.",
-   "obs": "Texto republicado pelo Brasil de Fato com crédito à Agência Brasil; não localizei a URL original da Agência Brasil para incluir como cobertura."
+   "obs": "Texto republicado pelo Brasil de Fato com crédito à Agência Brasil; não localizei a URL original da Agência Brasil para incluir como cobertura.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/01/mosquito-213805_1920.webp",
+    "credito": "nuzeee/Pixabay"
+   }
   },
   {
    "id": 1056,
@@ -281,7 +305,11 @@
    "nota_selo": 78,
    "motivo_nota": "Reportagem sobre decisão judicial identificada, com versões da acusação e da defesa, sem confirmação de outra fonte da base.",
    "gancho": "O júri popular ainda não tem data; família e organizações podem acompanhar e cobrar o andamento no Tribunal de Justiça de SP.",
-   "obs": "A Ponte cita reportagem da Folha sobre o processo disciplinar, mas não verifiquei essa URL (feed da Folha bloqueado nesta sessão). Cobertura cruzada vazia."
+   "obs": "A Ponte cita reportagem da Folha sobre o processo disciplinar, mas não verifiquei essa URL (feed da Folha bloqueado nesta sessão). Cobertura cruzada vazia.",
+   "imagem": {
+    "url": "https://ponte.org/wp-content/uploads/2025/02/Marco-Aurelio-Cardenas-Acosta.webp",
+    "credito": "Arquivo pessoal"
+   }
   },
   {
    "id": 1015,
@@ -299,7 +327,11 @@
    "nota_selo": 90,
    "motivo_nota": "Fonte oficial do Legislativo que registra a votação e a tramitação.",
    "gancho": "O PL 6725/25 segue para as comissões de Finanças e de CCJ; hortas e coletivos podem acompanhar a tramitação.",
-   "obs": "Cobertura vazia: não achei outra fonte da base sobre a votação (a busca web acabou durante a pesquisa). O autor está na matéria da Câmara de 19/02/2026 (https://www.camara.leg.br/noticias/1245708-projeto-cria-politica-nacional-para-incentivar-hortas-em-areas-urbanas), que é da mesma fonte e por isso não entra como cobertura."
+   "obs": "Cobertura vazia: não achei outra fonte da base sobre a votação (a busca web acabou durante a pesquisa). O autor está na matéria da Câmara de 19/02/2026 (https://www.camara.leg.br/noticias/1245708-projeto-cria-politica-nacional-para-incentivar-hortas-em-areas-urbanas), que é da mesma fonte e por isso não entra como cobertura.",
+   "imagem": {
+    "url": "https://www.camara.leg.br/midias/image/2026/11/img20260506155441407-768x473.jpeg",
+    "credito": "Renato Araújo/Câmara dos Deputados"
+   }
   },
   {
    "id": 1025,
@@ -317,7 +349,11 @@
    "nota_selo": 70,
    "motivo_nota": "Fato central (cancelamento anunciado pelo prefeito) é claro, mas a matéria é a única versão verificada e não informa o valor do cachê.",
    "gancho": "Projeto de lei da vereadora Jô Cavalcanti sobre contratação de artistas foi apresentado na Câmara do Recife e pode ser acompanhado.",
-   "obs": "Não foi possível verificar outra fonte da base cobrindo o fato (limite de buscas atingido). Tema politicamente sensível: as falas estão atribuídas a cada ator."
+   "obs": "Não foi possível verificar outra fonte da base cobrindo o fato (limite de buscas atingido). Tema politicamente sensível: as falas estão atribuídas a cada ator.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/11/jorge-e-mateus-1024x683-1-0a8f2b1c.webp",
+    "credito": "Cadu Fernandes/Divulgação"
+   }
   },
   {
    "id": 1033,
@@ -335,7 +371,11 @@
    "nota_selo": 62,
    "motivo_nota": "Anúncio de lançamento baseado na versão da ONG; os resultados do Recife não aparecem na matéria.",
    "gancho": "Relatório lançado em evento público na Unicap em 5/11; os dados podem embasar o debate sobre atendimento a pessoas com HIV no Recife.",
-   "obs": "A matéria é um anúncio e não traz os achados locais; o relatório em si não foi consultado. Sem cobertura cruzada encontrada."
+   "obs": "A matéria é um anúncio e não traz os achados locais; o relatório em si não foi consultado. Sem cobertura cruzada encontrada.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/11/ubsvanessaalcantaraprefrecife-ef04fbe1.webp",
+    "credito": "Vanessa Alcântara/Prefeitura do Recife"
+   }
   },
   {
    "id": 1009,
@@ -353,7 +393,11 @@
    "nota_selo": 66,
    "motivo_nota": "Reportagem detalhada sobre decisões judiciais, mas com uma só versão: prefeitura (Sehab) e SSP não responderam.",
    "gancho": "As famílias ainda não têm moradia definitiva; entidades podem cobrar da Sehab auxílio-aluguel e atendimento habitacional.",
-   "obs": "O único veículo da base que encontrei cobrindo o caso foi o Brasil de Fato. A continuação, de 04/11/2026, está em https://www.brasildefato.com.br/2026/11/04/tratados-como-lixo-o-descaso-da-gestao-ricardo-nunes-no-despejo-de-familias-do-centro-de-sp/ e traz a resposta da prefeitura: o imóvel é privado e a SMADS foi acionada no dia. O valor do IPTU e os 30 anos de abandono são dados de moradores e advogados. Os números de crianças variam dentro da matéria."
+   "obs": "O único veículo da base que encontrei cobrindo o caso foi o Brasil de Fato. A continuação, de 04/11/2026, está em https://www.brasildefato.com.br/2026/11/04/tratados-como-lixo-o-descaso-da-gestao-ricardo-nunes-no-despejo-de-familias-do-centro-de-sp/ e traz a resposta da prefeitura: o imóvel é privado e a SMADS foi acionada no dia. O valor do IPTU e os 30 anos de abandono são dados de moradores e advogados. Os números de crianças variam dentro da matéria.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/11/ocupacao-zepa-d3d8f37f-scaled.webp",
+    "credito": "Reprodução/Google Street View"
+   }
   },
   {
    "id": 1003,
@@ -378,7 +422,11 @@
    "nota_selo": 72,
    "motivo_nota": "Reportagem com nota oficial da Artesp, mas o adiamento só foi confirmado nesta fonte da base.",
    "gancho": "Moradores da Brasilândia podem cobrar da Artesp e da Linha Uni uma data para as estações; a Artesp prevê abertura até o fim do ano.",
-   "obs": "O adiamento também foi noticiado por Diário do Transporte e Band, que não fazem parte da base. A matéria da Agência Brasil de julho não dá data para Brasilândia; ela confirma só o contexto. O texto do Brasil de Fato tem tom crítico ao governo estadual, e a crítica ficou atribuída ao sindicalista."
+   "obs": "O adiamento também foi noticiado por Diário do Transporte e Band, que não fazem parte da base. A matéria da Agência Brasil de julho não dá data para Brasilândia; ela confirma só o contexto. O texto do Brasil de Fato tem tom crítico ao governo estadual, e a crítica ficou atribuída ao sindicalista.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/08/captura-de-tela-2026-08-17-155459-7e12d859.webp",
+    "credito": "Maria Dantas/Brasil de Fato"
+   }
   },
   {
    "id": 1055,
@@ -396,7 +444,11 @@
    "nota_selo": 76,
    "motivo_nota": "Reportagem presencial com organizadores identificados e dado de anuário conhecido, sem outra fonte da base confirmando.",
    "gancho": "O manifesto da caminhada lista reivindicações que coletivos e moradores podem levar à prefeitura e ao governo estadual.",
-   "obs": "Há inconsistência de autoria na página (texto cita Mariana Rosetti; metadados, Jessica Santos). Cobertura cruzada vazia: não achei a caminhada de 2026 em outra fonte da base; o Anuário (Fórum Brasileiro de Segurança Pública) não está na base."
+   "obs": "Há inconsistência de autoria na página (texto cita Mariana Rosetti; metadados, Jessica Santos). Cobertura cruzada vazia: não achei a caminhada de 2026 em outra fonte da base; o Anuário (Fórum Brasileiro de Segurança Pública) não está na base.",
+   "imagem": {
+    "url": "https://ponte.org/wp-content/uploads/2026/11/caminhada_vida_1_novembro_2026-scaled.webp",
+    "credito": "Mariana Rosetti/Ponte Jornalismo"
+   }
   },
   {
    "id": 1021,
@@ -414,7 +466,11 @@
    "nota_selo": 70,
    "motivo_nota": "Reportagem com a versão da prefeitura e do sindicato, mas sem outra fonte e com números divergentes.",
    "gancho": "Audiência pública sobre o caso na Câmara Municipal de Curitiba em 13/11; matrícula online na rede estadual abre em 23/11.",
-   "obs": "Não achei cobertura de outra fonte da base; a seção de Curitiba da Gazeta do Povo não mostrou o tema. O número de alunos afetados não é informado."
+   "obs": "Não achei cobertura de outra fonte da base; a seção de Curitiba da Gazeta do Povo não mostrou o tema. O número de alunos afetados não é informado.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/10/isabella-mayer-secom-00d95843.webp",
+    "credito": "Isabella Mayer/SECOM"
+   }
   },
   {
    "id": 1004,
@@ -432,7 +488,11 @@
    "nota_selo": 80,
    "motivo_nota": "Reportagem sólida com decisão e autor identificados e resposta da Urbs, mas sem outra fonte da base.",
    "gancho": "Licitação suspensa enquanto o TCE-PR revisa os pontos; usuários e conselhos de transporte podem acompanhar o processo e cobrar a Urbs.",
-   "obs": "A matéria foi produzida pela Tribuna do Paraná e publicada pela Gazeta do Povo. Não encontrei outra fonte da base sobre esta decisão; o limite de buscas acabou antes de procurar mais. Matérias anteriores da Gazeta (22/06 e 15/07/2026) mostram a disputa judicial com as empresas (Setransp) e o estudo da Fipecafi."
+   "obs": "A matéria foi produzida pela Tribuna do Paraná e publicada pela Gazeta do Povo. Não encontrei outra fonte da base sobre esta decisão; o limite de buscas acabou antes de procurar mais. Matérias anteriores da Gazeta (22/06 e 15/07/2026) mostram a disputa judicial com as empresas (Setransp) e o estudo da Fipecafi.",
+   "imagem": {
+    "url": "https://media.gazetadopovo.com.br/2026/10/29083355/transporte-curitiba.jpg",
+    "credito": "Luiz Costa/Prefeitura de Curitiba"
+   }
   },
   {
    "id": 1007,
@@ -475,7 +535,11 @@
    "nota_selo": 88,
    "motivo_nota": "Datas, local e patrona confirmados por fonte oficial (Agência Senado).",
    "gancho": "Programação gratuita na Praça da Alfândega até 15 de novembro.",
-   "obs": "O número de 1,5 milhão de visitantes é estimativa citada pela matéria, sem fonte detalhada. A matéria não informa orçamento."
+   "obs": "O número de 1,5 milhão de visitantes é estimativa citada pela matéria, sem fonte detalhada. A matéria não informa orçamento.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2025/11/feira-do-livro.webp",
+    "credito": "Carla Reginato/CRL"
+   }
   },
   {
    "id": 1028,
@@ -493,7 +557,11 @@
    "nota_selo": 76,
    "motivo_nota": "Programação detalhada com fonte identificada (prefeitura), mas os números de público e impacto são estimativas oficiais não verificadas.",
    "gancho": "Programação começa em 24 de novembro; parte das atrações é gratuita e a Catedral de Luz requer agendamento.",
-   "obs": "Texto assinado como 'Especial para a Tribuna do Paraná', publicado no site da Gazeta do Povo. A matéria não informa o custo total do evento. Sem cobertura cruzada de outra fonte da base encontrada (o site da prefeitura não está na base)."
+   "obs": "Texto assinado como 'Especial para a Tribuna do Paraná', publicado no site da Gazeta do Povo. A matéria não informa o custo total do evento. Sem cobertura cruzada de outra fonte da base encontrada (o site da prefeitura não está na base).",
+   "imagem": {
+    "url": "https://media.gazetadopovo.com.br/2026/10/28085359/natal.jpg",
+    "credito": "Pedro Ribas/Prefeitura de Curitiba"
+   }
   },
   {
    "id": 1036,
@@ -511,7 +579,11 @@
    "nota_selo": 86,
    "motivo_nota": "Dados oficiais apresentados pelo diretor do PNI, identificado; sem segunda fonte da base verificada.",
    "gancho": "Adolescentes de 10 a 14 anos que tomaram a 1ª dose devem voltar ao posto para a 2ª, três meses depois.",
-   "obs": "Fato replicado por vários sites fora da base; não localizei cobertura de outra fonte da base."
+   "obs": "Fato replicado por vários sites fora da base; não localizei cobertura de outra fonte da base.",
+   "imagem": {
+    "url": "https://imagens.ebc.com.br/hLWPbR-o0-3ef8mPwxSHK5O2W8Y=/1600x800/https://agenciabrasil.ebc.com.br/sites/default/files/thumbnails/image/2024/04/04/img_9278.jpg?itok=eWzPlbyO",
+    "credito": "Rovena Rosa/Agência Brasil"
+   }
   },
   {
    "id": 1013,
@@ -583,7 +655,11 @@
    "nota_selo": 92,
    "motivo_nota": "Fato confirmado pela ficha oficial de tramitação da Câmara e pelo Senado, além da imprensa pública.",
    "gancho": "A PEC 18/2026 aguarda despacho na Câmara; organizações podem acompanhar a tramitação e procurar seus deputados.",
-   "obs": "A página do Poder360 foi bloqueada no WebFetch; título e URL foram confirmados só por resultado de busca. O setor de ônibus (NTU) estima custo maior (R$ 20,8 bi), segundo veículos fora da base; não incluído. Em 29/10/2026 a dep. Luiza Erundina pediu o apensamento da PEC à PEC 25/2023 (ficha da Câmara)."
+   "obs": "A página do Poder360 foi bloqueada no WebFetch; título e URL foram confirmados só por resultado de busca. O setor de ônibus (NTU) estima custo maior (R$ 20,8 bi), segundo veículos fora da base; não incluído. Em 29/10/2026 a dep. Luiza Erundina pediu o apensamento da PEC à PEC 25/2023 (ficha da Câmara).",
+   "imagem": {
+    "url": "https://imagens.ebc.com.br/VE0w5nR7Fn0Su4ozu14kaaRkI8g=/1600x800/https://agenciabrasil.ebc.com.br/sites/default/files/thumbnails/image/transporte-urbano_mcamgo_abr_09082023-11.jpg?itok=h39JrCkj",
+    "credito": "Marcelo Camargo/Agência Brasil"
+   }
   },
   {
    "id": 1059,
@@ -601,7 +677,11 @@
    "nota_selo": 80,
    "motivo_nota": "Pesquisa com amostra e instituto identificados, divulgada por agência pública, sem outra fonte da base.",
    "gancho": "A pesquisa foi feita para orientar os governos que assumem em 2027; grêmios e entidades estudantis podem usá-la em suas pautas.",
-   "obs": "A pesquisa foi encomendada por fundações privadas (Itaú, Lemann, Telefônica Vivo e outras) e pelo Todos Pela Educação. O horário de publicação diverge na página (11h26 no texto, 14h26 nos metadados). Cobertura cruzada vazia."
+   "obs": "A pesquisa foi encomendada por fundações privadas (Itaú, Lemann, Telefônica Vivo e outras) e pelo Todos Pela Educação. O horário de publicação diverge na página (11h26 no texto, 14h26 nos metadados). Cobertura cruzada vazia.",
+   "imagem": {
+    "url": "https://imagens.ebc.com.br/p0ShD0gDul6VFGvEsAYh86SA5lY=/1600x800/https://agenciabrasil.ebc.com.br/sites/default/files/thumbnails/image/2026/06/25/img_7264.jpg_0.jpg?itok=hoR4F59_",
+    "credito": "Rafa Neddermeyer/Agência Brasil"
+   }
   },
   {
    "id": 1037,
@@ -632,7 +712,11 @@
    "nota_selo": 88,
    "motivo_nota": "Dados do Inpe, do Ibama e de sensores de qualidade do ar, confirmados em linhas gerais pela Agência Brasil.",
    "gancho": "O Ministério da Saúde anunciou uma base da Força Nacional do SUS em Manaus para atender quem foi afetado pela fumaça.",
-   "obs": "O título original diz que é o ar mais tóxico do mundo, mas isso se baseia em leituras pontuais (IQAir/Selva), não em médias. Os valores de MP2.5 mudam muito ao longo do dia e entre as fontes."
+   "obs": "O título original diz que é o ar mais tóxico do mundo, mas isso se baseia em leituras pontuais (IQAir/Selva), não em médias. Os valores de MP2.5 mudam muito ao longo do dia e entre as fontes.",
+   "imagem": {
+    "url": "https://amazoniareal.com.br/wp-content/uploads/2026/10/FUMACA-17102026-8-1.jpg",
+    "credito": "Alberto César Araújo/Amazônia Real"
+   }
   },
   {
    "id": 1041,
@@ -657,7 +741,11 @@
    "nota_selo": 90,
    "motivo_nota": "Dado oficial do Inpe, publicado pela agência pública.",
    "gancho": "",
-   "obs": "A matéria não diz se o número vem do Prodes (taxa anual) ou de outro sistema; a série desde 1988 indica que é o Prodes. Não achei a página do Inpe com o número anual antes de acabar o limite de buscas. A fonte de cobertura confirma só a tendência."
+   "obs": "A matéria não diz se o número vem do Prodes (taxa anual) ou de outro sistema; a série desde 1988 indica que é o Prodes. Não achei a página do Inpe com o número anual antes de acabar o limite de buscas. A fonte de cobertura confirma só a tendência.",
+   "imagem": {
+    "url": "https://imagens.ebc.com.br/17Gr9w6Halr_xS-APd26UAq8SK8=/1600x800/https://agenciabrasil.ebc.com.br/sites/default/files/thumbnails/image/2025/06/18/dji_0104.jpg?itok=dAKF4H43",
+    "credito": "Fernando Frazão/Agência Brasil"
+   }
   },
   {
    "id": 1030,
@@ -675,7 +763,11 @@
    "nota_selo": 82,
    "motivo_nota": "Pesquisa com metodologia descrita (amostra, período, apoio técnico do Datafolha), mas o relatório não foi consultado diretamente.",
    "gancho": "As prioridades apontadas pela pesquisa podem orientar cobranças a governantes eleitos em 2026.",
-   "obs": "A matéria não traz link para o relatório da pesquisa. Sem cobertura cruzada verificada em outra fonte da base."
+   "obs": "A matéria não traz link para o relatório da pesquisa. Sem cobertura cruzada verificada em outra fonte da base.",
+   "imagem": {
+    "url": "https://imagens.ebc.com.br/YgBKMgd0fFbitv_0SiLOqX8dqCE=/1600x800/https://agenciabrasil.ebc.com.br/sites/default/files/thumbnails/image/2024/10/25/kasa_branca.jpg?itok=ZFAIvHUz",
+    "credito": "Cena do filme Kasa Branca/Divulgação"
+   }
   },
   {
    "id": 1038,
@@ -693,7 +785,11 @@
    "nota_selo": 76,
    "motivo_nota": "A reportagem identifica a vara, a juíza e os autores e usa dados do Inpe, mas não informa o número do processo e não achei outra fonte da base.",
    "gancho": "Os réus têm 10 dias para apresentar planos e orçamento; organizações podem acompanhar a ação na 7ª Vara Federal Ambiental do Amazonas.",
-   "obs": "Não encontrei outra fonte da base sobre a decisão antes de acabar o limite de buscas. O número do processo não aparece na matéria. A disputa sobre a suposta recusa de ajuda federal é contada pelas versões de cada lado."
+   "obs": "Não encontrei outra fonte da base sobre a decisão antes de acabar o limite de buscas. O número do processo não aparece na matéria. A disputa sobre a suposta recusa de ajuda federal é contada pelas versões de cada lado.",
+   "imagem": {
+    "url": "https://amazoniareal.com.br/wp-content/uploads/2026/10/55584658669_6002414d65_k-1.jpg",
+    "credito": "Rodrigo Hanna/MIDR"
+   }
   },
   {
    "id": 1022,
@@ -743,7 +839,11 @@
    "nota_selo": 90,
    "motivo_nota": "Dados de monitoramento (UEA, INPE) confirmados por duas fontes da base.",
    "gancho": "Defesa Civil orienta grupos de risco a usar máscara PFF2 e evitar exercícios; moradores podem acompanhar os dados na plataforma Selva.",
-   "obs": "O pico exato varia entre as fontes (Agência Brasil cita 344,5 µg/m³ às 2h; Amazônia Real, 350,9 µg/m³ às 2h23), conforme horário da leitura. Tema também ligado a meio ambiente; pode se sobrepor a outro grupo."
+   "obs": "O pico exato varia entre as fontes (Agência Brasil cita 344,5 µg/m³ às 2h; Amazônia Real, 350,9 µg/m³ às 2h23), conforme horário da leitura. Tema também ligado a meio ambiente; pode se sobrepor a outro grupo.",
+   "imagem": {
+    "url": "https://amazoniareal.com.br/wp-content/uploads/2026/10/fumaca-manaus-08-de-outubro-michael-dantas-slide.jpg",
+    "credito": "Michael Dantas (foto cedida)"
+   }
   },
   {
    "id": 1044,
@@ -761,7 +861,11 @@
    "nota_selo": 86,
    "motivo_nota": "Fonte oficial que resume um documento técnico do Legislativo, sem confirmação em outra fonte da base.",
    "gancho": "A nota técnica é pública e serve de base para a análise do PLN 24/26 na Comissão Mista de Orçamento.",
-   "obs": "Não achei outra fonte da base sobre a nota antes de acabar o limite de buscas. A nota técnica em PDF fica no site do Congresso Nacional (congressonacional.leg.br), que não está na lista da base."
+   "obs": "Não achei outra fonte da base sobre a nota antes de acabar o limite de buscas. A nota técnica em PDF fica no site do Congresso Nacional (congressonacional.leg.br), que não está na lista da base.",
+   "imagem": {
+    "url": "https://www.camara.leg.br/midias/image/2026/10/img20230424110823717-768x512.jpg",
+    "credito": "Depositphotos"
+   }
   },
   {
    "id": 1023,
@@ -779,7 +883,11 @@
    "nota_selo": 82,
    "motivo_nota": "Reportagem com fontes oficiais identificadas (ministro, reitor e PF), mas sem confirmação de outro veículo.",
    "gancho": "O ministro prevê o início da obra cerca de 30 dias após a perícia; a comunidade acadêmica pode cobrar o cronograma.",
-   "obs": "Não achei cobertura de outra fonte da base: a página de Pernambuco do Brasil de Fato e a home da Marco Zero não mostravam o caso, e a busca web acabou. A matéria tem dateline do Rio de Janeiro, mas o fato é no Recife."
+   "obs": "Não achei cobertura de outra fonte da base: a página de Pernambuco do Brasil de Fato e a home da Marco Zero não mostravam o caso, e a busca web acabou. A matéria tem dateline do Rio de Janeiro, mas o fato é no Recife.",
+   "imagem": {
+    "url": "https://imagens.ebc.com.br/ZvYPoEu3nQerFj9MisJXJG8CHaU=/1600x800/https://agenciabrasil.ebc.com.br/sites/default/files/thumbnails/image/2026/10/08/incendio_causa_danos_a_predio_da_universidade_federal_de_pernambuco.jpg?itok=fcGdmyBb",
+    "credito": "Frame STV da Silva/X"
+   }
   },
   {
    "id": 1029,
@@ -797,7 +905,11 @@
    "nota_selo": 75,
    "motivo_nota": "Informações de serviço com fonte identificada (curador e Sesc), sem confirmação independente.",
    "gancho": "Exposição com entrada gratuita no Sesc Ipiranga.",
-   "obs": "Pauta de agenda cultural, com baixo potencial de conflito; data de encerramento e horários não informados. Sem cobertura cruzada encontrada."
+   "obs": "Pauta de agenda cultural, com baixo potencial de conflito; data de encerramento e horários não informados. Sem cobertura cruzada encontrada.",
+   "imagem": {
+    "url": "https://imagens.ebc.com.br/QHR4ig6yUMa0oMkkl6MT5_3PwxU=/1600x800/https://agenciabrasil.ebc.com.br/sites/default/files/thumbnails/image/2026/10/08/expo1.jpg?itok=nhhfSqu1",
+    "credito": "SESC/Divulgação"
+   }
   },
   {
    "id": 1058,
@@ -815,7 +927,11 @@
    "nota_selo": 72,
    "motivo_nota": "Reportagem presencial com reitor, ministro e entidades identificados, mas a causa estava em aberto e não há outra fonte da base.",
    "gancho": "O MEC prometeu reconstruir o prédio e repor os equipamentos; estudantes e docentes podem acompanhar prazos e valores.",
-   "obs": "Encaixe no tema: educação de jovens no ensino superior; o texto não diz quantos estudantes foram afetados. A matéria cita ameaças de bomba atribuídas a bolsonaristas contra estudantes de Jornalismo, mas a reitoria e as entidades evitaram ligar isso ao incêndio; deixei de fora. Cobertura cruzada vazia."
+   "obs": "Encaixe no tema: educação de jovens no ensino superior; o texto não diz quantos estudantes foram afetados. A matéria cita ameaças de bomba atribuídas a bolsonaristas contra estudantes de Jornalismo, mas a reitoria e as entidades evitaram ligar isso ao incêndio; deixei de fora. Cobertura cruzada vazia.",
+   "imagem": {
+    "url": "https://marcozero.org/wp-content/uploads/2026/10/DINE-1.jpg",
+    "credito": "Arnaldo Sete/Marco Zero"
+   }
   },
   {
    "id": 1032,
@@ -833,7 +949,11 @@
    "nota_selo": 85,
    "motivo_nota": "Dado oficial da Secretaria de Estado da Saúde, mas sem outra fonte da base verificada.",
    "gancho": "Vacina tríplice viral gratuita em todas as UBS; bebês de 6 a 11 meses da capital podem receber a dose zero.",
-   "obs": "A matéria se contradiz no número de casos novos (três no título, quatro no lide). Em 7/10, outra matéria da própria Agência Brasil citou 41 casos em SP segundo o Ministério da Saúde. Não verifiquei cobertura de outra fonte da base."
+   "obs": "A matéria se contradiz no número de casos novos (três no título, quatro no lide). Em 7/10, outra matéria da própria Agência Brasil citou 41 casos em SP segundo o Ministério da Saúde. Não verifiquei cobertura de outra fonte da base.",
+   "imagem": {
+    "url": "https://imagens.ebc.com.br/wV_kXfg42CMctlo38YOCUkIl2RM=/1600x800/https://agenciabrasil.ebc.com.br/sites/default/files/thumbnails/image/2026/08/18/_int1250.jpg?itok=qQmqJUCT",
+    "credito": "Paulo Pinto/Agência Brasil"
+   }
   },
   {
    "id": 1012,
@@ -851,7 +971,11 @@
    "nota_selo": 70,
    "motivo_nota": "Fonte oficial que cita dados do Censo, mas a análise é a opinião de uma única especialista.",
    "gancho": "Moradores podem cobrar da prefeitura o uso de IPTU progressivo e de edificação compulsória em imóveis vazios.",
-   "obs": "A matéria não liga para a tabela do IBGE. Não consegui abrir o site do IBGE (bloqueado no ambiente) para conferir os números de déficit e de domicílios vagos. A matéria também fala de saneamento e esporte; só a parte de habitação foi usada."
+   "obs": "A matéria não liga para a tabela do IBGE. Não consegui abrir o site do IBGE (bloqueado no ambiente) para conferir os números de déficit e de domicílios vagos. A matéria também fala de saneamento e esporte; só a parte de habitação foi usada.",
+   "imagem": {
+    "url": "https://www.camara.leg.br/midias/image/2026/09/img20241008113607805-1-768x506.jpg",
+    "credito": "Paulo Pinto/Agência Brasil"
+   }
   },
   {
    "id": 1045,
@@ -876,7 +1000,11 @@
    "nota_selo": 78,
    "motivo_nota": "Estimativa de uma ONG identificada, com ordem de grandeza confirmada pela consultoria da Câmara.",
    "gancho": "Qualquer pessoa pode consultar no Transferegov.br os planos de trabalho das emendas Pix enviadas ao seu município.",
-   "obs": "As estimativas variam: o Inesc fala em R$ 44,4 bi de emendas obrigatórias (base PLDO) e o projeto de lei, em R$ 44,8 bi. A Câmara calcula pouco mais de 25% do discricionário e o Inesc, 21%, porque usam bases diferentes."
+   "obs": "As estimativas variam: o Inesc fala em R$ 44,4 bi de emendas obrigatórias (base PLDO) e o projeto de lei, em R$ 44,8 bi. A Câmara calcula pouco mais de 25% do discricionário e o Inesc, 21%, porque usam bases diferentes.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/04/fachada-congresso-nacional.webp",
+    "credito": "Antônio Cruz/Agência Brasil"
+   }
   },
   {
    "id": 1049,
@@ -894,7 +1022,11 @@
    "nota_selo": 80,
    "motivo_nota": "Reportagem sobre decisão judicial concreta, com valores e fundamentos detalhados; o fato também foi publicado por outros veículos fora da base, mas nenhuma fonte da base foi confirmada.",
    "gancho": "Atingidos dos 19 bairros citados podem buscar indenização individual comprovando prejuízo; a aplicação dos R$ 50 milhões terá fiscalização do TCE e de conselho municipal.",
-   "obs": "Texto republicado do Sul21. Cobertura cruzada vazia: achei o mesmo fato em Estadão Conteúdo republicado pelo Diário do Grande ABC, Folha de Pernambuco, O Liberal e Jornal do Comércio, além do site do MP-RS, mas nenhum desses está na base e não consegui verificar a URL original no estadao.com.br (busca bloqueada). A reportagem não traz resposta da prefeitura; em 2025 a Procuradoria do Município contestou uma decisão anterior no mesmo processo."
+   "obs": "Texto republicado do Sul21. Cobertura cruzada vazia: achei o mesmo fato em Estadão Conteúdo republicado pelo Diário do Grande ABC, Folha de Pernambuco, O Liberal e Jornal do Comércio, além do site do MP-RS, mas nenhum desses está na base e não consegui verificar a URL original no estadao.com.br (busca bloqueada). A reportagem não traz resposta da prefeitura; em 2025 a Procuradoria do Município contestou uma decisão anterior no mesmo processo.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/09/ct7756-1080x720-1-117f20c2.webp",
+    "credito": "Julio Ferreira/PMPA"
+   }
   },
   {
    "id": 1050,
@@ -912,7 +1044,11 @@
    "nota_selo": 72,
    "motivo_nota": "Reportagem com fontes identificadas (governos e pesquisadores), mas há divergência de valores no próprio texto e não achei outra fonte da base sobre o anúncio.",
    "gancho": "O edital do projeto executivo de Eldorado do Sul ainda não saiu; moradores e entidades podem acompanhar a publicação e o cronograma previsto para 2027.",
-   "obs": "O título e o texto citam R$ 1,5 bilhão para a região metropolitana; a legenda da foto fala em R$ 6,5 bilhões para o estado inteiro; usei o valor do texto. A página mostra modificação em 27/10/2026. Cobertura cruzada vazia: a Agência Brasil tem matérias sobre chuvas em Eldorado do Sul (13/07/2026), mas não sobre este anúncio."
+   "obs": "O título e o texto citam R$ 1,5 bilhão para a região metropolitana; a legenda da foto fala em R$ 6,5 bilhões para o estado inteiro; usei o valor do texto. A página mostra modificação em 27/10/2026. Cobertura cruzada vazia: a Agência Brasil tem matérias sobre chuvas em Eldorado do Sul (13/07/2026), mas não sobre este anúncio.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/09/fotolulaenchentes-0db214e2.webp",
+    "credito": "Ricardo Stuckert/PR"
+   }
   },
   {
    "id": 1039,
@@ -930,7 +1066,11 @@
    "nota_selo": 72,
    "motivo_nota": "Reportagem com moradores e Dmae identificados, mas apoiada num único veículo da base e com dados técnicos não informados pelo órgão.",
    "gancho": "Moradores esperam as respostas por escrito que o Dmae prometeu na comissão da Câmara (Cuthab); o anteprojeto da obra definitiva estava previsto para set/out.",
-   "obs": "Na busca, a instalação só apareceu em fontes fora da base (site da prefeitura, Jornal do Comércio, Sul21). O Brasil de Fato tem outras matérias sobre o tema (16/06 e 25/08), mas é a mesma fonte. O Dmae não informou a cota de proteção nem a capacidade de bombeamento."
+   "obs": "Na busca, a instalação só apareceu em fontes fora da base (site da prefeitura, Jornal do Comércio, Sul21). O Brasil de Fato tem outras matérias sobre o tema (16/06 e 25/08), mas é a mesma fonte. O Dmae não informou a cota de proteção nem a capacidade de bombeamento.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/09/31082026-colocacao-de-barreira-movel-na-praia-do-guaruja-luciano-lanes-002-32652f13.webp",
+    "credito": "Luciano Lanes/PMPA"
+   }
   },
   {
    "id": 1043,
@@ -955,7 +1095,11 @@
    "nota_selo": 92,
    "motivo_nota": "Números do projeto oficial, confirmados pela Agência Câmara.",
    "gancho": "O projeto (PLN 24/26) tramita no Congresso; o valor das emendas de comissão ainda será decidido.",
-   "obs": "O total pode mudar na tramitação."
+   "obs": "O total pode mudar na tramitação.",
+   "imagem": {
+    "url": "https://imagens.ebc.com.br/AbfzFSG3vlCZz5MeKu3cWN1t4Ws=/1600x800/https://agenciabrasil.ebc.com.br/sites/default/files/thumbnails/image/real_moedadinheiro_jfcrz_abr_1701220045_1.jpg?itok=zk8i9xAS",
+    "credito": "José Cruz/Agência Brasil"
+   }
   },
   {
    "id": 1046,
@@ -973,7 +1117,11 @@
    "nota_selo": 80,
    "motivo_nota": "Números da prefeitura e da LDO publicados em veículo grande, sem segunda fonte da base.",
    "gancho": "As 10 propostas mais votadas por regional devem constar da LOA 2027; moradores podem conferir se elas entraram no projeto na Câmara.",
-   "obs": "O texto saiu na Gazeta do Povo, mas assinado como especial para a Tribuna do Paraná. Na busca, a cobertura só apareceu fora da base (Bem Paraná, Tribuna, prefeitura). Fora da janela preferida, mas dentro de 12 meses."
+   "obs": "O texto saiu na Gazeta do Povo, mas assinado como especial para a Tribuna do Paraná. Na busca, a cobertura só apareceu fora da base (Bem Paraná, Tribuna, prefeitura). Fora da janela preferida, mas dentro de 12 meses.",
+   "imagem": {
+    "url": "https://media.gazetadopovo.com.br/2026/08/12131857/fala-curitiba-2026-960x540.jpg.webp",
+    "credito": "Isabella Mayer/Prefeitura de Curitiba"
+   }
   },
   {
    "id": 1026,
@@ -991,7 +1139,11 @@
    "nota_selo": 78,
    "motivo_nota": "Análise feita sobre a lista oficial da lei municipal, com especialista identificado; falta resposta da prefeitura.",
    "gancho": "A reportagem traz a lista oficial de IEPs, que permite a moradores verificar quais imóveis do bairro têm proteção.",
-   "obs": "Publicada fora da janela preferencial (set–nov/2026), mas dentro de 12 meses. A própria matéria nota 271 imóveis únicos na lista de 273 (endereço repetido e campo vazio). Sem cobertura cruzada encontrada."
+   "obs": "Publicada fora da janela preferencial (set–nov/2026), mas dentro de 12 meses. A própria matéria nota 271 imóveis únicos na lista de 273 (endereço repetido e campo vazio). Sem cobertura cruzada encontrada.",
+   "imagem": {
+    "url": "https://marcozero.org/wp-content/uploads/2026/08/edificio-barao-rio-branco.jpeg",
+    "credito": "Maria Carolina Santos/Marco Zero"
+   }
   },
   {
    "id": 1019,
@@ -1016,7 +1168,11 @@
    "nota_selo": 93,
    "motivo_nota": "Dado oficial do MEC/Inep, confirmado por duas fontes de linhas editoriais diferentes.",
    "gancho": "",
-   "obs": "Fora da janela preferencial (agosto), mas dentro dos 12 meses. Não tive a URL oficial do Inep, que não está na base."
+   "obs": "Fora da janela preferencial (agosto), mas dentro dos 12 meses. Não tive a URL oficial do Inep, que não está na base.",
+   "imagem": {
+    "url": "https://media.gazetadopovo.com.br/2026/08/04142059/ideb-escolas-encerram-2025-sem-atingir-metas-previstas-2021.jpg",
+    "credito": "Tomaz Silva/Agência Brasil"
+   }
   },
   {
    "id": 1014,
@@ -1041,7 +1197,11 @@
    "nota_selo": 92,
    "motivo_nota": "Baseada em relatório oficial de agências da ONU e confirmada por outra fonte.",
    "gancho": "",
-   "obs": "Fora da janela preferencial (set-nov), mas dentro dos 12 meses. Não localizei a URL exata do relatório na FAO sem busca adicional, por isso não incluí a FAO na cobertura. O Brasil de Fato tem linha editorial alinhada ao governo; usei só os números."
+   "obs": "Fora da janela preferencial (set-nov), mas dentro dos 12 meses. Não localizei a URL exata do relatório na FAO sem busca adicional, por isso não incluí a FAO na cobertura. O Brasil de Fato tem linha editorial alinhada ao governo; usei só os números.",
+   "imagem": {
+    "url": "https://imagens.ebc.com.br/P--aMwNWgfHmUNC-D0tK9uOW4mA=/1600x800/https://agenciabrasil.ebc.com.br/sites/default/files/thumbnails/image/2026/07/21/55409160086_75c1be697c_k.jpg?itok=Q8V4VjrN",
+    "credito": "FAO/Giuseppe Carotenuto"
+   }
   },
   {
    "id": 1006,
@@ -1059,7 +1219,11 @@
    "nota_selo": 74,
    "motivo_nota": "Dados oficiais do governo do Paraná e da Amep, com uma única fonte da base.",
    "gancho": "A Amep promete mais 19 superarticulados até o fim do ano; passageiros da Região Metropolitana podem cobrar a entrega.",
-   "obs": "Fora da janela preferida, mas dentro de 12 meses. Matéria da Tribuna do Paraná republicada pela Gazeta do Povo. A notícia é de serviço e tem menos potencial de mobilização. Sem cobertura de outra fonte da base."
+   "obs": "Fora da janela preferida, mas dentro de 12 meses. Matéria da Tribuna do Paraná republicada pela Gazeta do Povo. A notícia é de serviço e tem menos potencial de mobilização. Sem cobertura de outra fonte da base.",
+   "imagem": {
+    "url": "https://media.gazetadopovo.com.br/2026/07/02095126/Superarticulados2.jpg",
+    "credito": "Camila Tonett/Governo do Paraná"
+   }
   },
   {
    "id": 1053,
@@ -1077,7 +1241,11 @@
    "nota_selo": 85,
    "motivo_nota": "Dados oficiais de ANA e SP Águas sobre nível e regras de operação, publicados por agência pública.",
    "gancho": "Em faixa de alerta, a pressão noturna pode ser reduzida; moradores podem acompanhar o nível e cobrar da Sabesp aviso prévio das restrições.",
-   "obs": "A matéria fala em queda de 18,7% em um ano, mas os números que ela dá (47,33% para 39,87%) dão cerca de 7,5 pontos percentuais; omiti esse percentual. Não verifiquei o nível atual (novembro). Cobertura cruzada vazia: ANA e SP Águas não estão na base, e não achei outra fonte da base sobre a mesma decisão."
+   "obs": "A matéria fala em queda de 18,7% em um ano, mas os números que ela dá (47,33% para 39,87%) dão cerca de 7,5 pontos percentuais; omiti esse percentual. Não verifiquei o nível atual (novembro). Cobertura cruzada vazia: ANA e SP Águas não estão na base, e não achei outra fonte da base sobre a mesma decisão.",
+   "imagem": {
+    "url": "https://imagens.ebc.com.br/2hgWExsaeM59qvq3DdQ4SM3uiOw=/1600x800/https://agenciabrasil.ebc.com.br/sites/default/files/thumbnails/image/2024/10/01/0g0a5588.jpg?itok=c8E1WFEP",
+    "credito": "Rovena Rosa/Agência Brasil"
+   }
   },
   {
    "id": 1010,
@@ -1095,7 +1263,11 @@
    "nota_selo": 60,
    "motivo_nota": "Fato confirmado pela prefeitura (FAS), mas as promessas não cumpridas vêm só do movimento, e União, SPU e PF não responderam.",
    "gancho": "O MLB cobra da SPU a realocação, o auxílio-aluguel e o terreno que diz terem sido prometidos às famílias.",
-   "obs": "Fora da janela preferida, mas dentro de 12 meses. Sem cobertura de outra fonte da base. A matéria foi atualizada em 03/07/2026. O Brasil de Fato também publicou, em 31/08/2026, uma carta da Campanha Despejo Zero no Paraná cobrando candidatos (https://www.brasildefato.com.br/2026/08/31/campanha-despejo-zero-no-parana-lanca-carta-em-defesa-do-direito-a-moradia-e-cobra-candidatos/), que não abri."
+   "obs": "Fora da janela preferida, mas dentro de 12 meses. Sem cobertura de outra fonte da base. A matéria foi atualizada em 03/07/2026. O Brasil de Fato também publicou, em 31/08/2026, uma carta da Campanha Despejo Zero no Paraná cobrando candidatos (https://www.brasildefato.com.br/2026/08/31/campanha-despejo-zero-no-parana-lanca-carta-em-defesa-do-direito-a-moradia-e-cobra-candidatos/), que não abri.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/06/img2878-e092531e-scaled-e1783097854651.webp",
+    "credito": "Divulgação/MLB Paraná"
+   }
   },
   {
    "id": 1002,
@@ -1146,6 +1318,10 @@
    "documento": {
     "tipo_doc": "dados",
     "paginas": null
+   },
+   "imagem": {
+    "url": "https://www.gov.br/inpe/pt-br/assuntos/ultimas-noticias/ciencia-e-tecnologia-do-inpe-tem-papel-de-destaque-na-reducao-historica-do-desmatamento-na-amazonia/deter_11jun2026_b.jpg/@@images/994b2fb1-6783-4e64-9742-57f96d6b6e9f.jpeg",
+    "credito": "Luara Baggi/ASCOM MCTI"
    }
   },
   {
@@ -1164,7 +1340,11 @@
    "nota_selo": 78,
    "motivo_nota": "Pesquisa com metodologia descrita e instituto identificado, mas é de opinião e sem outra fonte da base.",
    "gancho": "",
-   "obs": "Fora da janela preferida, mas dentro de 12 meses. A matéria não dá números para Belém, Manaus, Fortaleza e Salvador, nem para Curitiba (fora da amostra). Cobertura cruzada vazia: não achei outra fonte da base sobre a pesquisa."
+   "obs": "Fora da janela preferida, mas dentro de 12 meses. A matéria não dá números para Belém, Manaus, Fortaleza e Salvador, nem para Curitiba (fora da amostra). Cobertura cruzada vazia: não achei outra fonte da base sobre a pesquisa.",
+   "imagem": {
+    "url": "https://imagens.ebc.com.br/JGZeU57qvpGVEudpSN_aQv-7KAk=/1600x800/https://agenciabrasil.ebc.com.br/sites/default/files/thumbnails/image/2024/05/23/img_2703.jpg?itok=GPhSRwKY",
+    "credito": "Rafa Neddermeyer/Agência Brasil"
+   }
   },
   {
    "id": 1008,
@@ -1182,7 +1362,11 @@
    "nota_selo": 82,
    "motivo_nota": "Resultado oficial de leilão com números, publicado pela imprensa pública; sem outra fonte da base.",
    "gancho": "Famílias com renda de 1 a 3,5 salários mínimos poderão disputar as 637 unidades de aluguel social no centro do Recife.",
-   "obs": "Fora da janela preferida, mas dentro de 12 meses. A matéria não informa o valor do aluguel, o prazo do contrato nem o investimento total. Não achei cobertura de outra fonte da base."
+   "obs": "Fora da janela preferida, mas dentro de 12 meses. A matéria não informa o valor do aluguel, o prazo do contrato nem o investimento total. Não achei cobertura de outra fonte da base.",
+   "imagem": {
+    "url": "https://imagens.ebc.com.br/w-jj3GsCObeiue7HcvbEQcdgR2Y=/1600x800/https://agenciabrasil.ebc.com.br/sites/default/files/thumbnails/image/2026/01/20/55051807141_71998cd76d_o_0.jpg?itok=MfHP6cPG",
+    "credito": "Ricardo Stuckert/PR"
+   }
   },
   {
    "id": 1011,
@@ -1200,7 +1384,11 @@
    "nota_selo": 78,
    "motivo_nota": "Usa dados oficiais (Inmet, Defesa Civil) e ouve prefeitura e críticos, mas não tem outra fonte da base.",
    "gancho": "Algumas obras do ProMorar vão até 2028; moradores de áreas de risco podem cobrar da prefeitura o prazo dos 904 apartamentos de reassentamento.",
-   "obs": "A URL é o link curto (?p=250590), que abriu a matéria. Não consegui confirmar o endereço final com slug. Fora da janela preferida, mas dentro de 12 meses. O tema também envolve clima; foi colocado em Moradia por causa das áreas de risco e do reassentamento."
+   "obs": "A URL é o link curto (?p=250590), que abriu a matéria. Não consegui confirmar o endereço final com slug. Fora da janela preferida, mas dentro de 12 meses. O tema também envolve clima; foi colocado em Moradia por causa das áreas de risco e do reassentamento.",
+   "imagem": {
+    "url": "https://apublica.org/wp-content/uploads/2026/05/Capa_Chuvas-colocam-parques-alagaveis-em-Recife-a-prova-e-areas-de-risco-seguem-expostas.jpg",
+    "credito": "Edson Holanda/Prefeitura do Recife"
+   }
   },
   {
    "id": 1040,
@@ -1225,7 +1413,11 @@
    "nota_selo": 86,
    "motivo_nota": "Balanço do Corpo de Bombeiros e das Defesas Civis, confirmado por outra fonte da base.",
    "gancho": "A prefeitura pediu reavaliação de 35 obras de contenção de encostas no Novo PAC; moradores de morros podem cobrar a lista e os prazos.",
-   "obs": "Fora da janela preferida (set–nov), mas dentro de 12 meses. O balanço do Brasil de Fato é de um dia antes, com quatro mortes. Os números mudaram ao longo do evento."
+   "obs": "Fora da janela preferida (set–nov), mas dentro de 12 meses. O balanço do Brasil de Fato é de um dia antes, com quatro mortes. Os números mudaram ao longo do evento.",
+   "imagem": {
+    "url": "https://marcozero.org/wp-content/uploads/2026/05/defesa-civil-pe.jpeg",
+    "credito": "Defesa Civil de Pernambuco"
+   }
   },
   {
    "id": 1057,
@@ -1243,7 +1435,11 @@
    "nota_selo": 76,
    "motivo_nota": "Reportagem com fontes oficiais identificadas (MPRS e dados do Sinan/SES-RS), sem outra fonte da base.",
    "gancho": "A cartilha é gratuita no site do MPRS, e escolas podem usá-la em sala de aula e pedir a visita do órgão.",
-   "obs": "Fora da janela preferida, mas dentro de 12 meses. Os números de violência são estaduais (RS), não só de Porto Alegre. Cobertura cruzada vazia: o site do MPRS não está na base."
+   "obs": "Fora da janela preferida, mas dentro de 12 meses. Os números de violência são estaduais (RS), não só de Porto Alegre. Cobertura cruzada vazia: o site do MPRS não está na base.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/03/cartilha090304.webp",
+    "credito": "Rafael Guerra/MPRS"
+   }
   },
   {
    "id": 1018,
@@ -1261,7 +1457,11 @@
    "nota_selo": 62,
    "motivo_nota": "Depende da versão da própria iniciativa; o dado do CadÚnico é citado sem link direto.",
    "gancho": "A cozinha recebe doações de alimentos e dinheiro e aceita voluntários; os shows do Ecarta Musical recolhem 1 kg de arroz por pessoa.",
-   "obs": "Fora da janela preferencial (é de março/2026), mas dentro dos 12 meses; foi a única notícia local verificável sobre alimentação nas 8 cidades que encontrei. Sem cobertura cruzada na base."
+   "obs": "Fora da janela preferencial (é de março/2026), mas dentro dos 12 meses; foi a única notícia local verificável sobre alimentação nas 8 cidades que encontrei. Sem cobertura cruzada na base.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/03/IMG_6562.JPG-scaled.webp",
+    "credito": "Glaci Borges"
+   }
   },
   {
    "id": 1052,
@@ -1279,7 +1479,11 @@
    "nota_selo": 70,
    "motivo_nota": "Apuração com documentos e resposta da empresa, mas o risco depende de fontes anônimas e não há confirmação em outra fonte da base.",
    "gancho": "A venda ainda depende de análise da Arsesp, a agência reguladora estadual, que pode ser cobrada por moradores e entidades.",
-   "obs": "Fora da janela preferida, mas dentro de 12 meses. Não sei se a venda foi concluída depois da publicação. Cobertura cruzada vazia: não achei o mesmo fato em outra fonte da base."
+   "obs": "Fora da janela preferida, mas dentro de 12 meses. Não sei se a venda foi concluída depois da publicação. Cobertura cruzada vazia: não achei o mesmo fato em outra fonte da base.",
+   "imagem": {
+    "url": "https://apublica.org/wp-content/uploads/2026/02/Thumb-alt-Venda-de-predio-da-Sabesp-pode-colocar-em-risco-abastecimento-na-Avenida-Paulista.jpg",
+    "credito": "José Cícero/Agência Pública"
+   }
   },
   {
    "id": 1051,
@@ -1297,7 +1501,11 @@
    "nota_selo": 74,
    "motivo_nota": "Reportagem com dados do governo estadual, pesquisadores e moradores, mas sem confirmação de outra fonte da base e com valores divergentes.",
    "gancho": "A licitação do desassoreamento de R$ 113 milhões em Peixinhos ainda não saiu; moradores podem cobrar prazo do governo do estado.",
-   "obs": "Fora da janela preferida (set–nov/2026), mas dentro de 12 meses. A autora é jornalista e mestranda da UFPE. Cobertura cruzada vazia: não achei outra fonte da base sobre a mesma reportagem."
+   "obs": "Fora da janela preferida (set–nov/2026), mas dentro de 12 meses. A autora é jornalista e mestranda da UFPE. Cobertura cruzada vazia: não achei outra fonte da base sobre a mesma reportagem.",
+   "imagem": {
+    "url": "https://marcozero.org/wp-content/uploads/2026/02/Beberibe-1.jpeg",
+    "credito": "Carina Barros"
+   }
   },
   {
    "id": 1047,
@@ -1315,7 +1523,11 @@
    "nota_selo": 60,
    "motivo_nota": "Reportagem analítica com posição crítica explícita; os números atuais vêm de entrevistados, sem dado oficial conferido.",
    "gancho": "",
-   "obs": "O texto tem linha editorial crítica às gestões recentes; a prefeitura não aparece como fonte. Não achei cobertura na base. Em nov/2026, a prefeitura divulgou o início das assembleias do OP com votação digital, mas só no site da prefeitura e no Jornal do Comércio, fora da base."
+   "obs": "O texto tem linha editorial crítica às gestões recentes; a prefeitura não aparece como fonte. Não achei cobertura na base. Em nov/2026, a prefeitura divulgou o início das assembleias do OP com votação digital, mas só no site da prefeitura e no Jornal do Comércio, fora da base.",
+   "imagem": {
+    "url": "https://www.brasildefato.com.br/wp-content/uploads/2026/02/Capa-1.jpg",
+    "credito": "Mateus Raugust/PMPA"
+   }
   },
   {
    "id": 1048,
@@ -1369,7 +1581,11 @@
    "nota_selo": 86,
    "motivo_nota": "Dados oficiais do MTE/Caged publicados por agência pública.",
    "gancho": "Empresas médias e grandes são obrigadas a contratar aprendizes; jovens de 14 a 24 anos e entidades formadoras podem cobrar o cumprimento da cota.",
-   "obs": "Publicada em 10/11/2025, no limite dos 12 meses; os números já podem ter mudado. O horário diverge na página. O título original fala em vagas, mas o número de 710 mil é o total de aprendizes contratados. Cobertura cruzada vazia: o MTE (gov.br) não está na base."
+   "obs": "Publicada em 10/11/2025, no limite dos 12 meses; os números já podem ter mudado. O horário diverge na página. O título original fala em vagas, mas o número de 710 mil é o total de aprendizes contratados. Cobertura cruzada vazia: o MTE (gov.br) não está na base.",
+   "imagem": {
+    "url": "https://imagens.ebc.com.br/5IcfjtverH8zEdhGpJKbSJxjU4E=/1600x800/https://agenciabrasil.ebc.com.br/sites/default/files/thumbnails/image/2024/02/28/imrensa_jovem_03.jpg?itok=5VqTtLG0",
+    "credito": "Paulo Pinto/Agência Brasil"
+   }
   }
  ]
 }
