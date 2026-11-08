@@ -14,7 +14,11 @@ async function get(url: string, ms = 12000): Promise<Res> {
   const c = new AbortController(); const t = setTimeout(() => c.abort(), ms);
   try {
     const r = await fetch(url, { signal: c.signal, redirect: "follow", headers: { "user-agent": UA, accept: "application/rss+xml, application/atom+xml, application/xml;q=0.9, text/xml;q=0.9, text/html;q=0.8, */*;q=0.5" } });
-    const txt = (await r.text()).slice(0, 2_500_000);
+    // respeita a codificação do feed (alguns, como a Folha, ainda usam ISO-8859-1)
+    const buf = new Uint8Array(await r.arrayBuffer()).slice(0, 2_500_000);
+    const ini = new TextDecoder("latin1").decode(buf.slice(0, 400));
+    const cs = ((r.headers.get("content-type") || "").match(/charset=["']?([\w-]+)/i)?.[1] || ini.match(/encoding=["']([\w-]+)["']/i)?.[1] || "utf-8").toLowerCase();
+    let txt: string; try { txt = new TextDecoder(cs).decode(buf); } catch { txt = new TextDecoder().decode(buf); }
     return { ok: r.ok, status: r.status, url: r.url || url, ct: r.headers.get("content-type") || "", txt };
   } catch (e) { return { ok: false, status: 0, url, ct: "", txt: "", err: String(e).slice(0, 160) }; }
   finally { clearTimeout(t); }

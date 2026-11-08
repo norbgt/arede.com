@@ -3133,6 +3133,10 @@ function source(fl=S.filt, types=tabTypes()){
   }
   /* publicações das contas reais vêm primeiro, das mais novas às mais antigas */
   const reais = l.filter(it=>it.conta); if (reais.length) l = reais.sort((a,b)=>a.min-b.min).concat(l.filter(it=>!it.conta));
+  /* variedade: a mesma fonte não aparece em sequência (olha até 8 itens à frente para trocar a ordem) */
+  if (S.ord==="padrao" && S.tab!=="agenda"){ const fila = l.slice(), out = [];
+    while (fila.length){ const ult = out.slice(-2).map(x=>x.org); let i = fila.findIndex((x,k)=>k < 8 && (x.conta || !ult.includes(x.org))); if (i < 0) i = 0; out.push(fila.splice(i,1)[0]); }
+    l = out; }
   /* Movimentos (eventos e chamados) é uma agenda: no padrão, o que acontece ou vence primeiro */
   return S.tab==="agenda" && S.ord==="padrao" && types===tabTypes() ? l.slice().sort((a,b)=>(+a.dia || a.ate || 99) - (+b.dia || b.ate || 99)) : l;
 }
@@ -4565,7 +4569,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1.2 · 08/11 17:00";
+const VERSAO = "v1.2 · 08/11 17:08";
 console.info("a rede.com · protótipo · versão " + VERSAO);
 render();
 })();
