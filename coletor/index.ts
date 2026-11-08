@@ -1,5 +1,5 @@
 // a rede.com · COLETOR de notícias
-// Lê os feeds (RSS/Atom) das fontes com selo, guarda só título, chamada do veículo, data, imagem de capa e link,
+// Lê os feeds (RSS/Atom) das fontes com selo, guarda só título, chamada do veículo, um trecho de até 800 caracteres, data, imagem de capa e link,
 // evita repetidas, agrupa a mesma notícia em fontes diferentes (cobertura cruzada) e manda para o feed ou para a fila.
 // Modos: ?modo=descobrir (acha o feed de cada fonte) · ?modo=coletar (padrão). Lotes: ?lote=0..3 (as fontes se dividem em 4).
 import { createClient } from "npm:@supabase/supabase-js@2";
@@ -92,11 +92,30 @@ const limpa = (h: string) => h.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?
   .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n)).replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
   .replace(/&([a-z]+);/gi, (m, n) => ENT[n.toLowerCase()] ?? m).replace(/\s+/g, " ").trim();
 // regra da rede: texto sempre completo. A chamada é a primeira frase inteira (ou as duas primeiras, se couberem em 300 caracteres)
+// divide em frases sem perder nenhum pedaço (datas como 6.nov.2026 ficam inteiras); só a última pode estar incompleta
+const frases = (t: string) => t.split(/(?<=[.!?]["”»)]?)\s+(?=["“«(]?[A-ZÀ-Ý0-9])/).map((f) => f.trim() + " ").filter((f) => f.trim());
+const fechada = (f: string) => /[.!?]["”»)]?\s*$/.test(f);
 function chamada(t: string): string | null {
   t = t.replace(/\s*(The post|O post|Leia mais|Continue lendo|Saiba mais)[\s\S]*$/i, "").replace(/\[…\]|\[\.\.\.\]|…$/g, "").trim();
-  const fr = t.match(/[^.!?]+[.!?]+(?=\s|$)/g) || [];
-  let out = ""; for (const f of fr) { if ((out + f).length > 300) break; out += f; }
+  let out = ""; for (const f of frases(t)) { if (!fechada(f) || (out + f).length > 300) break; out += f; }
   out = out.trim(); return out.length >= 40 ? out : null;
+}
+// resumo para a página da notícia: os primeiros parágrafos do feed, só com frases inteiras, até 800 caracteres.
+// É um trecho, não a matéria: quem quer ler tudo vai ao site da fonte.
+const LIXO = /^(foto|imagem|crédito|credito|leia (mais|também|tambem)|veja (também|tambem|mais)|assista|ouça|ouca|siga|inscreva|publicidade|the post|o post)\b/i;
+function resumoLongo(html: string, cham: string | null): string | null {
+  const pars = html.replace(/<\/(p|li|h\d|blockquote|div)>|<br\s*\/?>/gi, "\u0001").split("\u0001")
+    .map((x) => limpa(x).replace(/\[…\]|\[\.\.\.\]|…$/g, "").trim()).filter((x) => x.length >= 40 && !LIXO.test(x));
+  const out: string[] = []; let n = 0;
+  for (const p of pars) {
+    let par = "";
+    for (const f of frases(p)) { if (!fechada(f) || n + par.length + f.length > 800) break; par += f; }
+    par = par.trim(); if (!par) break;
+    out.push(par); n += par.length; if (par.length < p.replace(/\s+$/, "").length - 1) break;
+  }
+  const t = out.join("\n\n"); if (!t) return null;
+  const base = (cham || "").replace(/\s+/g, " ");
+  return t.replace(/\s+/g, " ").length >= base.length + 60 ? t : null;
 }
 function imagem(it: any, html: string): string | null {
   for (const e of lista(it.enclosure)) if (/^image\//.test(e["@_type"] || "") || /\.(jpe?g|png|webp)(\?|$)/i.test(e["@_url"] || "")) return e["@_url"];
@@ -119,7 +138,7 @@ function leFeed(xml: string, base: string) {
     const resumo = texto(it.description) || texto(it.summary) || corpo;
     let img = imagem(it, corpo + " " + resumo); if (img) img = absoluto(img, base);
     const data = texto(it.pubDate) || texto(it["dc:date"]) || texto(it.published) || texto(it.updated);
-    return { titulo: limpa(texto(it.title)), url: absoluto(link(it), base), chamada: chamada(limpa(resumo)), imagem_url: img && img.startsWith("https://") ? img : null, publicada_em: data ? new Date(data) : null };
+    return { titulo: limpa(texto(it.title)), url: absoluto(link(it), base), chamada: chamada(limpa(resumo)), resumo: resumoLongo(corpo.length >= resumo.length ? corpo : resumo, chamada(limpa(resumo))), imagem_url: img && img.startsWith("https://") ? img : null, publicada_em: data ? new Date(data) : null };
   }).filter((i: any) => i.titulo && i.url.startsWith("http"));
   return { lingua, itens };
 }
@@ -154,8 +173,11 @@ async function coleta(f: any, recentes: any[]) {
   const limite = Date.now() - DIAS * 864e5;
   const frescos = itens.filter((i: any) => !i.publicada_em || isNaN(+i.publicada_em) || +i.publicada_em >= limite).map((i: any) => ({ ...i, url: limpaUrl(i.url) }));
   if (!frescos.length) return { erro: null, novas: 0 };
-  const { data: ja } = await SB.from("noticias").select("url").in("url", frescos.map((i: any) => i.url));
+  const { data: ja } = await SB.from("noticias").select("url,resumo").in("url", frescos.map((i: any) => i.url));
   const temUrl = new Set((ja || []).map((x: any) => x.url));
+  // resumo nulo = ainda não revisado com o divisor de frases atual; "" = revisado, o feed não tem mais texto
+  const semResumo = new Set((ja || []).filter((x: any) => x.resumo === null).map((x: any) => x.url));
+  await Promise.all(frescos.filter((i: any) => semResumo.has(i.url)).map((i: any) => SB.from("noticias").update({ resumo: i.resumo || "", chamada: i.chamada }).eq("url", i.url)));
   const novas: any[] = [];
   for (const i of frescos) {
     if (temUrl.has(i.url)) continue;
@@ -164,7 +186,7 @@ async function coleta(f: any, recentes: any[]) {
     const par = pw.size >= 4 ? recentes.find((x) => x.fonte_id !== f.id && x.grupo && parecido(pw, x.pw) >= 0.6) : null;
     const grupo: string = par ? par.grupo : crypto.randomUUID();   // cada notícia tem um grupo; a mesma notícia em outra fonte entra no mesmo
     const pt = portugues(i.titulo + " " + (i.chamada || ""), lingua);
-    const n = { fonte_id: f.id, url: i.url, titulo: i.titulo.slice(0, 300), chamada: i.chamada, imagem_url: i.imagem_url, publicada_em: i.publicada_em && !isNaN(+i.publicada_em) ? i.publicada_em.toISOString() : new Date().toISOString(),
+    const n = { fonte_id: f.id, url: i.url, titulo: i.titulo.slice(0, 300), chamada: i.chamada, resumo: i.resumo || "", imagem_url: i.imagem_url, publicada_em: i.publicada_em && !isNaN(+i.publicada_em) ? i.publicada_em.toISOString() : new Date().toISOString(),
       impressao: imp, grupo, tema: temaDe(i.titulo + " " + (i.chamada || "")), status: FORA.test(imp) ? "recusada" : f.nota >= NOTA_DIRETO && pt ? "publicada" : "fila" };
     novas.push(n); recentes.push({ id: null, fonte_id: f.id, impressao: imp, grupo, pw });
   }
