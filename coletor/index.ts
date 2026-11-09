@@ -1,13 +1,15 @@
 // a rede.com · COLETOR de notícias
 // Lê os feeds (RSS/Atom) das fontes com selo, guarda só título, chamada do veículo, um trecho de até 800 caracteres, data, imagem de capa e link,
 // evita repetidas, agrupa a mesma notícia em fontes diferentes (cobertura cruzada) e manda para o feed ou para a fila.
-// Modos: ?modo=descobrir (acha o feed de cada fonte) · ?modo=coletar (padrão). Lotes: ?lote=0..3 (as fontes se dividem em 4).
+// Modos: ?modo=descobrir (acha o feed de cada fonte) · ?modo=coletar (padrão) · ?modo=agrupar (junta a mesma notícia entre idiomas).
+// Lotes: ?lote=0..9 (as fontes se dividem em 10).
+// Idiomas: português, inglês e espanhol vão direto para o feed (selo 80+); cada notícia guarda o idioma, e quem lê escolhe as origens.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { XMLParser } from "npm:fast-xml-parser@4.4.1";
 
 const SB = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 const UA = "Mozilla/5.0 (compatible; arede-coletor/1.0; +https://norbgt.github.io/arede.com/)";
-const LOTES = 4, DIAS = 4, NOTA_DIRETO = 80;
+const LOTES = 10, DIAS = 4, NOTA_DIRETO = 80, IDIOMAS = ["pt", "en", "es"];
 
 type Res = { ok: boolean; status: number; url: string; ct: string; txt: string; err?: string };
 async function get(url: string, ms = 12000): Promise<Res> {
@@ -51,6 +53,41 @@ const CONHECIDOS: Record<string, string[]> = {
   "aosfatos.org": ["https://www.aosfatos.org/noticias/feed/"],
   "unicef.org": ["https://www.unicef.org/brazil/rss.xml"],
   "paho.org": ["https://www.paho.org/pt/rss.xml"],
+  // inglês
+  "factcheck.org": ["https://www.factcheck.org/feed/"],
+  "washingtonpost.com": ["https://feeds.washingtonpost.com/rss/world"],
+  "latimes.com": ["https://www.latimes.com/world-nation/rss2.0.xml"],
+  "telegraph.co.uk": ["https://www.telegraph.co.uk/news/rss.xml"],
+  "smh.com.au": ["https://www.smh.com.au/rss/feed.xml"],
+  "pbs.org/newshour": ["https://www.pbs.org/newshour/feeds/rss/headlines"],
+  "cbc.ca/news": ["https://www.cbc.ca/webfeed/rss/rss-topstories"],
+  "abc.net.au/news": ["https://www.abc.net.au/news/feed/51120/rss.xml"],
+  "rnz.co.nz": ["https://www.rnz.co.nz/rss/national.xml"],
+  "nasa.gov": ["https://www.nasa.gov/news-release/feed/"],
+  "nature.com": ["https://www.nature.com/nature.rss"],
+  "science.org": ["https://www.science.org/rss/news_current.xml"],
+  "democracynow.org": ["https://www.democracynow.org/democracynow.rss"],
+  "globalvoices.org": ["https://globalvoices.org/feed/"],
+  "grist.org": ["https://grist.org/feed/"],
+  "insideclimatenews.org": ["https://insideclimatenews.org/feed/"],
+  "themarshallproject.org": ["https://www.themarshallproject.org/rss/recent.rss"],
+  // espanhol
+  "bbc.com/mundo": ["https://feeds.bbci.co.uk/mundo/rss.xml"],
+  "dw.com/es": ["https://rss.dw.com/rdf/rss-sp-all", "https://rss.dw.com/xml/rss-sp-all"],
+  "rfi.fr/es": ["https://www.rfi.fr/es/rss"],
+  "rtve.es": ["https://api2.rtve.es/rss/temas_noticias.xml"],
+  "elmundo.es": ["https://e00-elmundo.uecdn.es/elmundo/rss/portada.xml"],
+  "abc.es": ["https://www.abc.es/rss/2.0/portada/"],
+  "lavanguardia.com": ["https://www.lavanguardia.com/rss/home.xml"],
+  "eldiario.es": ["https://www.eldiario.es/rss/"],
+  "clarin.com": ["https://www.clarin.com/rss/lo-ultimo/"],
+  "lanacion.com.ar": ["https://www.lanacion.com.ar/arc/outboundfeeds/rss/?outputType=xml"],
+  "elespectador.com": ["https://www.elespectador.com/arc/outboundfeeds/rss/?outputType=xml"],
+  "latercera.com": ["https://www.latercera.com/arc/outboundfeeds/rss/?outputType=xml"],
+  "elcomercio.pe": ["https://elcomercio.pe/arcio/rss/"],
+  "ciperchile.cl": ["https://www.ciperchile.cl/feed/"],
+  "newtral.es": ["https://www.newtral.es/feed/"],
+  "elsaltodiario.com": ["https://www.elsaltodiario.com/general/feed"],
 };
 const absoluto = (h: string, base: string) => { try { return new URL(h.replace(/&amp;/g, "&"), base).href; } catch { return ""; } };
 function linksDeFeed(html: string, base: string): string[] {
@@ -145,25 +182,51 @@ function leFeed(xml: string, base: string) {
 
 // impressão digital, cobertura cruzada, tema e idioma
 const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
-const VAZIAS = new Set("a o as os de do da dos das e em no na nos nas um uma para por com que se ao aos sobre apos mais the of to in and for on is are at by with from".split(" "));
+// datas e palavras de serviço (hoje, ao vivo, cotação) não dizem que duas notícias são a mesma
+const DATAS = "segunda terca quarta quinta sexta sabado domingo janeiro fevereiro marco abril maio junho julho agosto setembro outubro novembro dezembro hoje ontem amanha vivo " +
+  "lunes martes miercoles jueves viernes enero febrero abril mayo junio julio agosto septiembre octubre noviembre diciembre hoy ayer manana cuanto cotiza precio efemerides feriado " +
+  "monday tuesday wednesday thursday friday saturday sunday january february march april may june july august september october november december today yesterday live";
+const VAZIAS = new Set(("a o as os de do da dos das e em no na nos nas um uma para por com que se ao aos sobre apos mais the of to in and for on is are at by with from el la los las del en este esta " + DATAS).split(" "));
 const palavras = (s: string) => new Set(norm(s).split(" ").filter((w) => w.length > 2 && !VAZIAS.has(w)));
 const parecido = (a: Set<string>, b: Set<string>) => { let i = 0; for (const w of a) if (b.has(w)) i++; return i / Math.max(1, Math.min(a.size, b.size)); };
+// nomes próprios (pessoas, lugares, instituições) valem em qualquer idioma: é por eles que a mesma notícia se reconhece entre português, inglês e espanhol
+const COMUNS = new Set(("the and how what why who new says after over from with for this that their about into amid more first last year news " +
+  "el la los las del como que por para una uno este esta sus tras ante entre sobre contra nuevo nueva presidente gobierno " +
+  "o a os as do da dos das como que por para uma um este esta seus apos sobre entre contra novo nova governo " +
+  "quien quem who calendario horarios agenda temblor terremoto dolar euro real precio cotizacao " + DATAS).split(" "));
+const entidades = (t: string) => new Set((t.match(/(?<![\p{L}])[A-ZÀ-Ý][\p{L}'-]{2,}/gu) || []).map((w) => norm(w)).filter((w) => w.length > 2 && !COMUNS.has(w)));
+const comuns = (a: Set<string>, b: Set<string>) => { let i = 0; for (const w of a) if (b.has(w)) i++; return i; };
+// mesma notícia: ao menos 3 nomes em comum no título e na chamada (60% dos nomes do menor) e ao menos 2 deles no próprio título
+const mesmaPorNomes = (x: any, y: any) => { if (x.en.size < 3 || y.en.size < 3 || x.et.size < 2 || y.et.size < 2) return false;
+  const i = comuns(x.en, y.en); return i >= 3 && i / Math.min(x.en.size, y.en.size) >= 0.6 && comuns(x.et, y.et) >= 2; };
+const mesmaNoticia = (x: any, y: any) => (x.pw.size >= 4 && y.pw.size >= 4 && parecido(x.pw, y.pw) >= 0.6) || mesmaPorNomes(x, y);
 const TEMAS: [string, RegExp][] = [
-  ["Mobilidade", /\b(onibus|metro|metrô|transporte|ciclovia|bicicleta|transito|mobilidade|tarifa|brt|trem|transit|bus|cycling)\b/],
-  ["Moradia", /\b(moradia|habitac\w*|despejo|aluguel|ocupac\w*|sem.teto|minha casa|reintegrac\w*|housing|eviction|homeless)\b/],
-  ["Hortas e alimentação", /\b(fome|aliment\w*|horta\w*|agricultura familiar|seguranca alimentar|merenda|agroecolog\w*|cesta basica|hunger|food)\b/],
-  ["Educação", /\b(escola\w*|educac\w*|ensino|professor\w*|universidade\w*|enem|creche\w*|alunos?|school\w*|education|teacher\w*)\b/],
-  ["Cultura", /\b(cultura\w*|festival|museu|cinema|musica|teatro|livros?|artistas?|patrimonio|culture|museum)\b/],
-  ["Saúde pública", /\b(saude|sus|hospita\w*|ubs|vacina\w*|dengue|medic\w*|epidemi\w*|doenc\w*|health|vaccine\w*|disease\w*)\b/],
-  ["Meio ambiente", /\b(desmatamento|clima\w*|queimada\w*|amazonia|floresta\w*|ambient\w*|poluic\w*|enchente\w*|cop ?30|carbono|climate|deforestation|wildfire\w*|flood\w*)\b/],
-  ["Saneamento", /\b(saneamento|esgoto|abastecimento|drenagem|lixo|residuos|sabesp|sanitation|sewage|drinking water)\b/],
-  ["Juventude", /\b(jove\w*|juventude|adolescente\w*|youth|teen\w*)\b/],
-  ["Orçamento participativo", /\b(orcamento|prefeitura\w*|vereador\w*|licitac\w*|audiencia publica|emenda\w*|camara municipal|conselho\w*|budget|city council)\b/],
+  ["Mobilidade", /\b(onibus|metro|metrô|transporte|ciclovia|bicicleta|transito|mobilidade|tarifa|brt|trem|transit|bus|cycling|autobus|movilidad|ciclovia|trafico)\b/],
+  ["Moradia", /\b(moradia|habitac\w*|despejo|aluguel|ocupac\w*|sem.teto|minha casa|reintegrac\w*|housing|eviction|homeless|vivienda|desalojo\w*|alquiler\w*|personas sin hogar)\b/],
+  ["Hortas e alimentação", /\b(fome|aliment\w*|horta\w*|agricultura familiar|seguranca alimentar|merenda|agroecolog\w*|cesta basica|hunger|food|hambre|alimentacion|huerta\w*)\b/],
+  ["Educação", /\b(escola\w*|educac\w*|ensino|professor\w*|universidade\w*|enem|creche\w*|alunos?|school\w*|education|teacher\w*|escuela\w*|educacion|docente\w*|universidad\w*|estudiantes?)\b/],
+  ["Cultura", /\b(cultura\w*|festival|museu|cinema|musica|teatro|livros?|artistas?|patrimonio|culture|museum|museo)\b/],
+  ["Saúde pública", /\b(saude|sus|hospita\w*|ubs|vacina\w*|dengue|medic\w*|epidemi\w*|doenc\w*|health|vaccine\w*|disease\w*|salud|hospital\w*|vacuna\w*|enfermedad\w*)\b/],
+  ["Meio ambiente", /\b(desmatamento|clima\w*|queimada\w*|amazonia|floresta\w*|ambient\w*|poluic\w*|enchente\w*|cop ?30|carbono|climate|deforestation|wildfire\w*|flood\w*|clima\w*|deforestacion|incendio\w*|inundacion\w*|medio ambiente)\b/],
+  ["Saneamento", /\b(saneamento|esgoto|abastecimento|drenagem|lixo|residuos|sabesp|sanitation|sewage|drinking water|saneamiento|agua potable|alcantarillado|residuos)\b/],
+  ["Juventude", /\b(jove\w*|juventude|adolescente\w*|youth|teen\w*|juventud|jovenes)\b/],
+  ["Orçamento participativo", /\b(orcamento|prefeitura\w*|vereador\w*|licitac\w*|audiencia publica|emenda\w*|camara municipal|conselho\w*|budget|city council|presupuesto\w*|ayuntamiento\w*|alcaldia\w*|concejo\w*)\b/],
 ];
 // fora do escopo da rede (esporte, entretenimento, sorteios): guardada como recusada, para não voltar na próxima coleta
-const FORA = /\b(futebol|campeonato|brasileirao|libertadores|copa do brasil|goleada|gols?|tenis|masters de|formula 1|ufc|nba|nfl|bbb|big brother|novela|reality|celebridade\w*|famosos|horoscopo|signo|loteria|mega.sena|lotofacil|quina|palmeiras|corinthians|flamengo|vasco|santos fc|gremio|cruzeiro)\b/;
+const FORA = /\b(futebol|campeonato|brasileirao|libertadores|copa do brasil|goleada|gols?|tenis|masters de|formula 1|ufc|nba|nfl|bbb|big brother|novela|reality|celebridade\w*|famosos|horoscopo|signo|loteria|mega.sena|lotofacil|quina|palmeiras|corinthians|flamengo|vasco|santos fc|gremio|cruzeiro|soccer|premier league|champions league|super bowl|playoffs?|touchdown|celebrity|celebrities|horoscope|lottery|powerball|futbol|liga mx|laliga|goles?|telenovela\w*|farandula|horoscopo|loteria|rugby|cricket|grand prix)\b/;
 const temaDe = (t: string) => { const n = norm(t); for (const [k, re] of TEMAS) if (re.test(n)) return k; return "Geral"; };
-const portugues = (t: string, lingua: string) => lingua.startsWith("pt") || (!lingua && (norm(t).match(/\b(de|do|da|que|para|com|nao|em|os|das)\b/g) || []).length >= 2);
+// idioma: o declarado no feed quando é pt, en ou es; senão, palavras frequentes do próprio texto
+const MARCAS: Record<string, RegExp> = {
+  pt: /\b(do|da|dos|das|nao|sao|com|uma|pelo|pela|tambem|mais|ao|aos|esta|governo)\b/g,
+  es: /\b(el|la|los|las|del|en|una|por|con|y|se|mas|esta|gobierno|tambien|al|sus)\b/g,
+  en: /\b(the|and|of|to|in|for|is|on|with|that|by|from|after|over|says)\b/g,
+};
+function idiomaDe(t: string, lingua: string): string {
+  const l = (lingua || "").slice(0, 2).toLowerCase(); if (IDIOMAS.includes(l)) return l;
+  const n = " " + norm(t) + " "; let melhor = "outra", max = 1;
+  for (const [k, re] of Object.entries(MARCAS)) { const c = (n.match(re) || []).length; if (c > max){ max = c; melhor = k; } }
+  return melhor;
+}
 const limpaUrl = (u: string) => { try { const x = new URL(u); x.hash = ""; for (const k of [...x.searchParams.keys()]) if (/^(utm_|fbclid|gclid|ref$|cmpid|origin)/i.test(k)) x.searchParams.delete(k); return x.href; } catch { return u; } };
 
 async function coleta(f: any, recentes: any[]) {
@@ -183,12 +246,13 @@ async function coleta(f: any, recentes: any[]) {
     if (temUrl.has(i.url)) continue;
     const imp = norm(i.titulo); if (recentes.some((x) => x.fonte_id === f.id && x.impressao === imp)) continue;   // mesma matéria repetida na fonte
     const pw = palavras(i.titulo);
-    const par = pw.size >= 4 ? recentes.find((x) => x.fonte_id !== f.id && x.grupo && parecido(pw, x.pw) >= 0.6) : null;
+    const en = entidades(i.titulo + " " + (i.chamada || "")), et = entidades(i.titulo), eu = { pw, en, et };
+    const par = recentes.find((x) => x.fonte_id !== f.id && x.grupo && mesmaNoticia(eu, x));
     const grupo: string = par ? par.grupo : crypto.randomUUID();   // cada notícia tem um grupo; a mesma notícia em outra fonte entra no mesmo
-    const pt = portugues(i.titulo + " " + (i.chamada || ""), lingua);
-    const n = { fonte_id: f.id, url: i.url, titulo: i.titulo.slice(0, 300), chamada: i.chamada, resumo: i.resumo || "", imagem_url: i.imagem_url, publicada_em: i.publicada_em && !isNaN(+i.publicada_em) ? i.publicada_em.toISOString() : new Date().toISOString(),
-      impressao: imp, grupo, tema: temaDe(i.titulo + " " + (i.chamada || "")), status: FORA.test(imp) ? "recusada" : f.nota >= NOTA_DIRETO && pt ? "publicada" : "fila" };
-    novas.push(n); recentes.push({ id: null, fonte_id: f.id, impressao: imp, grupo, pw });
+    const lg = idiomaDe(i.titulo + " " + (i.chamada || ""), lingua);
+    const n = { fonte_id: f.id, url: i.url, titulo: i.titulo.slice(0, 300), chamada: i.chamada, resumo: i.resumo || "", lingua: lg, imagem_url: i.imagem_url, publicada_em: i.publicada_em && !isNaN(+i.publicada_em) ? i.publicada_em.toISOString() : new Date().toISOString(),
+      impressao: imp, grupo, tema: temaDe(i.titulo + " " + (i.chamada || "")), status: FORA.test(imp) ? "recusada" : f.nota >= NOTA_DIRETO && IDIOMAS.includes(lg) ? "publicada" : "fila" };
+    novas.push(n); recentes.push({ id: null, fonte_id: f.id, impressao: imp, grupo, pw, en, et });
   }
   if (novas.length) { const { error } = await SB.from("noticias").upsert(novas, { onConflict: "url", ignoreDuplicates: true }); if (error) return { erro: "Banco: " + error.message, novas: 0 }; }
   return { erro: null, novas: novas.length };
@@ -211,8 +275,26 @@ Deno.serve(async (req) => {
     }));
     return new Response(JSON.stringify({ modo, lote, fontes: rel }), { headers: { "content-type": "application/json" } });
   }
-  const { data: rec } = await SB.from("noticias").select("id,fonte_id,impressao,grupo,titulo").gte("coletada_em", new Date(Date.now() - 3 * 864e5).toISOString()).limit(3000);
-  const recentes = (rec || []).map((x: any) => ({ ...x, pw: palavras(x.titulo) }));
+  const { data: rec } = await SB.from("noticias").select("id,fonte_id,impressao,grupo,titulo,chamada,publicada_em").gte("coletada_em", new Date(Date.now() - 3 * 864e5).toISOString()).limit(4000);
+  const recentes = (rec || []).map((x: any) => ({ ...x, pw: palavras(x.titulo), en: entidades(x.titulo + " " + (x.chamada || "")), et: entidades(x.titulo) }));
+  if (modo === "agrupar") {
+    // refaz os grupos dos últimos 3 dias: a mesma notícia, no mesmo idioma ou em idiomas diferentes (cada grupo com até 12 notícias)
+    const L = recentes, pai = new Map<string, string>();
+    const raiz = (g: string): string => { let r = g; while (pai.has(r) && pai.get(r) !== r) r = pai.get(r)!; return r; };
+    const tam = new Map<string, number>(); for (const x of recentes) tam.set(x.grupo, (tam.get(x.grupo) || 0) + 1);
+    let juntou = 0;
+    for (let a = 0; a < L.length; a++) for (let b = a + 1; b < L.length; b++) {
+      const x = L[a], y = L[b]; if (x.fonte_id === y.fonte_id) continue;
+      const rx = raiz(x.grupo), ry = raiz(y.grupo); if (rx === ry) continue;
+      if (Math.abs(+new Date(x.publicada_em) - +new Date(y.publicada_em)) > 2 * 864e5 || !mesmaNoticia(x, y)) continue;
+      if ((tam.get(rx) || 1) + (tam.get(ry) || 1) > 12) continue;
+      pai.set(ry, rx); tam.set(rx, (tam.get(rx) || 1) + (tam.get(ry) || 1)); juntou++;
+    }
+    const mudar = new Map<string, string>(); for (const x of recentes) { const r = raiz(x.grupo); if (r !== x.grupo) mudar.set(x.grupo, r); }
+    const m = [...mudar].map(([de, para]) => ({ de, para })); let mudou = 0;
+    for (let k = 0; k < m.length; k += 500) { const { data } = await SB.rpc("aplica_grupos", { m: m.slice(k, k + 500) }); mudou += data || 0; }
+    return new Response(JSON.stringify({ modo, juntou, grupos: mudar.size, noticias: mudou }), { headers: { "content-type": "application/json" } });
+  }
   const comFeed = fontes.filter((f: any) => f.feed_url);
   for (let i = 0; i < comFeed.length; i += 5) await Promise.all(comFeed.slice(i, i + 5).map(async (f: any) => {
     const r = await coleta(f, recentes);
