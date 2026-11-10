@@ -128,14 +128,21 @@ img,svg{max-width:100%}
 .ldot.lga{margin:0 .04em;transition:width .28s ease,margin .28s ease}
 .logo .ldot.lga{width:0;margin:0}   /* sem mouse: "arede" junto */
 .ldot.lmove{position:absolute;left:0;top:0;margin:0;transform:translate(var(--bx,0px),var(--by,0px));transition:transform .32s cubic-bezier(.3,.7,.2,1)}
-/* com mouse: a marca aparece compacta ("a.rede") e se completa ("arede.online") ao passar o mouse.
-   Sem mouse (celular, toque): a marca aparece completa, "arede.online". */
+/* em repouso, em qualquer aparelho, a marca aparece compacta ("a.rede") e se completa ("arede.online"):
+   com mouse, ao passar o mouse; no toque (celular), sozinha ao abrir o site, ao tocar na marca e ao voltar ao topo
+   (a classe .abre, posta pelo script, faz no toque o papel do mouse). Quem pede menos movimento vê a marca completa, parada. */
+.logo .ext{max-width:0;opacity:0;overflow:hidden;transition:max-width .28s ease,opacity .2s ease}
+.logo.abre .ext,.logo:focus-visible .ext{max-width:4.4em;opacity:1}
 @media (hover:hover) and (pointer:fine){
-  .logo:not(:hover):not(:focus-visible) .ldot.lmove{transform:translate(var(--ax,0px),var(--ay,0px))}
-  .logo:not(:hover):not(:focus-visible) .ldot.lga{width:.23em;margin:0 .04em}
-  .logo .ext{max-width:0;opacity:0;overflow:hidden;transition:max-width .28s ease,opacity .2s ease}
-  .logo:hover .ext,.logo:focus-visible .ext{max-width:4.4em;opacity:1}
+  .logo:not(:hover):not(:focus-visible):not(.abre) .ldot.lmove{transform:translate(var(--ax,0px),var(--ay,0px))}
+  .logo:not(:hover):not(:focus-visible):not(.abre) .ldot.lga{width:.23em;margin:0 .04em}
+  .logo:hover .ext{max-width:4.4em;opacity:1}
 }
+@media not all and (hover:hover) and (pointer:fine){
+  .logo:not(:focus-visible):not(.abre) .ldot.lmove{transform:translate(var(--ax,0px),var(--ay,0px))}
+  .logo:not(:focus-visible):not(.abre) .ldot.lga{width:.23em;margin:0 .04em}
+}
+@media (prefers-reduced-motion:reduce){ .ldot.lmove,.ldot.lga,.logo .ext{transition:none} }
 .mark{display:inline-flex;align-items:baseline;font-family:var(--font-display);font-weight:700;letter-spacing:-.04em;line-height:1;color:var(--ink)}
 .mark .ldot{width:.24em;height:.24em;margin-left:.06em}
 .pagehead{font-size:var(--fs-h1);font-weight:600}
@@ -6182,12 +6189,27 @@ window.addEventListener("resize", debounce(()=>{
   layoutAllPins(); fitTiles(); }, 150));
 /* mede as duas posições do ponto do logo (mudam com a fonte e o tamanho da tela) */
 function placeLogoDots(){ $$(".logo .lw").forEach(w=>{ const a = w.querySelector(".lga"), b = w.querySelector(".lgb"), d = w.querySelector(".lmove"); if (!a || !b || !d) return;
-  const lg = w.closest(".logo"); if (lg && lg.matches(":hover, :focus-visible")) return;   /* mede só em repouso */
+  const lg = w.closest(".logo"); if (lg && lg.matches(":hover, :focus-visible, .abre")) return;   /* mede só em repouso */
   w.style.setProperty("--ax", a.offsetLeft + "px"); w.style.setProperty("--ay", a.offsetTop + "px");
   /* no destino, o espaço do ponto entre "a" e "rede" se fecha: desconta essa largura (medida com a marca em repouso) */
   const cs = getComputedStyle(a), fecha = a.getBoundingClientRect().width + parseFloat(cs.marginLeft) + parseFloat(cs.marginRight);
-  w.style.setProperty("--bx", (b.offsetLeft - fecha) + "px"); w.style.setProperty("--by", b.offsetTop + "px"); }); }
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ layoutAllPins(); fitTiles(); placeLogoDots(); });
+  w.style.setProperty("--bx", (b.offsetLeft - fecha) + "px"); w.style.setProperty("--by", b.offsetTop + "px"); });
+  if (typeof logoHerda==="function") logoHerda(); }
+/* MARCA NO TOQUE (10 nov 2026): sem mouse, o movimento do ponto acontece sozinho. A marca se completa ("arede.online") por uns
+   2,5 segundos e volta ao repouso ("a.rede"): ao abrir o site, ao tocar na marca e ao voltar ao topo da página. */
+const LOGO_TOQUE = matchMedia("not all and (hover:hover) and (pointer:fine)"), LOGO_CALMA = matchMedia("(prefers-reduced-motion: reduce)");
+let logoAte = 0, logoT = 0, logoDesceu = false;
+function logoAbre(ms=2500){ if (!LOGO_TOQUE.matches) return;
+  if (LOGO_CALMA.matches){ logoAte = Infinity; $$(".logo").forEach(l=>l.classList.add("abre")); return; }   /* menos movimento: completa e parada */
+  placeLogoDots(); logoAte = Date.now() + ms;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ $$(".logo").forEach(l=>l.classList.add("abre")); }));
+  clearTimeout(logoT); logoT = setTimeout(()=>{ logoAte = 0; $$(".logo.abre").forEach(l=>l.classList.remove("abre")); }, ms); }
+/* a tela é redesenhada a cada navegação: a marca nova herda o estado da anterior, sem pular */
+const logoHerda = () => { if (LOGO_TOQUE.matches && Date.now() < logoAte) $$(".logo:not(.abre)").forEach(l=>l.classList.add("abre")); };
+document.addEventListener("pointerdown", e=>{ if (e.pointerType!=="mouse" && e.target.closest && e.target.closest(".logo")) logoAbre(); }, {passive:true});
+addEventListener("scroll", ()=>{ if (scrollY > 400) logoDesceu = true; else if (scrollY < 8 && logoDesceu){ logoDesceu = false; logoAbre(); } }, {passive:true});
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ layoutAllPins(); fitTiles(); placeLogoDots(); setTimeout(logoAbre, 700); });
+else setTimeout(logoAbre, 900);
 
 /* PARTICIPAÇÃO AO VIVO (Estrutura #3): a cada poucos segundos entra um voto, apoio, presença ou voluntário
    num conteúdo visível. No produto real, isso vem do servidor em tempo real; aqui é simulado. */
@@ -6201,7 +6223,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 10/11 14:28";
+const VERSAO = "v1 registrada · 10/11 14:43";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();

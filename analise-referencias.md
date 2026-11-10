@@ -264,3 +264,7 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - A prévia não conta na cota de vídeos (8 para visitante; 15 a cada 12 horas para conta com e-mail): a cota vale para quem toca em Assistir.
 - Respeita “Reproduzir vídeos automaticamente” (Configurações), o pedido de menos movimento do aparelho e a economia de dados.
 - Privacidade: antes, o player do YouTube só era carregado no toque. Com a prévia, ele é carregado sem clique (ainda no endereço sem cookies de rastreio); quem desliga a reprodução automática volta ao comportamento anterior.
+
+## 10/11 · O movimento da marca também no celular
+- Antes, no toque (celular), a marca aparecia sempre completa e parada, “arede.online”; o ponto só se movia com mouse. Agora o repouso é “a.rede” em qualquer aparelho, e no toque o ponto corre sozinho: a marca se completa (“arede.online”) por uns 2,5 segundos e volta. Acontece ao abrir o site, ao tocar na marca (que também abre “Sobre arede.online”) e ao voltar ao topo da página.
+- Com mouse, nada muda: continua ao passar o mouse. Quem pede menos movimento no aparelho vê a marca completa, parada.
