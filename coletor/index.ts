@@ -3,6 +3,7 @@
 // evita repetidas, agrupa a mesma notícia em fontes diferentes (cobertura cruzada) e manda para o feed ou para a fila.
 // Modos: ?modo=descobrir (acha o feed de cada fonte) · ?modo=coletar (padrão) · ?modo=agrupar (junta a mesma notícia entre idiomas).
 // Lotes: ?lote=0..9 (as fontes se dividem em 10).
+// Canais do YouTube: feed_tipo "youtube", lidos pelo RSS público do canal (só vídeos longos, sem Shorts nem lives).
 // Idiomas: português, inglês e espanhol vão direto para o feed (selo 80+); cada notícia guarda o idioma, e quem lê escolhe as origens.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { XMLParser } from "npm:fast-xml-parser@4.4.1";
@@ -165,12 +166,25 @@ function link(it: any): string {
   const g = it.guid; const gu = texto(g); if (/^https?:\/\//.test(gu)) return gu;
   return "";
 }
+// descrição de vídeo: tira links, hashtags, pedidos de inscrição e redes sociais; fica só o texto sobre o vídeo
+const YT_LIXO = /^(quer ajudar|contribua|doe |doação|faça parte|torne-se|pix|inscreva|siga|assine|acesse|baixe|ative|seja membro|apoie|curta|compartilhe|leia|veja|assista|ouça|conheça nosso|nossas redes|redes sociais|facebook|instagram|twitter|x:|tiktok|whatsapp|telegram|threads|bluesky|site|podcast|spotify|#|\*|»|►|▶|👉|📲|📺|🔔)/i;
+const limpaYT = (t: string) => t.split(/\n/).map((l) => l.trim()).filter((l) => l && !YT_LIXO.test(l) && !/https?:\/\/|www\./i.test(l)).join("\n").replace(/\n{3,}/g, "\n\n").trim();
 function leFeed(xml: string, base: string) {
   let o: any; try { o = parser.parse(xml); } catch { return { lingua: "", itens: [] as any[] }; }
   const ch = o?.rss?.channel || o?.["rdf:RDF"]?.channel || {};
   const brutos = o?.rss ? lista(o.rss.channel?.item) : o?.["rdf:RDF"] ? lista(o["rdf:RDF"].item) : o?.feed ? lista(o.feed.entry) : [];
   const lingua = (texto(ch.language) || texto(ch["dc:language"]) || (o?.feed?.["@_xml:lang"] ?? "")).toLowerCase();
   const itens = brutos.slice(0, 40).map((it: any) => {
+    // vídeo de canal do YouTube (RSS público do canal): capa e descrição vêm de yt:videoId e media:group
+    const yid = texto(it["yt:videoId"]);
+    if (yid) {
+      const g = lista(it["media:group"])[0] || {};
+      // só linhas que terminam como frase: título repetido, créditos e chamadas de canal (sem ponto final) ficam de fora
+      const desc = limpaYT(texto(g["media:description"])).split("\n").filter((l) => !l || /[.!?…"”»)]$/.test(l)).join("\n");
+      const data = texto(it.published) || texto(it.updated);
+      return { titulo: limpa(texto(it.title)), url: "https://www.youtube.com/watch?v=" + yid, chamada: chamada(desc), resumo: resumoLongo(desc.split(/\n\s*\n/).map((x) => "<p>" + x + "</p>").join(""), chamada(desc)),
+        imagem_url: "https://i.ytimg.com/vi/" + yid + "/hqdefault.jpg", publicada_em: data ? new Date(data) : null };
+    }
     const corpo = texto(it["content:encoded"]) || texto(it.content) || texto(it.description) || texto(it.summary);
     const resumo = texto(it.description) || texto(it.summary) || corpo;
     let img = imagem(it, corpo + " " + resumo); if (img) img = absoluto(img, base);
@@ -247,12 +261,14 @@ async function coleta(f: any, recentes: any[]) {
     const imp = norm(i.titulo); if (recentes.some((x) => x.fonte_id === f.id && x.impressao === imp)) continue;   // mesma matéria repetida na fonte
     const pw = palavras(i.titulo);
     const en = entidades(i.titulo + " " + (i.chamada || "")), et = entidades(i.titulo), eu = { pw, en, et };
-    const par = recentes.find((x) => x.fonte_id !== f.id && x.grupo && mesmaNoticia(eu, x));
+    // vídeo de canal fica no próprio grupo: não esconde nem é escondido por uma matéria escrita sobre o mesmo assunto
+    const yt = f.feed_tipo === "youtube";
+    const par = yt ? null : recentes.find((x) => x.fonte_id !== f.id && x.grupo && !x.yt && mesmaNoticia(eu, x));
     const grupo: string = par ? par.grupo : crypto.randomUUID();   // cada notícia tem um grupo; a mesma notícia em outra fonte entra no mesmo
-    const lg = idiomaDe(i.titulo + " " + (i.chamada || ""), lingua);
+    const lg = idiomaDe(i.titulo + " " + (i.chamada || ""), lingua || (yt ? f.lingua : ""));   // o RSS do YouTube não diz o idioma: vale o do canal
     const n = { fonte_id: f.id, url: i.url, titulo: i.titulo.slice(0, 300), chamada: i.chamada, resumo: i.resumo || "", lingua: lg, imagem_url: i.imagem_url, publicada_em: i.publicada_em && !isNaN(+i.publicada_em) ? i.publicada_em.toISOString() : new Date().toISOString(),
       impressao: imp, grupo, tema: temaDe(i.titulo + " " + (i.chamada || "")), status: FORA.test(imp) ? "recusada" : f.nota >= NOTA_DIRETO && IDIOMAS.includes(lg) ? "publicada" : "fila" };
-    novas.push(n); recentes.push({ id: null, fonte_id: f.id, impressao: imp, grupo, pw, en, et });
+    novas.push(n); recentes.push({ id: null, fonte_id: f.id, impressao: imp, grupo, pw, en, et, yt });
   }
   if (novas.length) { const { error } = await SB.from("noticias").upsert(novas, { onConflict: "url", ignoreDuplicates: true }); if (error) return { erro: "Banco: " + error.message, novas: 0 }; }
   return { erro: null, novas: novas.length };
@@ -268,15 +284,17 @@ Deno.serve(async (req) => {
   const fontes = (todas || []).filter((f: any, i: number) => i % LOTES === lote);
   const agora = new Date().toISOString(), rel: any[] = [];
   if (modo === "descobrir") {
-    for (let i = 0; i < fontes.length; i += 4) await Promise.all(fontes.slice(i, i + 4).map(async (f: any) => {
+    // canais do YouTube já têm o endereço certo do RSS (cadastrado pelo ID do canal): não passam pela busca
+    const busca = fontes.filter((f: any) => f.feed_tipo !== "youtube");
+    for (let i = 0; i < busca.length; i += 4) await Promise.all(busca.slice(i, i + 4).map(async (f: any) => {
       const d: any = await descobre(f);
       await SB.from("fontes").update({ feed_url: d.feed_url, feed_tipo: d.feed_tipo, descoberto_em: agora, ultimo_erro: d.erro || null }).eq("id", f.id);
       rel.push({ id: f.id, feed: d.feed_url, erro: d.erro });
     }));
     return new Response(JSON.stringify({ modo, lote, fontes: rel }), { headers: { "content-type": "application/json" } });
   }
-  const { data: rec } = await SB.from("noticias").select("id,fonte_id,impressao,grupo,titulo,chamada,publicada_em").gte("coletada_em", new Date(Date.now() - 3 * 864e5).toISOString()).limit(4000);
-  const recentes = (rec || []).map((x: any) => ({ ...x, pw: palavras(x.titulo), en: entidades(x.titulo + " " + (x.chamada || "")), et: entidades(x.titulo) }));
+  const { data: rec } = await SB.from("noticias").select("id,fonte_id,url,impressao,grupo,titulo,chamada,publicada_em").gte("coletada_em", new Date(Date.now() - 3 * 864e5).toISOString()).limit(4000);
+  const recentes = (rec || []).map((x: any) => ({ ...x, pw: palavras(x.titulo), en: entidades(x.titulo + " " + (x.chamada || "")), et: entidades(x.titulo), yt: /youtube\.com\/watch/.test(x.url || "") }));
   if (modo === "agrupar") {
     // refaz os grupos dos últimos 3 dias: a mesma notícia, no mesmo idioma ou em idiomas diferentes (cada grupo com até 12 notícias)
     const L = recentes, pai = new Map<string, string>();
@@ -284,7 +302,7 @@ Deno.serve(async (req) => {
     const tam = new Map<string, number>(); for (const x of recentes) tam.set(x.grupo, (tam.get(x.grupo) || 0) + 1);
     let juntou = 0;
     for (let a = 0; a < L.length; a++) for (let b = a + 1; b < L.length; b++) {
-      const x = L[a], y = L[b]; if (x.fonte_id === y.fonte_id) continue;
+      const x = L[a], y = L[b]; if (x.fonte_id === y.fonte_id || x.yt || y.yt) continue;
       const rx = raiz(x.grupo), ry = raiz(y.grupo); if (rx === ry) continue;
       if (Math.abs(+new Date(x.publicada_em) - +new Date(y.publicada_em)) > 2 * 864e5 || !mesmaNoticia(x, y)) continue;
       if ((tam.get(rx) || 1) + (tam.get(ry) || 1) > 12) continue;

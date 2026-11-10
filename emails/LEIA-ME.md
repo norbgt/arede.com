@@ -9,8 +9,8 @@ Authentication > Emails > Templates.
 | Reset password | Crie uma nova senha · a rede.com | nova-senha.html |
 
 Configuração de endereços (Authentication > URL Configuration):
-- Site URL: https://norbgt.github.io/arede.com/prototipo/
-- Redirect URLs: https://norbgt.github.io/arede.com/**
+- Site URL: https://arede.online/prototipo/
+- Redirect URLs: https://arede.online/** e https://norbgt.github.io/arede.com/** (endereço antigo)
 
 ## Situação em 08/11/2026
 - Site URL e Redirect URLs já configurados no Supabase (projeto arede).

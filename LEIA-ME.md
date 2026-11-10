@@ -16,7 +16,7 @@ Tanto a Amanda quanto o Claude podem sinalizar que chegou a hora. (Acordo provis
 
 ## Protótipo online
 
-https://norbgt.github.io/arede.com/ (público; publicado pelo GitHub Pages a partir da branch main). A cada nova publicação no repositório, o link se atualiza sozinho em cerca de um minuto.
+https://arede.online (público; domínio próprio desde 10 nov 2026, registrado no Cloudflare e publicado pelo GitHub Pages a partir da branch main). O endereço antigo, https://norbgt.github.io/arede.com/, leva ao novo. A cada nova publicação no repositório, o site se atualiza sozinho em cerca de um minuto.
 
 ## Painel de controle (só local)
 
@@ -31,6 +31,7 @@ https://norbgt.github.io/arede.com/ (público; publicado pelo GitHub Pages a par
 - Detalhes no painel, em Permissões.
 
 ## Versões publicadas
+- **v1 registrada (10 nov 2026):** a primeira versão no domínio próprio, arede.online. Traz vídeos de canais oficiais do YouTube (Canal UOL, TV Senado, Câmara dos Deputados, TV Brasil, BBC News Brasil, DW Brasil, Brasil de Fato, Intercept Brasil, Repórter Brasil, Agência Pública e Aos Fatos), tocados aqui, um de cada vez, com o detalhe da publicação junto; Documentação cidadã com a localidade de cada documento; tema e local nos cartões de notícia; e espaços de anunciantes de exemplo, discretos, 1 a cada 8 cartões.
 - **v1.2 (8 nov 2026, 16h35):** contas reais com confirmação por e-mail e publicações originais guardadas no servidor (Supabase, projeto arede), abertas a quem acessa; feed com fotos das matérias, cartões de tamanhos variados e texto sempre completo; Agenda no perfil; logo com o ponto que se move e roxo da marca unificado. Publicada em https://norbgt.github.io/arede.com/
 - **v1.1 (8 nov 2026, 12h15):** notícias reais, Mobilizar a partir disto, novo manifesto e resumo do algoritmo. Publicada em https://norbgt.github.io/arede.com/
 - **v0.1 (7 nov 2026):** primeira versão.

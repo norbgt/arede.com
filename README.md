@@ -4,7 +4,7 @@ Ambiente online do projeto **a rede.com**: uma rede social e de notícias que aj
 
 ## Protótipo navegável
 
-**https://norbgt.github.io/arede.com/** (abre direto o protótipo, no celular e no computador)
+**https://arede.online** (abre direto o protótipo, no celular e no computador). O endereço antigo, norbgt.github.io/arede.com, leva ao novo.
 
 O protótipo guarda as escolhas de cada pessoa (tema, curtidas, pastas, algoritmo) só no navegador dela. Quem abre o link pela primeira vez vê o mesmo ponto de partida.
 
