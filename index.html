@@ -606,6 +606,9 @@ h1 .fic{font-size:11px;vertical-align:4px}
 .srclink .icon{width:15px;height:15px}
 .srclink:hover{text-decoration:underline;text-underline-offset:3px}
 .pinseal{display:flex;flex-direction:column;gap:2px;padding:8px 0 2px;border-top:1px solid var(--line)}
+.pinseal > .why{border-top:0;padding-top:2px}
+.pinacts{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:0 18px}.pinacts .rep,.pinacts .linkbtn{min-height:32px;padding:0;font-size:13px}.pinacts .repbox{flex-basis:100%}
+.av.rede{background:var(--accent);color:var(--on-accent)}.av.rede .amark{font-size:1.25em;margin:-3px 0 0 0}
 /* Para entender: nota de contexto no detalhe do cartão */
 .pent{display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:var(--r);background:color-mix(in srgb,var(--accent) 7%,var(--surface));border-left:3px solid var(--accent)}
 .pent[hidden]{display:none}
@@ -614,7 +617,10 @@ h1 .fic{font-size:11px;vertical-align:4px}
 .pentf{display:flex;flex-direction:column;gap:4px;margin-top:2px;font-size:13px}.pentf a{display:inline-flex;align-items:center;gap:4px;font-weight:500}.pentf a .icon{width:13px;height:13px}.pentf small{font-size:12px;color:var(--muted)}
 /* Conversa: comentários */
 .coms{display:flex;flex-direction:column;gap:12px;padding-top:12px;border-top:1px solid var(--line)}.coms[hidden]{display:none}.coms .pinh{margin:0}
-.cnovo{display:flex;flex-direction:column;gap:8px;align-items:flex-start}.cnovo .input{width:100%}.cnovo .ctxt{min-height:64px;resize:vertical}
+.cnovo{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.cnovo .ctxt,.cnovo .cfon{width:100%;box-sizing:border-box;padding:10px 14px;border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--ink);font:inherit;font-size:14.5px;line-height:1.4;resize:none;outline:none}
+.cnovo .ctxt:focus,.cnovo .cfon:focus{border-color:var(--accent)}.cnovo .ctxt::placeholder,.cnovo .cfon::placeholder{color:var(--muted)}
+.cnovo:not(.ativo) .cmarcas,.cnovo:not(.ativo) .cbt{display:none}
 .cnovo.fora{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 14px;font-size:13.5px;color:var(--muted)}
 .cmarcas{gap:6px}.cmarcas .chip{font-size:12.5px;min-height:32px}.cmarcas .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 .caviso{padding:12px;border-radius:var(--r);background:var(--surface-2);font-size:13.5px;line-height:1.45}.caviso[hidden]{display:none}.caviso p{margin:0 0 10px}.caviso b{font-weight:600}
@@ -3613,6 +3619,7 @@ function why(it, mode){
   if (mode==="algo"){
     /* padrão único: "Apareceu porque você …" */
     if (it.daRede) return `<div class="why">${ic("info")}<span>Apareceu porque você ${it.minha ? "conectou o seu " + REDES[it.rede].nome + " e escolheu mostrar no feed" : "acompanha " + esc(o.nome) + " no " + REDES[it.rede].nome}.</span></div>`;
+    if (ME.user && it.autorId===ME.user.id) return "";   /* a própria publicação: não há "por que apareceu" */
     const rs = relacoes(it).slice(0, 3), temLoc = rs.some(x=>x.loc);
     const txt = rs.length ? "Por que apareceu: " + rs.map(x=>x.frase).join("; ") + "." : "Sem relação forte com o seu algoritmo: apareceu pela ordem geral do feed.";
     return `<div class="why">${ic("info")}<span>${txt} <button class="linkbtn inl" type="button" data-act="${temLoc ? "origens" : "adjust"}">Ajustar</button></span></div>`;
@@ -4159,7 +4166,7 @@ const painelRow = () => LOCAL ? `<button class="setting painel" type="button" da
 /* o logo da barra superior abre "Sobre arede.online": Manifesto e Como arede.online funciona */
 const LOGO = `<button class="logo" type="button" data-act="sobre" aria-haspopup="dialog" aria-label="arede.online: manifesto e como funciona"><span class="lw" aria-hidden="true">a<i class="ldot lg lga"></i>rede<span class="ext"><i class="ldot lg lgb"></i><span class="com">online</span></span><i class="ldot lmove"></i></span><svg class="lchev" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>`;
 const header = (inner) => `<header class="top" id="top"><div class="topin container">${inner}</div></header>`;
-const avatar = (o, cls="av") => `<span class="${cls}" style="background:${o.cor}" aria-hidden="true">${o.sigla}</span>`;
+const avatar = (o, cls="av") => o.daRedeConta ? `<span class="${cls} rede" aria-hidden="true"><span class="amark">a<i></i></span></span>` : `<span class="${cls}" style="background:${o.cor}" aria-hidden="true">${o.sigla}</span>`;
 function statusLine(){
   const n = nFiltros(), o = ORDS.find(x=>x[0]===S.ord)[1];
   /* o estado do algoritmo fica no botão Algoritmo; o detalhe e os ajustes, no ícone ao lado (sheetAdjust) */
@@ -4243,7 +4250,7 @@ function planBlock(Q, final, g){
   /* a mídia só sobe para o bloco atual se já estiver perto (janela curta): assim imagens e vídeos ficam espalhados pelo feed */
   const mediaCol = (c, w=LOOK+1) => { let m = take(it=>!isTextual(it) && !it.anuncio, w);
     if (!m){ const a = take(it=>it.anuncio, w); if (!a) return null; const p = take(it=>it.tipo==="imagem", LOOK+6);
-      return p ? [cell(p,"s",1,c,1,2), cell(a,"s",2,c,1,2)] : [cell(a,"s",1,c,1,2)]; }
+      return p ? [cell(p,"s",1,c,1,2), cell(a,"s",2,c,1,2)] : [cell(a,"t",1,c,2,2)]; }   /* anúncio sozinho ocupa a coluna toda: sem buraco embaixo dele */
     if (m.tipo==="video") return [cell(m,"t",1,c,2,2)];
     /* anúncio é sempre quadradinho: entra como o par pequeno de uma imagem */
     const m2 = take(it=>it.anuncio, 3) || take(it=>it.tipo==="imagem", 2);
@@ -4809,16 +4816,15 @@ const comDest = c => !!((c.perfis || {}).colaborador) || c.uteis >= COM_DEST;
 function comHTML(c, st){ const pf = c.perfis || {}, meu = ME.user && c.autor===ME.user.id, adm = ME.perfil && ME.perfil.papel==="admin", dest = comDest(c), url = /^https:\/\//.test(c.fonte_url || "") ? c.fonte_url : "", on = st.meus.has(c.id);
   return `<article class="com${dest ? " dest" : ""}" data-com="${c.id}">
     ${pf.papel==="admin" ? `<span class="av cav rede" aria-hidden="true"><span class="amark">a<i></i></span></span>` : `<span class="av cav" style="background:${comCor(c.autor)}" aria-hidden="true">${esc(siglaDe(pf.nome))}</span>`}
-    <div class="cb"><div class="comh"><span class="cn">${esc(pf.nome || "Conta da rede")}</span>${verifBtn(pf.verificado)}${pf.colaborador ? `<span class="colab" title="Usuário colaborador: destaque dado pela rede a quem contribui de forma construtiva">Colaborador</span>` : ""}<small>${quando(c.criado_em)}</small></div>
-      ${dest || c.marca ? `<div class="ctags">${dest ? `<span class="ctag d">Em destaque</span>` : ""}${c.marca && MARCAS[c.marca] ? `<span class="ctag">${MARCAS[c.marca]}</span>` : ""}</div>` : ""}
+    <div class="cb"><div class="comh"><span class="cn">${esc(pf.nome || "Conta da rede")}</span>${verifBtn(pf.verificado)}${pf.colaborador ? `<span class="colab" title="Usuário colaborador: destaque dado pela rede a quem contribui de forma construtiva">Colaborador</span>` : ""}<small>${quando(c.criado_em)}${c.marca && MARCAS[c.marca] ? " · " + MARCAS[c.marca].toLowerCase() : ""}</small>${dest && !pf.colaborador && pf.papel!=="admin" ? `<span class="ctag d">Em destaque</span>` : ""}</div>
       <p class="ctx">${esc(c.texto)}</p>
       ${url ? `<a class="cfonte" href="${esc(url)}" target="_blank" rel="noopener nofollow ugc">Fonte: ${esc(hostOf(url).replace(/^www\./,""))} ${ic("ext","sm")}</a>` : ""}
       <div class="cacts"><button class="linkbtn cutil" type="button" data-act="comutil" data-id="${c.id}" aria-pressed="${on}"${meu ? " disabled" : ""} aria-label="Marcar como útil${c.uteis ? ". " + c.uteis + " pessoas marcaram" : ""}">${ic("heart","sm")} Útil${c.uteis ? " · " + c.uteis : ""}</button>
         ${meu || adm ? `<button class="linkbtn muted" type="button" data-act="comapaga" data-id="${c.id}">${meu ? "Apagar" : "Remover (moderação)"}</button>` : ME.user ? `<button class="linkbtn muted" type="button" data-act="comdenuncia" data-id="${c.id}">${ic("flag","sm")} Denunciar</button>` : ""}</div></div></article>`; }
 function comForm(){ if (!ME.user) return `<div class="cnovo fora"><span>Só quem tem conta comenta. Ler é livre.</span><a class="linkbtn" href="#conta" data-act="criarconta">Criar conta</a><a class="linkbtn" href="#conta" data-act="acessar">Entrar</a></div>`;
-  return `<div class="cnovo"><textarea class="input ctxt" rows="2" maxlength="1000" placeholder="Acrescente algo construtivo" aria-label="Seu comentário"></textarea>
+  return `<div class="cnovo"><textarea class="ctxt" rows="1" maxlength="1000" placeholder="Comente algo construtivo" aria-label="Seu comentário"></textarea>
     <div class="chips cmarcas" role="group" aria-label="Tipo de contribuição, opcional">${Object.entries(MARCAS).map(([k,t])=>`<button class="chip" type="button" data-act="commarca" data-m="${k}" aria-pressed="false">${t}</button>`).join("")}</div>
-    <input class="input cfon" type="url" inputmode="url" placeholder="Endereço da fonte (https://…)" maxlength="500" aria-label="Endereço da fonte" hidden>
+    <input class="cfon" type="url" inputmode="url" placeholder="Endereço da fonte (https://…)" maxlength="500" aria-label="Endereço da fonte" hidden>
     <div class="caviso" hidden><p><b>Seu comentário é público.</b> Ele aparece com o nome do seu perfil para qualquer pessoa, mesmo com o perfil privado. Você pode apagar quando quiser.</p>
       <div class="row"><button class="btn sm primary" type="button" data-act="comenvia" data-ciente="1">Entendi, comentar</button><button class="btn sm ghost" type="button" data-act="comcancela">Cancelar</button></div></div>
     <p class="rmsg cmsg" role="alert"></p><button class="btn sm primary cbt" type="button" data-act="comenvia">Comentar</button></div>`; }
@@ -4832,6 +4838,8 @@ function comsDesenha(key){ $$(`[data-coms="${key}"]`).forEach(el=>{ const t = el
     const h = comsHTML(key); el.hidden = !h; el.innerHTML = h;
     const t2 = el.querySelector(".ctxt"); if (t2 && r.t) t2.value = r.t; if (r.m){ const b = el.querySelector(`.cmarcas [data-m="${r.m}"]`); if (b) b.setAttribute("aria-pressed", "true"); const f2 = el.querySelector(".cfon"); if (f2){ f2.hidden = false; f2.value = r.f; } } }); }
 async function comsPreenche(el){ el.dataset.ok = "1"; const key = el.dataset.coms; el.innerHTML = comsHTML(key); if (!COMS.has(key) || !COMS.get(key).lista) await comsCarrega(key); if (el.isConnected) comsDesenha(key); }
+document.addEventListener("focusin", e=>{ const t = e.target; if (t && t.classList && t.classList.contains("ctxt")) t.closest(".cnovo").classList.add("ativo"); });
+document.addEventListener("input", e=>{ const t = e.target; if (t && t.classList && t.classList.contains("ctxt")){ t.style.height = "auto"; t.style.height = Math.min(220, t.scrollHeight + 2) + "px"; } });
 const comKey = b => { const s = b.closest("[data-coms]"); return s ? s.dataset.coms : ""; };
 let extraRaf = 0;
 new MutationObserver(()=>{ if (extraRaf) return; extraRaf = requestAnimationFrame(()=>{ extraRaf = 0;
@@ -4860,7 +4868,6 @@ function detailHTML(it, uid, mode, inline){
         <${TitleTag} class="pintitle">${esc(it.titulo)}</${TitleTag}></div>
       ${it.daArte ? artistaLinha(it) : `<div class="orgline">${avatar(o)}<span class="t"><span class="whorow"><button class="who" type="button" data-act="openorg" data-org="${o.id}">${o.nome}</button>${verifBtn(o.verificado)}</span>${ficTag(o)}<small>${orgMeta(o)} · ${it.ext ? "publicado em " + dLabel(it.ext.data) : tempo(it.min)}</small></span>
         ${o.pessoa ? "" : `<button class="btn ${f?"ghost":"ink"}" type="button" data-act="follow" data-org="${o.id}">${f?(o.real?"Seguindo":"Participando"):(o.real?"Seguir":"Participar")}</button>`}</div>`}
-      ${podeApagar(it) ? `<button class="btn ghost block" type="button" data-act="apagarreal" data-uid="${uid}">${ME.user && it.autorId===ME.user.id ? "Apagar minha publicação" : "Remover publicação (moderação)"}</button>` : ""}
       ${it.foto && !isImg ? `<figure class="dfoto"><img src="${esc(it.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer">${it.credito ? `<figcaption>Foto: ${esc(it.credito)} · via ${esc(it.ext ? it.ext.dom : "fonte")}</figcaption>` : ""}</figure>` : ""}
       ${it.daArte ? `<div class="pintext" hidden></div><button class="linkbtn moretext" type="button" hidden></button>` : text}
       ${pentSlot(it)}
@@ -4869,9 +4876,9 @@ function detailHTML(it, uid, mode, inline){
           <span class="srcnote">Acervo do Design Ativista · publicada em ${dLabel(it.ext.data)}${it.copia ? " · imagem reduzida na prévia sem internet" : ""}</span></div>`
         : it.ext ? `<div class="srcblock"><a class="btn ghost srcbtn" href="${it.ext.url}" target="_blank" rel="noopener">${it.daRede ? "Ver no " + REDES[it.rede].nome : it.yt ? "Assistir no YouTube" : it.base ? "Ler na íntegra em " + esc(it.ext.dom) : it.tipo==="documento" ? "Ler o documento em " + esc(it.ext.dom) + (it.pags ? ` · ${it.pags} pág.` : "") : "Ler a matéria completa em " + esc(it.ext.dom)} ${ic("ext","sm")}</a>
           <span class="srcnote">${it.daRede ? `${it.notaFilme ? estrelas(it.notaFilme) + " · " : ""}${it.texto ? "Trecho do" : "Do"} ${it.minha ? "seu feed público no " + REDES[it.rede].nome : "feed público de " + esc(o.nome)}, ${dLabel(it.ext.data)}.${it.exemplo ? " Exemplo, sem conexão." : ""}` : it.yt ? `Descrição publicada pelo canal ${esc(o.nome)} no YouTube, ${dLabel(it.ext.data)}.` : it.coletada ? `Trecho do feed de ${esc(o.nome)}, ${dLabel(it.ext.data)}.` : `${it.base ? `Texto oficial, com as mudanças posteriores · ${esc(it.num)}, de ${dLabel(it.ext.data)}.` : `Resumo da curadoria da rede · ${esc(o.nome)}, ${dLabel(it.ext.data)}.`}`}</span></div>`
-        : `<div class="srcblock">${orig ? `<div class="native">${ic("ext","sm")}<span>Original em ${orig}</span><span class="fic" title="Endereço de exemplo, sem destino real">exemplo</span></div>` : `<div class="native">${ic("check","sm")}<span>Publicado direto na rede por ${o.nome}</span></div>`}</div>`}
+        : orig ? `<div class="srcblock"><div class="native">${ic("ext","sm")}<span>Original em ${orig}</span><span class="fic" title="Endereço de exemplo, sem destino real">exemplo</span></div></div>` : ""}
       ${interact(it)}
-      <section class="pinseal">${sealBox(it, true)}<div class="pinfoot">${why(it, mode)}${reportBox(it)}</div></section>
+      <section class="pinseal">${sealBox(it, true)}${why(it, mode)}<div class="pinacts">${ME.user && it.autorId===ME.user.id ? "" : reportBox(it)}${podeApagar(it) ? `<button class="linkbtn muted" type="button" data-act="apagarreal" data-uid="${uid}">${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}</button>` : ""}</div></section>
       ${comsSlot(it)}
     </div></div>
     <div class="pinside">${links.length||sibs.length ? `<section class="pinsec s"><h3 class="pinh">${it.ext ? "Outras fontes sobre isto" : "Conteúdos vinculados"}</h3><div class="lks">${links.map(linkRow).join("")}${sibs.map(sibRow).join("")}</div></section>` : ""}</div>
@@ -5166,7 +5173,7 @@ const CORES_CONTA = ["#2A3FD4","#1F7A4D","#B8430F","#7A3E9D","#0E7490","#C2185B"
 const siglaDe = n => (n||"?").trim().split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join("").toUpperCase() || "?";
 function orgDaPessoa(pf){ const id = "u-" + pf.id;
   if (!ORG[id]) ORG[id] = {id, nome:pf.nome, sigla:siglaDe(pf.nome), cidade:pf.cidade || "", tema:"", membros:0, real:true, pessoa:true, natureza:"conta na rede",
-    cor:CORES_CONTA[parseInt(pf.id.replace(/-/g,"").slice(0,6),16) % CORES_CONTA.length], sobre:pf.bio || "", verificado:pf.verificado || null};
+    cor:CORES_CONTA[parseInt(pf.id.replace(/-/g,"").slice(0,6),16) % CORES_CONTA.length], sobre:pf.bio || "", verificado:pf.verificado || null, daRedeConta:pf.papel==="admin"};
   else Object.assign(ORG[id], {nome:pf.nome, sigla:siglaDe(pf.nome), cidade:pf.cidade || "", verificado:pf.verificado || null});
   return id; }
 function itemDaPublicacao(p){
@@ -5190,7 +5197,7 @@ const prioDe = it => it.conta && it.autorId ? (PRIO[it.autorId] || 0) : 0;
 async function prioridadesCarrega(ids){ const falta = [...new Set(ids)].filter(Boolean); if (!SB || !falta.length) return;
   try{ const r = await SB.rpc("prioridades", {p_autores:falta}); if (!r.error && r.data){ falta.forEach(id=>{ PRIO[id] = r.data[id] || 0; }); } }catch(e){} }
 async function publicacoesCarrega(){ if (!SB) return;
-  const {data, error} = await SB.from("publicacoes").select("*, perfis(id, nome, cidade, bio, verificado)").order("criada_em", {ascending:false}).limit(200);
+  const {data, error} = await SB.from("publicacoes").select("*, perfis(id, nome, cidade, bio, verificado, papel)").order("criada_em", {ascending:false}).limit(200);
   if (error || !data) return;
   for (let i = POOL.length - 1; i >= 0; i--) if (POOL[i].conta) POOL.splice(i, 1);
   data.slice().reverse().forEach(p=>POOL.unshift(itemDaPublicacao(p)));
@@ -6493,7 +6500,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 10/11 19:48";
+const VERSAO = "v1 registrada · 10/11 20:00";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();

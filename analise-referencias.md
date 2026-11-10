@@ -312,3 +312,13 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - Histórico (reputação) de 0 a 100, calculado no servidor, nos últimos 90 dias: começa em 40; somam tempo de conta (até 15), pessoas diferentes que marcaram comentários como úteis (até 25, o que mais pesa), comentários com fonte (até 10), destaque de colaborador (10) e verificação (5); cada comentário removido tira 15. Decisão da Amanda: a pessoa vê o próprio número, na conta, com o que ajuda a subir. Ninguém mais vê; o feed recebe só a faixa.
 - Prioridade no feed, decisão da Amanda: em todo lugar, inclusive com o algoritmo desligado. Faixas: 80+ sobe 12 horas na ordem, 65+ sobe 6 horas, abaixo de 30 desce 6 horas. O “Como funciona” ganhou a regra “Bom histórico conta”, porque o espaço aberto deixou de ser critério idêntico para todo mundo (a regra é a mesma para todos).
 - Os números (40, pesos, 65, 80, 30, horas) são pontos de partida escolhidos pelo Claude.
+
+## 10/11 · Detalhe do cartão mais simples
+- Saíram o botão grande “Apagar minha publicação”, logo abaixo da autoria, e a caixa “Publicado direto na rede por…”, que repetia a autoria. Apagar e Denunciar viraram links discretos no fim do bloco de confiança.
+- Selo e “Por que apareceu” ficam um embaixo do outro. Na própria publicação não aparece “Por que apareceu”.
+- Conversa: o campo de comentário tem uma linha e cresce ao escrever; o tipo (contexto, confirma, contesta) e o botão só aparecem quando a pessoa toca no campo. O tipo do comentário vai na linha do nome, sem pílula separada.
+- A conta da própria rede aparece com a marca “a.” em todo lugar (autoria e comentários).
+
+## 10/11 · Sem buracos no feed
+- Quando um bloco tinha um anúncio sem foto ao lado, o anúncio ocupava meio espaço e sobrava um quadrado vazio embaixo. Agora o anúncio sozinho ocupa a coluna inteira.
+- Conferido em três larguras (celular estreito, celular comum e computador), com e sem algoritmo: nenhum espaço em branco.
