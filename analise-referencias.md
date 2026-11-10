@@ -257,3 +257,10 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - A cidade é descoberta no próprio aparelho, com a lista pública dos 5.571 municípios do Brasil embutida na página (dados do IBGE reunidos em kelvins/municipios-brasileiros, licença MIT): a posição exata não sai do aparelho. Quando a lista não resolve (fora do Brasil), a posição arredondada, cerca de 1 km, vai à função “local” do servidor, que consulta o OpenStreetMap e não guarda nada. Decisão da Amanda: ter os dois caminhos, um suprindo o outro.
 - Fica guardada só a cidade (“Cidade, UF”), e só no aparelho. Com a permissão dada, ela se atualiza sozinha ao abrir o site, no máximo a cada 6 horas. Escrever a cidade à mão desliga a atualização.
 - Lugares de interesse: pelo que a pessoa abre (1 ponto), curte (2), salva, compartilha e segue (3), o site percebe de quais cidades e estados ela quer saber mais e sobe um pouco as notícias de lá. Cada ponto perde metade do valor a cada 30 dias; um lugar entra na lista com 4 pontos. Começa ligado junto com o algoritmo (decisão da Amanda), fica só no aparelho, e a pessoa vê a lista, tira qualquer lugar, apaga tudo ou desliga, em Origem das notícias › Ordem do feed. No cartão, o lugar ganha a marca “do seu interesse”.
+
+## 10/11 · Prévia dos vídeos sem clique
+- Quando a capa de um vídeo do YouTube fica na tela por um instante, ele toca sozinho por cerca de 5 segundos, sem som, e a capa volta. Uma prévia por vez, uma vez por vídeo a cada visita. Tocar no cartão abre o vídeo normalmente, com som.
+- A capa só dá lugar à prévia quando o player avisa que o vídeo começou; se o canal não deixa embutir, a capa fica.
+- A prévia não conta na cota de vídeos (8 para visitante; 15 a cada 12 horas para conta com e-mail): a cota vale para quem toca em Assistir.
+- Respeita “Reproduzir vídeos automaticamente” (Configurações), o pedido de menos movimento do aparelho e a economia de dados.
+- Privacidade: antes, o player do YouTube só era carregado no toque. Com a prévia, ele é carregado sem clique (ainda no endereço sem cookies de rastreio); quem desliga a reprodução automática volta ao comportamento anterior.

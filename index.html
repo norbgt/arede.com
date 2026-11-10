@@ -632,6 +632,10 @@ a.lk{color:var(--ink);text-decoration:none}
 .ytplay .icon{width:18px;height:18px}
 .ytplay:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .face.yt .xplay.ytcanal{top:10px;bottom:auto;max-width:calc(100% - 20px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ytprev{position:absolute;inset:0;z-index:1;opacity:0;transition:opacity .25s;pointer-events:none;overflow:hidden;background:#000}
+.ytprev.on{opacity:1}
+.ytprev iframe{position:absolute;top:50%;left:50%;width:max(100%,calc(var(--h) * 16 / 9));height:max(100%,calc(var(--w) * 9 / 16));transform:translate(-50%,-50%);border:0;pointer-events:none}
+.ytprev .ptag{position:absolute;left:8px;bottom:8px;padding:2px 8px;border-radius:99px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:600;line-height:1.5}
 .ytbox{position:relative}
 .ytframe{position:absolute;inset:0;z-index:5;background:#000}
 .ytbox .ytframe{position:absolute}
@@ -3472,7 +3476,7 @@ function art(item, h=1, label){
   return `<svg class="art" viewBox="0 0 100 ${H}" preserveAspectRatio="xMidYMid slice" ${aria}><rect width="100" height="${H}" fill="${b}"/>${g}</svg>`;
 }
 /* VÍDEOS DE CANAIS DO YOUTUBE (10 nov 2026): a capa é a miniatura do próprio YouTube; o vídeo toca aqui, no player do YouTube
-   sem cookies de rastreio (youtube-nocookie), só quando a pessoa toca no play. Um vídeo por vez: tocar outro, ou rolar para longe, para o anterior. */
+   sem cookies de rastreio (youtube-nocookie), quando a pessoa toca no play; antes disso, uma prévia curta e sem som (ver PRÉVIA DOS VÍDEOS). Um vídeo por vez: tocar outro, ou rolar para longe, para o anterior. */
 const ytCapa = (it, h=.5625) => `<span class="ytcapa" data-yt="${it.yt}">${art(it, h, false)}${it.capa ? `<img src="${esc(it.capa)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ""}</span>`;
 const ytPlayBtn = (it, big) => big ? `<button class="ytplay big" type="button" data-act="ytplay" data-yt="${it.yt}" aria-label="Assistir aqui: ${esc(it.titulo)}">${ic("play")}<span>Assistir</span></button>`
   : `<button class="ytplay" type="button" data-act="ytabre" aria-label="Assistir e ver detalhes: ${esc(it.titulo)}">${ic("play")}<span>Assistir</span></button>`;
@@ -3481,6 +3485,41 @@ document.addEventListener("click", e=>{ const f = e.target.closest && e.target.c
   const c = (f.closest(".facewrap") || f).querySelector(".ytcapa[data-yt]"); if (c) S.ytAuto = c.dataset.yt; }, true);
 function ytAutoInicia(){ const box = $(".ytbox[data-auto]"); if (!box) return; box.removeAttribute("data-auto"); S.ytAuto = null;
   const b = box.querySelector(".ytplay"); if (b) ytToca(box, b.dataset.yt, b.getAttribute("aria-label").replace(/^Assistir aqui: /,"")); }
+/* PRÉVIA DOS VÍDEOS (10 nov 2026): quando a capa de um vídeo do YouTube fica na tela por um instante, ele toca sozinho
+   por alguns segundos, sem som e sem clique, e a capa volta. Uma prévia por vez, uma vez por vídeo a cada visita.
+   Respeita "Reproduzir vídeos automaticamente" (Configurações), o pedido de menos movimento do aparelho e a economia de dados.
+   A prévia não conta na cota de vídeos: a cota vale para quem toca em Assistir. Tocar no cartão abre o vídeo normalmente, com som.
+   Atenção (privacidade): com a prévia, o player do YouTube (sem cookies) é carregado sem clique; quem desliga a reprodução automática volta ao comportamento anterior. */
+const PREV = {seg:5, el:null, t:0, vistos:new Set(), naTela:new Set(), espera:new WeakMap(), obs:null, olhados:new WeakSet()};
+const prevPode = () => S.autoplay && !matchMedia("(prefers-reduced-motion: reduce)").matches && !(navigator.connection && navigator.connection.saveData) && document.visibilityState==="visible";
+function prevPara(){ clearTimeout(PREV.t); const e = PREV.el; if (!e) return; PREV.el = null; if (e._msg) removeEventListener("message", e._msg);
+  e.classList.remove("on"); setTimeout(()=>e.remove(), 260); setTimeout(prevProxima, 900); }
+function prevProxima(){ if (PREV.el || !prevPode()) return; for (const c of PREV.naTela) if (c.isConnected && !PREV.vistos.has(c.dataset.yt)) return prevToca(c); }
+function prevToca(capa){ const id = capa.dataset.yt;
+  if (!id || PREV.el || PREV.vistos.has(id) || !prevPode() || !capa.isConnected || $(".ytframe") || capa.closest(".ytvivo")) return;
+  PREV.vistos.add(id);
+  const box = document.createElement("span"); box.className = "ytprev"; box.setAttribute("aria-hidden", "true");
+  box.style.setProperty("--w", capa.clientWidth + "px"); box.style.setProperty("--h", capa.clientHeight + "px");
+  const web = /^https?:$/.test(location.protocol), orig = web ? "&origin=" + encodeURIComponent(location.origin) : "";
+  box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&disablekb=1&fs=0&iv_load_policy=3&enablejsapi=1${orig}" title="" tabindex="-1" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe><span class="ptag">Prévia · sem som</span>`;
+  capa.appendChild(box); PREV.el = box; const fr = box.firstChild; let tocando = false;
+  const mostra = () => { if (PREV.el!==box || tocando) return; tocando = true; box.classList.add("on"); clearTimeout(PREV.t); PREV.t = setTimeout(prevPara, PREV.seg * 1000); };
+  /* o player avisa quando o vídeo começa de fato (ou quando não pode ser embutido): só então a capa dá lugar à prévia */
+  box._msg = ev => { if (ev.source!==fr.contentWindow) return; let d = ev.data; try{ if (typeof d==="string") d = JSON.parse(d); }catch(e){ return; }
+    if (!d) return; if (d.event==="onError") return prevPara(); if ((d.info && d.info.playerState===1) || (d.event==="onStateChange" && d.info===1)) mostra(); };
+  addEventListener("message", box._msg);
+  fr.addEventListener("load", ()=>{ const fala = o => { try{ fr.contentWindow.postMessage(JSON.stringify(o), "https://www.youtube-nocookie.com"); }catch(e){} };
+    fala({event:"listening", id:"prev", channel:"widget"}); fala({event:"command", func:"addEventListener", args:["onStateChange"], id:"prev", channel:"widget"}); fala({event:"command", func:"addEventListener", args:["onError"], id:"prev", channel:"widget"});
+    setTimeout(()=>{ if (!tocando && PREV.el===box) (web ? prevPara : mostra)(); }, web ? 4500 : 1500); });   /* sem resposta do player: no site, desiste; na cópia local, mostra mesmo assim */
+  PREV.t = setTimeout(prevPara, 10000); }
+function prevObserva(){ if (!PREV.obs) PREV.obs = new IntersectionObserver(es=>es.forEach(e=>{ const c = e.target;
+    if (e.isIntersecting && e.intersectionRatio >= .6){ PREV.naTela.add(c); if (!PREV.espera.get(c)) PREV.espera.set(c, setTimeout(()=>{ PREV.espera.delete(c); if (PREV.naTela.has(c)) prevToca(c); }, 700)); }
+    else { PREV.naTela.delete(c); clearTimeout(PREV.espera.get(c)); PREV.espera.delete(c); if (PREV.el && PREV.el.parentNode===c && e.intersectionRatio < .3) prevPara(); } }), {threshold:[0, .3, .6]});
+  $$(".ytcapa[data-yt]").forEach(c=>{ if (PREV.olhados.has(c) || c.closest(".ytbox")) return; PREV.olhados.add(c); PREV.obs.observe(c); });
+  for (const c of PREV.naTela) if (!c.isConnected) PREV.naTela.delete(c); }
+let prevRaf = 0;
+new MutationObserver(()=>{ if (prevRaf) return; prevRaf = requestAnimationFrame(()=>{ prevRaf = 0; prevObserva(); }); }).observe(document.getElementById("main"), {childList:true, subtree:true});
+document.addEventListener("visibilitychange", ()=>{ if (document.visibilityState!=="visible") prevPara(); });
 function ytPara(exceto){ $$(".ytframe").forEach(fr=>{ if (exceto && exceto.contains(fr)) return; const box = fr.parentNode; fr.remove(); box.classList.remove("ytvivo"); }); }
 /* cota de vídeos: visitante, 8 por visita; conta com e-mail, 15 a cada 12 horas e depois só no canal original */
 function ytNegado(id, g){ ytPara();
@@ -3488,7 +3527,7 @@ function ytNegado(id, g){ ytPara();
   if (g.k==="cadastro") return openSheet(shead("Vídeos") + `<div class="note">${ic("lock")}<span><b>Você viu os ${ACESSO.visitante.videos} vídeos abertos a visitantes.</b> Para ver mais vídeos aqui, crie sua conta ou entre. É grátis.</span></div>
     <a class="btn primary block" href="#conta" data-act="criarconta">Criar conta</a><a class="btn block" href="#conta" data-act="criarconta" data-entrar="1">Já tenho conta</a>`, "Vídeos");
   openSheet(shead("Vídeos") + `<div class="note">${ic("info")}<span><b>Você viu ${ACESSO.cadastrado.videos} vídeos nas últimas 12 horas.</b> Aqui, mais a partir das ${horaDe(g.volta)}. Até lá, os vídeos abrem no canal original. Contas verificadas veem sem esse limite: o pedido de verificação fica na sua conta.</span></div>${fora}`, "Vídeos"); }
-function ytToca(box, id, titulo){ const g = acessoVideo("yt" + id); if (g) return ytNegado(id, g);
+function ytToca(box, id, titulo){ prevPara(); const g = acessoVideo("yt" + id); if (g) return ytNegado(id, g);
   ytPara(box);
   $$(".face.vid video, .tile video, video.pinvid").forEach(v=>{ if (!v.paused){ v.dataset.user = "paused"; v.pause(); } });
   if (box.querySelector(".ytframe")) return;
@@ -4567,7 +4606,7 @@ function screenConfig(){
       ${switchRow("algo","Algoritmo", (S.algo?"Ligado":"Desligado")+". A sua escolha fica salva: nada volta sozinho para o algoritmo.")}
       <button class="setting" type="button" data-act="adjust"><span class="t"><b>Meu algoritmo</b><small>${S.temas.length} temas escolhidos · ${S.mix}% organizações / ${100-S.mix}% temas</small></span>${ic("sliders")}</button>
       ${switchRow("pausas","Pausas no feed",`Um ponto de parada a cada ${PAUSE_EVERY} publicações`)}
-      ${switchRow("autoplay","Reproduzir vídeos automaticamente","Sempre sem som. Desligue para economizar dados móveis.")}
+      ${switchRow("autoplay","Reproduzir vídeos automaticamente","Sempre sem som. Inclui a prévia de alguns segundos dos vídeos do YouTube. Desligue para economizar dados móveis.")}
     </div>
     <h2 class="sectitle">Aparência</h2>
     <div class="setting stack"><span class="t"><b>Tema</b><small>Automático segue a configuração do seu aparelho.</small></span>
@@ -6134,7 +6173,7 @@ if (!location.hash){ const ini = store.get("ultima", "") || START; if (ini && in
 window.addEventListener("hashchange", render);
 if (S.localAuto && navigator.permissions && navigator.permissions.query) navigator.permissions.query({name:"geolocation"}).then(q=>{ if (q.state==="granted" && Date.now() - (S.localQuando || 0) > 6 * 3600e3) localAtualiza(true); }).catch(()=>{});
 contaInicia();
-if (/[?&]teste=1/.test(location.search)) window.__arede = {prox, footCtx, footInfo, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
+if (/[?&]teste=1/.test(location.search)) window.__arede = {prox, footCtx, footInfo, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
 window.addEventListener("scroll", ()=>{ const t = $("#top"); if (t) t.classList.toggle("scrolled", window.scrollY > 4); }, {passive:true});
 window.addEventListener("resize", debounce(()=>{
   placeLogoDots();
@@ -6162,7 +6201,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 10/11 14:24";
+const VERSAO = "v1 registrada · 10/11 14:28";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
