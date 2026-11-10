@@ -400,6 +400,15 @@ button.setting{width:100%;border:0;text-align:left;color:var(--ink)}
 .tbody{flex:0 1 auto;min-height:0;overflow:hidden}
 .tbody p{font-size:var(--fs-tile);line-height:1.42;color:var(--muted);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:var(--cl,5);overflow:hidden}
 .tfoot{flex:none;display:flex;flex-direction:column;gap:6px;margin-top:auto;padding-top:4px}
+/* pé em 2 linhas: cada linha cabe numa só; o que não cabe vai para uma segunda linha escondida (sai inteiro, sem corte) */
+.fctx,.finfo{display:flex;flex-wrap:wrap;align-items:center;column-gap:8px;row-gap:6px;height:18px;line-height:18px;overflow:hidden;font-size:12px;color:var(--muted);min-width:0}
+.fctx > *,.finfo > *{flex:none;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.fctx .tloc{overflow:visible}.fctx .tloc b{overflow:visible}
+.finfo > span + span::before{content:"·";margin-right:8px;color:var(--muted)}
+.finfo b{font-weight:600;color:var(--ink)}
+.ftag{display:inline-flex;align-items:center;gap:3px;font-weight:600;color:var(--muted)}
+.ftag.meu{color:var(--ink)}.ftag.meu .icon{color:var(--accent);fill:var(--accent)}
+.ftag .icon{width:12px;height:12px;fill:currentColor;stroke:none}
 .tmeta{font-size:clamp(11px,2.2cqw,13px);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tfoot .bar{height:4px}
 /* selo: sobre a imagem, no canto; no cartão textual, ao lado do tipo */
@@ -3492,16 +3501,64 @@ function typeFoot(it){
 const tstatus = it => it.tipo==="votacao" ? (it.fase==="apoios" ? "Reunindo apoios" : `Encerra em ${it.prazo}`) : it.tipo==="enquete" ? `Fecha ${it.fecha}` : "";
 /* processo crítico (eleições e disputas entre chapas) x decisão simples */
 const procLine = it => it.critico ? "Processo crítico: voto secreto, apuração auditável acompanhada pelas chapas" : "Decisão simples: maioria dos votos, com quórum";
+/* PÉ DO CARTÃO (10 nov 2026): sempre 2 linhas, sem repetir o que já está no cartão.
+   Linha 1, contexto: onde (lugar) e as etiquetas do conteúdo. As que batem com os interesses de quem lê
+   (temas do algoritmo e interesses do perfil) vêm primeiro e em destaque.
+   Linha 2, origem ou o essencial do tipo: quem publicou e quando; no evento, hora, local e quem vai; etc.
+   Cada linha cabe em uma: o que não couber sai inteiro (nunca cortado no meio). Barras de progresso não contam como linha. */
+const meusInteresses = () => new Set([...(S.temas || []), ...(S.interesses || [])]);
+const TEMA_PALAVRAS = {"Mobilidade":/\b(onibus|metro|transporte|ciclovia|bicicleta|transito|mobilidade|tarifa|trem|brt)\b/,"Moradia":/\b(moradia|habitac\w*|despejo|aluguel|ocupac\w*|sem.teto)\b/,
+  "Hortas e alimentação":/\b(fome|aliment\w*|horta\w*|agricultura familiar|merenda|agroecolog\w*)\b/,"Educação":/\b(escola\w*|educac\w*|ensino|professor\w*|universidade\w*|enem|creche\w*|alunos?)\b/,
+  "Cultura":/\b(cultura\w*|festival|museu|cinema|musica|teatro|livros?|artistas?)\b/,"Saúde pública":/\b(saude|sus|hospita\w*|vacina\w*|dengue|medic\w*|doenc\w*)\b/,
+  "Meio ambiente":/\b(desmatamento|clima\w*|queimada\w*|amazonia|floresta\w*|ambient\w*|poluic\w*|enchente\w*|cop ?3\d|carbono)\b/,"Saneamento":/\b(saneamento|esgoto|abastecimento|drenagem|lixo|residuos)\b/,
+  "Juventude":/\b(jove\w*|juventude|adolescente\w*)\b/,"Orçamento participativo":/\b(orcamento|prefeitura\w*|vereador\w*|licitac\w*|audiencia publica|emenda\w*|camara municipal)\b/};
+const TAGS_CACHE = new Map();
+function tagsDe(it){ if (TAGS_CACHE.has(it.id)) return TAGS_CACHE.get(it.id);
+  const t = semAcento(((it.titulo || "") + " " + (resumoOf(it) || "")).toLowerCase()), out = [];
+  if (it.tema && it.tema !== "Geral") out.push(it.tema);
+  for (const [k, re] of Object.entries(TEMA_PALAVRAS)) if (!out.includes(k) && re.test(t)) out.push(k);
+  TAGS_CACHE.set(it.id, out); return out; }
+function footCtx(it){
+  const L = (it.daArte || it.daRede || it.anuncio) ? null : docLocal(it), meus = meusInteresses();
+  const tags = tagsDe(it).map(t=>({t, meu:meus.has(t)})).sort((a,b)=>b.meu - a.meu);
+  const loc = L ? `<span class="tloc lv-${L.k}">${ic(L.k==="int"?"globe":"pin","sm")}<b>${L.k==="nac" ? "Nacional" : esc(L.lugar)}</b>${prox(it) >= 2 ? "<em>perto de você</em>" : ""}</span>` : "";
+  const tg = tags.map(x=>`<span class="ftag${x.meu ? " meu" : ""}"${x.meu ? ' title="Está nos seus interesses"' : ""}>${x.meu ? ic("heart","sm") : "#"}${esc(x.t)}</span>`).join("");
+  const extra = it.daRede ? `<span class="indtag">fonte individual</span>` : reforcoTag(it);
+  return `<span class="fctx">${loc}${tg}${extra}${!loc && !tg && !extra ? `<span class="ftag">#Geral</span>` : ""}</span>`; }
+const tempoRel = min => min < 60 ? "há " + Math.max(1, min) + " min" : min < 1440 ? "há " + Math.round(min/60) + " h" : min < 2880 ? "ontem" : "há " + Math.round(min/1440) + " dias";
+function footInfo(it){
+  const o = ORG[it.org], I = (...xs) => `<span class="finfo">${xs.filter(Boolean).map(x=>`<span>${x}</span>`).join("")}</span>`;
+  if (it.externo || (it.ext && it.tipo==="chamado" && !it.meta)){
+    const t = it.tipo==="votacao" ? [it.quemVota ? esc(it.quemVota) : "", it.prazo ? "prazo " + esc(it.prazo) : "processo público"]
+      : it.tipo==="enquete" ? [it.opcoes.length + " opções", it.fecha ? esc(it.fecha) : ""] : [esc(it.un), it.quando ? esc(it.quando) : ""];
+    return I(...t, `participar em ${esc(it.ext.dom)} ↗`); }
+  if (it.daArte) return I(esc(it.artista || "Autoria não informada"), "Design Ativista ↗");
+  if (it.daRede) return I(`<b>${esc(o.nome)}</b>`, (it.notaFilme ? `<span class="rstars" aria-label="nota ${String(it.notaFilme).replace(".",",")} de 5">${estrelas(it.notaFilme)}</span> ` : "") + REDES[it.rede].nome + " ↗", dLabel(it.ext.data));
+  if (it.ext && (it.tipo==="texto" || it.tipo==="imagem" || it.tipo==="video")) return I(`<b>${esc(o.nome)}</b> ↗`, dLabel(it.ext.data));
+  switch(it.tipo){
+    case "evento": return I(esc(it.hora), esc(it.local), `${vaoOf(it)} vão${S.rsvp[it.uid]==="vou" ? " · você vai" : ""}`);
+    case "enquete": { const p = pollState(it), i = p.lead;
+      return `<span class="popts"><span class="popt lead"><i style="width:${p.pct(i)}%"></i><span class="pl">${it.opcoes[i]}${p.mine===i?" ✓":""}</span><span class="pp">${p.pct(i)}%</span></span></span>` + I(LIVEDOT + p.tot + " votos", "fecha " + it.fecha); }
+    case "votacao": { if (it.fase==="apoios"){ const a = supState(it);
+        return cbar(it,a) + I(LIVEDOT + `${a.a} de ${a.meta} apoios para ir a voto`, a.on ? "você apoiou" : ""); }
+      const v = voteState(it);
+      return qbar(v) + I(LIVEDOT + `${v.v} de ${it.votantes} votaram`, "quórum " + it.quorum, v.done ? "você votou" : ""); }
+    case "chamado": { const c = callState(it);
+      return cbar(it,c) + I(`<b style="color:${o.cor}">${c.falta ? "Faltam " + c.falta : "Meta atingida"}</b>${c.falta ? " " + esc(it.un) : ""}`, `${c.t} de ${it.meta}`, c.on ? "você está dentro" : ""); }
+    case "documento": return I(esc(it.doc || "Documento"), it.pags ? it.pags + " pág." : "", esc(it.data || ""), it.status ? `<span class="dstat">${esc(it.status)}</span>` : "");
+    default: return I(`<b>${esc(o.nome)}</b>`, it.min !== undefined ? tempoRel(it.min) : "");
+  }
+}
 /* topo, título e pé do cartão textual: os mesmos no Início (blocos) e no mosaico (Buscar, organizações) */
 function textParts(it){
   const o = ORG[it.org], s = sealOf(it);
   const seal = s.sc!==null ? `<span class="tseal" aria-hidden="true">${sealIco(s,14)}${s.sc}</span>` : "";
   const kind = it.tipo==="documento" && it.doc ? it.doc : kindOf(it);
-  const tema = it.tema && it.tema!=="Geral" && !it.daArte && !it.daRede ? `<span class="ttema">${esc(it.tema)}</span>` : "";
-  const head = `<span class="thead">${seal}<span class="fkind pinkind" style="--k:${it.tipo==="votacao"||it.tipo==="documento"?"var(--ink)":o.cor}">${kind}</span>${tema}${repTag(it)}</span>`;
+  /* o tema saiu do topo (10 nov 2026): virou etiqueta no pé do cartão, junto dos interesses de quem lê */
+  const head = `<span class="thead">${seal}<span class="fkind pinkind" style="--k:${it.tipo==="votacao"||it.tipo==="documento"?"var(--ink)":o.cor}">${kind}</span>${repTag(it)}</span>`;
   const title = it.tipo==="evento" ? `<span class="evrow">${evChip(it)}<span class="ftitle">${esc(it.titulo)}</span></span>` : `<span class="ftitle">${esc(it.titulo)}</span>`;
   const bg = it.tipo==="documento" || it.tipo==="votacao" ? "" : it.tipo==="enquete" ? "background:var(--surface-2)" : `background:color-mix(in srgb,${o.cor} 14%,var(--surface))`;
-  return {head, title, foot:tLoc(it) + typeFoot(it), bg};
+  return {head, title, foot:footCtx(it) + footInfo(it), bg};
 }
 function face(item){
   switch(item.tipo){
@@ -5803,7 +5860,7 @@ const START = "";
 if (!location.hash){ const ini = store.get("ultima", "") || START; if (ini && ini!=="inicio"){ try{ history.replaceState(null, "", "#" + ini); }catch(err){ location.hash = ini; } } }
 window.addEventListener("hashchange", render);
 contaInicia();
-if (/[?&]teste=1/.test(location.search)) window.__arede = {prox, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
+if (/[?&]teste=1/.test(location.search)) window.__arede = {prox, footCtx, footInfo, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
 window.addEventListener("scroll", ()=>{ const t = $("#top"); if (t) t.classList.toggle("scrolled", window.scrollY > 4); }, {passive:true});
 window.addEventListener("resize", debounce(()=>{
   placeLogoDots();
@@ -5831,7 +5888,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 10/11 10:37";
+const VERSAO = "v1 registrada · 10/11 10:48";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
