@@ -336,6 +336,8 @@ html.snapvid #feed .v-video .face.vid .art{width:100%}
 .setting .t{flex:1;min-width:0}
 .setting b{display:block;font-size:14.5px}
 .setting small{display:block;font-size:13px;color:var(--muted)}
+/* Configurações e Conta: a descrição de cada linha cabe em uma linha só (10 nov 2026). Os textos foram encurtados para caber; o corte com reticências é só rede de segurança */
+.setting.l1 small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 button.setting{width:100%;border:0;text-align:left;color:var(--ink)}
 .stop{display:flex;flex-direction:column;gap:12px;margin:var(--gap) 0 24px;padding:20px;border-radius:var(--r-lg);background:var(--ink);color:var(--bg)}
 .stop h3{font-size:22px}
@@ -1311,6 +1313,8 @@ button.setting{width:100%;border:0;text-align:left;font:inherit;color:inherit;cu
 .indtag{display:inline-flex;align-items:center;flex:none;margin-left:6px;padding:0 7px;border-radius:99px;border:1px solid var(--line);font-size:11.5px;font-weight:600;white-space:nowrap;color:var(--muted);line-height:1.6}
 .osub .indtag{margin:0 2px}
 .rbadge{flex:none;display:inline-grid;place-items:center;width:32px;height:32px;border-radius:9px;color:#fff;font-weight:800;font-size:15px;line-height:1}
+.rlks{margin:0 0 8px;gap:6px}.chip.rlk{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--ink)}
+.chip.rlk .icon{width:13px;height:13px;color:var(--muted)}.chip.rlk .rbadge.mini{margin:0;box-shadow:none}
 .rbadge.mini{width:18px;height:18px;border-radius:5px;font-size:10.5px;margin-right:-2px;box-shadow:0 0 0 1.5px var(--bg)}
 .rrow.off .rbadge{opacity:.45}
 .rrow .ot{min-width:0}
@@ -4461,7 +4465,7 @@ function mandatoNote(o, full){
     return full ? `<div class="note" style="margin:0 0 12px">${ic("info")}<span>Eleições são processo crítico: se o mandato vence sem eleição, a oposição assume interinamente por até 30 dias e a eleição é obrigatória nesse prazo. Assembleias e votações simples seguem o processo comum.</span></div>`
       : `<div class="note warnnote" style="margin:10px 0 12px">${ic("clock")}<span><b>Mandato da coordenação encerrado em ${m.vencido} sem nova eleição.</b> Coordenação interina: ${m.interina}, até ${m.ate}. ${m.eleicao}.</span></div>`; }
   return full && MANDATO_ATE[o.id] ? `<div class="note" style="margin:0 0 12px">${ic("info")}<span>Coordenação eleita, mandato até <b>${MANDATO_ATE[o.id]}</b>. Se o mandato vencer sem eleição, a oposição assume interinamente por até 30 dias, com eleição obrigatória. Nenhum mandato se prolonga sozinho.</span></div>` : ""; }
-function switchRow(k, title, sub){ return `<div class="setting"><span class="t"><b>${title}</b><small>${sub}</small></span><button class="switch" type="button" role="switch" data-act="setting" data-k="${k}" aria-checked="${S[k]}" aria-label="${title}"></button></div>`; }
+function switchRow(k, title, sub){ return `<div class="setting l1"><span class="t"><b>${title}</b><small>${sub}</small></span><button class="switch" type="button" role="switch" data-act="setting" data-k="${k}" aria-checked="${S[k]}" aria-label="${title}"></button></div>`; }
 /* PERFIL — conteúdo (referência Pinterest): quem você é no topo, abas Pastas · Salvos · Publicações.
    Configurações ficam numa tela própria (engrenagem); "Visualizar perfil" mostra o que os outros veem. */
 function boardHTML([k, title, , sec]){ const n = folderCount(k);
@@ -4476,7 +4480,7 @@ const idDeUid = u => String(u).replace(/-[^-]*$/,"");
 /* INTERESSES PÚBLICOS: até 5, escolhidos pela pessoa para expor no perfil.
    São separados dos temas do algoritmo (que são privados e só servem ao seu feed). */
 const MAX_INT = 5;
-const intChips = (edit, center) => `<div class="chips tags pints"${center?' style="justify-content:center"':""}>${S.interesses.map(t=>`<span class="chip static">${t}</span>`).join("")}${edit?`<button class="linkbtn" type="button" data-act="interesses">${S.interesses.length?"Editar interesses":"Adicionar interesses"}</button>`:""}</div>`;
+const intChips = (edit, center) => `<div class="chips tags pints"${center?' style="justify-content:center"':""}>${S.interesses.map(t=>`<span class="chip static">${t}</span>`).join("")}${edit?`<button class="linkbtn" type="button" data-act="interesses">${S.interesses.length?"Editar interesses":"Adicionar interesses"}</button>`:""}</div>${redeLinks(center)}`;
 function sheetInteresses(){ S.intDraft = S.interesses.slice(); openSheet(intBody(), "Interesses públicos"); }
 function intBody(){ const d = S.intDraft, full = d.length >= MAX_INT;
   return shead("Interesses públicos") + `<p style="color:var(--muted);font-size:14px">Escolha até ${MAX_INT} temas para mostrar no seu perfil. Eles não mudam o seu algoritmo.</p>
@@ -4598,32 +4602,32 @@ function screenConfig(){
   + `<div class="container">
     <h2 class="sectitle">Conta</h2>
     <div class="list">${ME.user
-      ? `<a class="setting" href="#conta"><span class="t"><b>Sua conta</b><small>${esc((ME.perfil && ME.perfil.nome) || "")}${ME.user.email ? " · " + esc(ME.user.email) : ""} · nome, cidade, sobre você e sair</small></span>${ic("back","sm flip")}</a>`
-      : `<a class="setting" href="#conta" data-act="acessar"><span class="t"><b>Acessar arede.online</b><small>Entre ou crie uma conta para publicar de verdade</small></span>${ic("back","sm flip")}</a>`}</div>
+      ? `<a class="setting l1" href="#conta"><span class="t"><b>Sua conta</b><small>Perfil, segurança, seus dados e sair</small></span>${ic("back","sm flip")}</a>`
+      : `<a class="setting l1" href="#conta" data-act="acessar"><span class="t"><b>Acessar arede.online</b><small>Entre ou crie sua conta</small></span>${ic("back","sm flip")}</a>`}</div>
     <h2 class="sectitle">Perfil e privacidade</h2>
     <div class="list">
-      <button class="setting" type="button" data-act="interesses"><span class="t"><b>Interesses públicos</b><small>${S.interesses.length ? S.interesses.join(" · ") : "Nenhum"} · até ${MAX_INT}, aparecem no seu perfil público</small></span>${ic("back","sm flip")}</button>
-      ${switchRow("publico","Perfil público", S.publico ? "Qualquer pessoa vê seu nome, suas publicações e as pastas que não são secretas." : "Só as organizações de que você participa veem seu nome e suas publicações. Suas pastas ficam só com você.")}
-      ${switchRow("orgsVisiveis","Mostrar minhas organizações no perfil","Desligado por padrão. Filiação política é dado sensível pela LGPD.")}
-      ${switchRow("usarOrgs","Usar minhas organizações no algoritmo","Consentimento específico. Você pode tirar quando quiser.")}
-      <button class="setting" type="button" data-act="redes"><span class="t"><b>Outras redes</b><small>${(()=>{ const m = S.redes.filter(c=>c.tipo==="minha"), a = S.redes.length - m.length; return m.length || a ? [m.length ? m.map(c=>REDES[c.rede].nome).join(", ") + " no perfil" : "", a ? a + (a===1 ? " perfil acompanhado" : " perfis acompanhados") + " no feed" : ""].filter(Boolean).join(" · ") : "Traga suas publicações do Letterboxd, Substack, Medium e Pinterest"; })()}</small></span>${ic("back","sm flip")}</button>
-      <a class="setting" href="#perfil-ver"><span class="t"><b>Visualizar perfil</b><small>Veja o que as outras pessoas veem</small></span>${ic("back","sm flip")}</a>
+      <button class="setting l1" type="button" data-act="interesses"><span class="t"><b>Interesses públicos</b><small>${S.interesses.length} de ${MAX_INT} · aparecem no seu perfil</small></span>${ic("back","sm flip")}</button>
+      ${switchRow("publico","Perfil público", S.publico ? "Todo mundo vê seu nome e publicações" : "Só suas organizações veem você")}
+      ${switchRow("orgsVisiveis","Mostrar minhas organizações no perfil","Filiação política é dado sensível")}
+      ${switchRow("usarOrgs","Usar minhas organizações no algoritmo","Desligue quando quiser")}
+      <button class="setting l1" type="button" data-act="redes"><span class="t"><b>Outras redes</b><small>${(()=>{ const m = S.redes.filter(c=>c.tipo==="minha").length, a = S.redes.length - m; return m || a ? [m ? m + " no perfil" : "", a ? a + " no feed" : ""].filter(Boolean).join(" · ") : "Traga publicações de outras redes"; })()}</small></span>${ic("back","sm flip")}</button>
+      <a class="setting l1" href="#perfil-ver"><span class="t"><b>Visualizar perfil</b><small>Veja o que as outras pessoas veem</small></span>${ic("back","sm flip")}</a>
       <div class="note">${ic("lock")}<span>arede.online não deduz suas opiniões políticas. O algoritmo usa só o que você escolhe aqui, e com o algoritmo desligado nada do seu perfil é usado.</span></div>
     </div>
     <h2 class="sectitle">Seu feed</h2>
     <div class="list">
-      ${switchRow("algo","Algoritmo", (S.algo?"Ligado":"Desligado")+". A sua escolha fica salva: nada volta sozinho para o algoritmo.")}
-      <button class="setting" type="button" data-act="adjust"><span class="t"><b>Meu algoritmo</b><small>${S.temas.length} temas escolhidos · ${S.mix}% organizações / ${100-S.mix}% temas</small></span>${ic("sliders")}</button>
-      ${switchRow("pausas","Pausas no feed",`Um ponto de parada a cada ${PAUSE_EVERY} publicações`)}
-      ${switchRow("autoplay","Reproduzir vídeos automaticamente","Sempre sem som. Inclui a prévia de alguns segundos dos vídeos do YouTube. Desligue para economizar dados móveis.")}
+      ${switchRow("algo","Algoritmo", (S.algo?"Ligado":"Desligado")+" · sua escolha fica salva")}
+      <button class="setting l1" type="button" data-act="adjust"><span class="t"><b>Meu algoritmo</b><small>${S.temas.length} temas · ${S.mix}% organizações</small></span>${ic("sliders")}</button>
+      ${switchRow("pausas","Pausas no feed",`Parada a cada ${PAUSE_EVERY} publicações`)}
+      ${switchRow("autoplay","Reproduzir vídeos automaticamente","Sem som, com as prévias")}
     </div>
     <h2 class="sectitle">Aparência</h2>
-    <div class="setting stack"><span class="t"><b>Tema</b><small>Automático segue a configuração do seu aparelho.</small></span>
+    <div class="setting stack"><span class="t"><b>Tema</b><small>Automático segue o seu aparelho</small></span>
       <div class="chips" role="radiogroup" aria-label="Tema">${[["auto","Automático"],["claro","Claro"],["escuro","Escuro"]].map(([k,t])=>`<button class="chip" type="button" role="radio" data-act="tema" data-v="${k}" aria-checked="${S.tema===k}">${t}</button>`).join("")}</div></div>
     <h2 class="sectitle">Sobre arede.online</h2>
     <div class="list">
-      <a class="setting" href="#manifesto"><span class="t"><b>Manifesto</b></span>${ic("back","sm flip")}</a>
-      <a class="setting" href="#funciona"><span class="t"><b>Como arede.online funciona</b></span>${ic("back","sm flip")}</a>
+      <a class="setting l1" href="#manifesto"><span class="t"><b>Manifesto</b></span>${ic("back","sm flip")}</a>
+      <a class="setting l1" href="#funciona"><span class="t"><b>Como arede.online funciona</b></span>${ic("back","sm flip")}</a>
       ${painelRow()}
     </div>
     <p class="ver">arede.online · versão ${VERSAO}</p></div>`;
@@ -4648,7 +4652,7 @@ function fillPublic(){ const box = $("#pfeed"); if (!box) return;
   const g = new TileGrid("pfeed", box, "none"); items.forEach(it=>g.add(it)); g.flush(true); g.render(); }
 function pubShow(){ $$('[data-act="pubtab"]').forEach(t=>t.setAttribute("aria-selected", t.dataset.tab===S.pubTab)); $("#pubstatus").innerHTML = pubStatus(); $("#pubbody").innerHTML = pubBody(); fillPublic(); }
 function visBox(){ const m = S.redes.filter(c=>c.tipo==="minha"), li = t => `<li>${t}</li>`;
-  const sim = ["Nome, iniciais e cidade", "Até " + MAX_INT + " interesses que você escolhe", "Suas publicações", m.length ? "O que vem de " + m.map(c=>REDES[c.rede].nome).join(", ") : "", S.publico ? "Pastas que não são secretas" : "", S.orgsVisiveis ? "Organizações de que você participa" : ""].filter(Boolean);
+  const sim = ["Nome, iniciais e cidade", "Até " + MAX_INT + " interesses que você escolhe", "Suas publicações", ...m.map(c=>(c.destino==="link" ? "O link do seu " : "O link e a prévia do seu ") + REDES[c.rede].nome), S.publico ? "Pastas que não são secretas" : "", S.orgsVisiveis ? "Organizações de que você participa" : ""].filter(Boolean);
   const nao = ["Algoritmo, temas e tudo o que alimenta o seu feed", "Curtidas e compartilhadas", "Agenda: eventos e chamados", "Pastas secretas" + (S.publico ? "" : " (e, com o perfil privado, todas as pastas)"), "Perfis que você acompanha em outras redes", "Seu e-mail", S.orgsVisiveis ? "" : "Organizações de que você participa (você escolheu ocultar)"].filter(Boolean);
   /* resumo numa linha; o detalhe abre no chevron */
   return `<details class="visdet"><summary>${ic(S.publico?"globe":"people")}<span class="t"><b>Perfil ${S.publico ? "público" : "privado"}</b><small>${S.publico ? "Qualquer pessoa vê esta página" : "Só quem participa das mesmas organizações vê esta página"} · seu algoritmo nunca aparece</small></span>${ic("chev","sm")}</summary>
@@ -5137,7 +5141,20 @@ const redeBadge = (k, z) => `<span class="rbadge${z ? " " + z : ""}" style="back
 const estrelas = n => "★".repeat(Math.floor(n)) + (n % 1 ? "½" : "");
 const hashStr = s => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
 const redeQuem = c => c.tipo==="minha" ? "você" : (c.nome || "@" + c.usuario);
-const destinoTxt = c => c.tipo==="acompanha" ? "no seu feed" : c.destino==="perfil_feed" ? "no perfil e no feed" : "só no perfil";
+/* CONECTAR UMA REDE AO PERFIL (10 nov 2026): a conexão mostra o link da conta no perfil. A prévia das publicações é uma escolha
+   à parte da pessoa, e só existe se o perfil dela lá for público (a rede lê só o que é público, sem pedir senha).
+   destino: "link" = só o link · "perfil" = link e prévia no perfil · "perfil_feed" = a prévia vai também ao feed de quem segue. */
+const destinoTxt = c => c.tipo==="acompanha" ? "no seu feed" : c.destino==="link" ? "só o link no perfil" : c.destino==="perfil_feed" ? "prévia no perfil e no feed" : "prévia no perfil";
+const temPrevia = c => c.tipo==="minha" && c.destino!=="link";
+const redeEndereco = (k, u) => { u = String(u || "").trim().replace(/^@/, ""); if (/^https?:\/\//.test(u)) return u;
+  return k==="letterboxd" ? `https://letterboxd.com/${u}/` : k==="pinterest" ? `https://www.pinterest.com/${u}/` : k==="medium" ? `https://medium.com/@${u}` : k==="substack" ? `https://${u.includes(".") ? u : u + ".substack.com"}` : ""; };
+const redeOpcoes = (opt, R) => `<h3 class="osec">O que aparece no seu perfil?</h3><div class="ropts" role="radiogroup" aria-label="O que aparece no seu perfil">
+    ${opt("link","Só o link","Seu perfil mostra o endereço da sua conta.")}${opt("perfil","Link e prévia das publicações","As mais recentes aparecem no seu perfil.")}${opt("perfil_feed","Link, prévia e feed","A prévia vai também ao feed de quem segue você.")}</div>
+    <small class="ohint">A prévia só funciona se o seu perfil no ${R.nome} for público. arede.online lê só o que é público lá, sem pedir a sua senha.</small>`;
+/* os links das contas conectadas, no perfil (o que as outras pessoas veem) */
+const redeLinks = center => { const m = S.redes.filter(c=>c.tipo==="minha" && REDES[c.rede]); if (!m.length) return "";
+  return `<div class="chips rlks"${center ? ' style="justify-content:center"' : ""} aria-label="Em outras redes">${m.map(c=>{ const url = c.perfil || redeEndereco(c.rede, c.usuario), miolo = `${redeBadge(c.rede, "mini")}<span>${REDES[c.rede].nome}</span>`;
+    return url ? `<a class="chip static rlk" href="${esc(url)}" target="_blank" rel="noopener" title="${esc(c.usuario)} no ${REDES[c.rede].nome}">${miolo}${ic("ext","sm")}</a>` : `<span class="chip static rlk">${miolo}</span>`; }).join("")}</div>`; };
 async function redeBusca(rede, usuario){
   try{ const r = await fetch(`${SB_URL}/functions/v1/redes?rede=${rede}&usuario=${encodeURIComponent(usuario)}`);
     const d = await r.json(); return r.ok ? d : {erro:d.erro || "rede", msg:d.msg || "A rede não respondeu agora."}; }
@@ -5162,7 +5179,9 @@ function confirmacoes(it){ const a = palavrasTit(it.titulo); if (a.size < 4) ret
     .slice(0, 4).map(p=>({fonte:ORG[p.org].nome, url:p.ext.url, titulo:p.titulo, papel:"fonte da base sobre o mesmo assunto"})); }
 function redesAplica(){
   for (let i = POOL.length - 1; i >= 0; i--) if (POOL[i].daRede) POOL.splice(i, 1);
-  S.redes.forEach(c=>{ const R = REDES[c.rede], cache = REDE_CACHE[c.id]; if (!R || !cache) return; const org = orgDaRede(c);
+  S.redes.forEach(c=>{ const R = REDES[c.rede], cache = REDE_CACHE[c.id]; if (!R || !cache) return;
+    if (c.tipo==="minha" && c.destino==="link") return;      /* só o link: nenhuma publicação de lá entra aqui */
+    const org = orgDaRede(c);
     cache.itens.forEach((x,k)=>{ const id = "r" + hashStr(c.id + "|" + x.url), dt = x.data ? Date.parse(x.data) : Date.now() - (k+1)*36e5;
       const it = {id, tipo:"texto", org, tema:R.tema || "Geral", titulo:x.titulo + (x.ano ? " (" + x.ano + ")" : ""), texto:x.texto || "", cidade:"", daRede:true, rede:c.rede, conexao:c.id, minha:c.tipo==="minha", repost:!!x.repost,
         noFeed:c.tipo==="acompanha" || c.destino==="perfil_feed", rtipo:x.tipo, notaFilme:x.nota, exemplo:!!x.exemplo, lingua:"pt",
@@ -5195,7 +5214,7 @@ async function redeServidor(op, c){ if (!SB || !ME.user) return;
     else await q.delete().eq("rede", c.rede).eq("usuario", c.usuario).eq("tipo", c.tipo); }catch(e){} }
 function redeLinha(k){ const R = REDES[k], c = S.redes.find(x=>x.rede===k && x.tipo==="minha");
   const n = c && REDE_CACHE[c.id] ? REDE_CACHE[c.id].itens.length : 0;
-  const sub = !R.aberta ? "Em breve · depende de aprovação " + (k==="spotify" ? "do Spotify" : "da Meta") : c ? `${esc(c.usuario)} · ${n} ${n===1?"publicação":"publicações"} · ${destinoTxt(c)}` : R.vem.replace(/^./, x=>x.toUpperCase());
+  const sub = !R.aberta ? "Em breve · depende de aprovação " + (k==="spotify" ? "do Spotify" : "da Meta") : c ? (c.destino==="link" ? `${esc(c.usuario)} · ${destinoTxt(c)}` : `${esc(c.usuario)} · ${n} ${n===1?"publicação":"publicações"} · ${destinoTxt(c)}`) : R.vem.replace(/^./, x=>x.toUpperCase());
   const bt = !R.aberta ? `<button class="btn sm ghost" type="button" data-act="redeembreve" data-r="${k}">Saiba mais</button>`
     : c ? `<button class="btn sm ghost" type="button" data-act="redeajustar" data-id="${c.id}">Ajustar</button>` : `<button class="btn sm" type="button" data-act="redeconectar" data-r="${k}" data-t="minha">Conectar</button>`;
   return `<div class="orow rrow${R.aberta ? "" : " off"}">${redeBadge(k)}<span class="ot"><b>${R.nome}${c ? ` <span class="rok">${ic("check","sm")} conectado</span>` : ""}</b><small>${sub}</small></span>${bt}</div>`; }
@@ -5215,9 +5234,8 @@ function sheetRedeConectar(k, tipo){ const R = REDES[k]; S.redeDraft = {rede:k, 
     ${tipo==="acompanha" ? `<div class="chips" role="radiogroup" aria-label="Rede">${REDES_ABERTAS.map(r=>`<button class="chip" type="button" role="radio" data-act="rederede" data-r="${r}" aria-checked="${r===k}">${REDES[r].nome}</button>`).join("")}</div>` : ""}
     <label class="olbl" for="redeuser">${tipo==="minha" ? R.campo : "Usuário ou endereço no " + R.nome}</label>
     <input id="redeuser" class="input" type="text" placeholder="${R.ex}" autocapitalize="off" autocomplete="off" spellcheck="false" enterkeyhint="go">
-    <small class="ohint">Vem de lá: ${tipo==="minha" ? R.vem : R.vem.replace(/\b(seus?|sua|suas|você)\b/g, m=>({seu:"dele",seus:"dele",sua:"dela",suas:"dela","você":"a pessoa"})[m])}. Só o que é público no perfil.</small>
-    ${tipo==="minha" ? `<h3 class="osec">Onde as suas publicações aparecem?</h3><div class="ropts" role="radiogroup" aria-label="Onde aparecem">
-        ${opt("perfil","Só no meu perfil","Quem abre o seu perfil vê.")}${opt("perfil_feed","No perfil e no feed","Também no feed de quem segue você.")}</div>`
+    <small class="ohint">${tipo==="minha" ? "Na prévia vem" : "Vem de lá"}: ${tipo==="minha" ? R.vem : R.vem.replace(/\b(seus?|sua|suas|você)\b/g, m=>({seu:"dele",seus:"dele",sua:"dela",suas:"dela","você":"a pessoa"})[m])}. Só o que é público no perfil.</small>
+    ${tipo==="minha" ? redeOpcoes(opt, R)
       : `<div class="note">${ic("info")}<span>Entra no seu feed com o selo de confiança e a marca de fonte individual. Só você vê quem você acompanha.</span></div>`}
     <p id="redemsg" class="rmsg" role="alert"></p>
     <button class="btn primary block" type="button" data-act="redeenviar" id="redeenviar">${tipo==="minha" ? "Conectar" : "Acompanhar"}</button></div>`, tipo==="minha" ? "Conectar o " + R.nome : "Acompanhar um perfil");
@@ -5225,10 +5243,10 @@ function sheetRedeConectar(k, tipo){ const R = REDES[k]; S.redeDraft = {rede:k, 
 function sheetRedeAjustar(id){ const c = S.redes.find(x=>x.id===id); if (!c) return sheetRedes(); const R = REDES[c.rede], ca = REDE_CACHE[c.id], n = ca ? ca.itens.length : 0;
   const opt = (v, t, d) => `<button class="ropt" type="button" role="radio" data-act="redesdest" data-id="${c.id}" data-v="${v}" aria-checked="${c.destino===v}"><span class="rdot" aria-hidden="true"></span><span><b>${t}</b><small>${d}</small></span></button>`;
   openSheet(shead(c.tipo==="minha" ? "Seu " + R.nome : esc(c.nome || c.usuario)) + `<div class="rform">
-    <div class="orow rrow">${redeBadge(c.rede)}<span class="ot"><b>${esc(c.usuario)}</b><small>${n} ${n===1?"publicação":"publicações"}${ca ? " · lido " + quando(new Date(ca.em).toISOString()) : ""}${ca && ca.exemplo ? " · exemplos, sem conexão" : ""}</small></span>${c.perfil ? `<a class="btn sm ghost" href="${esc(c.perfil)}" target="_blank" rel="noopener">Abrir ${ic("ext","sm")}</a>` : ""}</div>
-    ${c.tipo==="minha" ? `<h3 class="osec">Onde as suas publicações aparecem?</h3><div class="ropts" role="radiogroup" aria-label="Onde aparecem">${opt("perfil","Só no meu perfil","Quem abre o seu perfil vê.")}${opt("perfil_feed","No perfil e no feed","Também no feed de quem segue você.")}</div>` : ""}
+    <div class="orow rrow">${redeBadge(c.rede)}<span class="ot"><b>${esc(c.usuario)}</b><small>${c.tipo==="minha" && c.destino==="link" ? "Só o link no perfil" : `${n} ${n===1?"publicação":"publicações"}${ca ? " · lido " + quando(new Date(ca.em).toISOString()) : ""}${ca && ca.exemplo ? " · exemplos, sem conexão" : ""}`}</small></span>${c.perfil ? `<a class="btn sm ghost" href="${esc(c.perfil)}" target="_blank" rel="noopener">Abrir ${ic("ext","sm")}</a>` : ""}</div>
+    ${c.tipo==="minha" ? redeOpcoes(opt, R) : ""}
     <p id="redemsg" class="rmsg" role="alert"></p>
-    <div class="row"><button class="btn" type="button" data-act="redeatualizar" data-id="${c.id}">${ic("sort","sm")} Ler de novo</button><button class="btn ghost" type="button" data-act="redesair" data-id="${c.id}">${c.tipo==="minha" ? "Desconectar" : "Deixar de acompanhar"}</button></div>
+    <div class="row">${c.tipo==="minha" && c.destino==="link" ? "" : `<button class="btn" type="button" data-act="redeatualizar" data-id="${c.id}">${ic("sort","sm")} Ler de novo</button>`}<button class="btn ghost" type="button" data-act="redesair" data-id="${c.id}">${c.tipo==="minha" ? "Desconectar" : "Deixar de acompanhar"}</button></div>
     <button class="linkbtn" type="button" data-act="redes">Todas as redes</button></div>`, R.nome); }
 function sheetRedeEmBreve(k){ const R = REDES[k];
   openSheet(shead(R.nome) + `<div class="rform"><div class="orow rrow off">${redeBadge(k)}<span class="ot"><b>${R.nome} · em breve</b><small>Depende de aprovação ${k==="spotify" ? "do Spotify" : "da Meta"}</small></span></div>
@@ -5596,11 +5614,11 @@ function acessoCard(){ const nv = nivel(), a = ME.acesso || {}, ped = a.pedido, 
 function contaSeguranca(){ const u = ME.user, ult = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString("pt-BR", {day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"}) : "";
   const chev = ic("back","sm flip");
   return `<section class="acard" aria-labelledby="hseg"><h2 id="hseg">Segurança da conta</h2><div class="list">
-      <button class="setting" type="button" data-act="trocasenha"><span class="t"><b>Trocar a senha</b><small>Pede a senha atual e tira a conta dos outros aparelhos</small></span>${chev}</button>
-      <button class="setting" type="button" data-act="sairtodos"><span class="t"><b>Sair de todos os aparelhos</b><small>${ult ? "Último acesso: " + ult : "Encerra a conta em todo lugar onde ela está aberta"}</small></span>${chev}</button></div></section>
+      <button class="setting l1" type="button" data-act="trocasenha"><span class="t"><b>Trocar a senha</b><small>Pede a senha atual</small></span>${chev}</button>
+      <button class="setting l1" type="button" data-act="sairtodos"><span class="t"><b>Sair de todos os aparelhos</b><small>${ult ? "Último acesso: " + ult : "Encerra a conta em todo lugar"}</small></span>${chev}</button></div></section>
     <section class="acard" aria-labelledby="hdados"><h2 id="hdados">Seus dados</h2><div class="list">
-      <button class="setting" type="button" data-act="baixadados"><span class="t"><b>Baixar meus dados</b><small>Um arquivo com tudo o que a rede guarda sobre você</small></span>${chev}</button>
-      ${nivel()==="admin" ? "" : `<button class="setting perigo" type="button" data-act="apagaconta"><span class="t"><b>Apagar minha conta</b><small>Apaga perfil, publicações e histórico. Não tem volta.</small></span>${chev}</button>`}</div></section>`; }
+      <button class="setting l1" type="button" data-act="baixadados"><span class="t"><b>Baixar meus dados</b><small>Tudo o que a rede guarda sobre você</small></span>${chev}</button>
+      ${nivel()==="admin" ? "" : `<button class="setting l1 perigo" type="button" data-act="apagaconta"><span class="t"><b>Apagar minha conta</b><small>Apaga tudo. Não tem volta.</small></span>${chev}</button>`}</div></section>`; }
 const sheetErro = t => { const e = $("#layer .ferr"); if (e){ e.textContent = t; e.hidden = !t; } };
 function screenNovaSenha(){
   return header(`<div class="toprow"><h1 class="pagehead">Nova senha</h1></div>`) + `<div class="container cform">
@@ -6125,20 +6143,28 @@ const A = {
   redeenviar: async () => { const D = S.redeDraft, inp = $("#redeuser"), msg = $("#redemsg"), bt = $("#redeenviar"); if (!D || !inp || !bt) return;
     const u = inp.value.trim(), diz = t => { if (msg) msg.textContent = t; }, rotulo = D.tipo==="minha" ? "Conectar" : "Acompanhar", volta = t => { bt.disabled = false; bt.textContent = rotulo; diz(t); };
     if (!u){ diz("Escreva o usuário ou o endereço."); inp.focus(); return; }
-    if (D.tipo==="minha" && !D.destino){ diz("Escolha onde as suas publicações aparecem."); return; }
+    if (D.tipo==="minha" && !D.destino){ diz("Escolha o que aparece no seu perfil."); return; }
     if (bt.disabled) return; bt.disabled = true; bt.textContent = "Buscando…"; diz("");
     let d = await redeBusca(D.rede, u);
     if (d.erro==="offline") d = redeExemplos(D.rede, u.replace(/^@/,"").replace(/^https?:\/\//,"").replace(/\/+$/,""));
-    if (d.erro) return volta(d.msg);
+    const soLink = D.tipo==="minha" && D.destino==="link", limpo = u.replace(/^@/,"").replace(/^https?:\/\//,"").replace(/\/+$/,"");
+    /* só o link: a conta entra mesmo sem nada público para ler. Com prévia, o perfil de lá precisa ser público. */
+    if (d.erro && soLink) d = {usuario:limpo, nome:"", perfil:redeEndereco(D.rede, u), itens:[]};
+    if (d.erro) return volta(D.tipo==="minha" ? d.msg + " A prévia só funciona com o perfil público lá; você também pode conectar só o link." : d.msg);
     if (S.redes.some(c=>c.rede===D.rede && c.tipo===D.tipo && c.usuario.toLowerCase()===String(d.usuario).toLowerCase())) return volta(D.tipo==="minha" ? "Esse perfil já está conectado." : "Você já acompanha esse perfil.");
-    if (!d.itens.length && !d.exemplo) return volta("Achamos o perfil, mas ele ainda não tem nada público para trazer.");
+    if (!d.itens.length && !d.exemplo && !soLink) return volta(D.tipo==="minha" ? "Achamos o perfil, mas não há nada público para mostrar na prévia. Deixe o perfil público lá ou conecte só o link." : "Achamos o perfil, mas ele ainda não tem nada público para trazer.");
     const c = {id:"cx" + Date.now().toString(36), rede:D.rede, usuario:String(d.usuario), nome:d.nome || "", perfil:d.perfil || "", tipo:D.tipo, destino:D.tipo==="minha" ? D.destino : "feed"};
     S.redes.push(c); REDE_CACHE[c.id] = {em:Date.now(), itens:d.itens, exemplo:!!d.exemplo}; persist("redes"); store.set("redesCache", REDE_CACHE);
     redeServidor("insert", c); redesAplica(); S.redeDraft = null; render(); sheetRedes();
     const n = d.itens.length, R = REDES[c.rede];
-    toast(d.exemplo ? `Sem conexão agora: o ${R.nome} entrou com exemplos. Os reais chegam quando a internet voltar.` : c.tipo==="minha" ? `${R.nome} conectado: ${n} ${n===1?"publicação":"publicações"} ${destinoTxt(c)}.` : `Você passou a acompanhar ${c.nome || c.usuario} no feed.`); },
-  redesdest: b => { const c = S.redes.find(x=>x.id===b.dataset.id); if (!c) return; c.destino = b.dataset.v; persist("redes"); redeServidor("update", c); redesAplica();
-    $$('[data-act="redesdest"]').forEach(x=>x.setAttribute("aria-checked", x.dataset.v===c.destino)); render(); toast(`${REDES[c.rede].nome}: ${destinoTxt(c)}.`); },
+    toast(d.exemplo ? `Sem conexão agora: o ${R.nome} entrou com exemplos. Os reais chegam quando a internet voltar.` : c.tipo==="minha" ? (c.destino==="link" ? `${R.nome} conectado: o link aparece no seu perfil.` : `${R.nome} conectado: ${n} ${n===1?"publicação":"publicações"}, ${destinoTxt(c)}.`) : `Você passou a acompanhar ${c.nome || c.usuario} no feed.`); },
+  redesdest: async b => { const c = S.redes.find(x=>x.id===b.dataset.id); if (!c) return; const antes = c.destino; c.destino = b.dataset.v;
+    $$('[data-act="redesdest"]').forEach(x=>x.setAttribute("aria-checked", x.dataset.v===c.destino));
+    if (antes==="link" && c.destino!=="link"){ const m = $("#redemsg"); if (m) m.textContent = "Lendo o seu perfil público…";
+      const r = await redeAtualiza(c, true), n = REDE_CACHE[c.id] ? REDE_CACHE[c.id].itens.length : 0;
+      if (r!==true || !n){ c.destino = "link"; persist("redes"); sheetRedeAjustar(c.id); const m2 = $("#redemsg"); if (m2) m2.textContent = "Não há nada público para mostrar na prévia. Deixe o seu perfil público lá e tente de novo. Por enquanto fica só o link."; return; }
+      store.set("redesCache", REDE_CACHE); }
+    persist("redes"); redeServidor("update", c); redesAplica(); render(); sheetRedeAjustar(c.id); toast(`${REDES[c.rede].nome}: ${destinoTxt(c)}.`); },
   redeatualizar: async b => { const c = S.redes.find(x=>x.id===b.dataset.id); if (!c) return; b.disabled = true; b.textContent = "Lendo…";
     const r = await redeAtualiza(c, true); store.set("redesCache", REDE_CACHE); persist("redes"); redesAplica(); render(); sheetRedeAjustar(c.id);
     if (r!==true){ const m = $("#redemsg"); if (m) m.textContent = r.erro==="offline" ? "Sem conexão agora. Fica o que já tinha sido lido." : r.msg; } else toast("Atualizado."); },
@@ -6225,7 +6251,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 10/11 14:46";
+const VERSAO = "v1 registrada · 10/11 17:07";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();

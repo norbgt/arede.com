@@ -271,3 +271,18 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 
 ## 10/11 · Pé do cartão com menos negrito
 - O pé do cartão perdeu peso: o lugar e o nome da fonte ficam em peso médio; as etiquetas de tema (com ou sem coração) e a data, em peso normal. A cor continua fazendo a distinção.
+
+## 10/11 · Descrições de uma linha em Configurações e na Conta
+- Em Configurações e nas linhas de segurança e dados da Conta, a descrição de cada item cabe em uma linha só, do celular pequeno (320 px) ao computador. Os textos foram encurtados para caber inteiros; o corte com reticências existe só como rede de segurança.
+
+
+## 10/11 · Conectar uma rede ao perfil: o link, e a prévia como escolha
+- Conectar uma conta de outra rede (Letterboxd, Substack, Medium, Pinterest) passa a mostrar, no perfil, o link dessa conta. A prévia das publicações virou uma escolha à parte da pessoa: “Só o link”, “Link e prévia das publicações” ou “Link, prévia e feed”.
+- A prévia só existe se o perfil da pessoa lá for público: arede.online lê só o que é público, sem pedir senha. Se não houver nada público, a conexão com prévia é recusada com a orientação de deixar o perfil público ou conectar só o link; quem liga a prévia depois passa pela mesma checagem.
+- “Só o link” conecta mesmo sem nada público para ler. Em “Como outras pessoas veem”, os links aparecem junto dos interesses, e a lista “Aparece” diz se é só o link ou o link e a prévia.
+- No servidor, o destino das contas ligadas passou a aceitar “link” (só o link no perfil), além de “perfil”, “perfil_feed” e “feed”.
+
+## 10/11 · Forma de trabalho: dois tipos de mudança
+- Ajustes visuais e de texto (negrito, descrições, logo, espaçamentos) ficam no HTML (prévia no Claude e cópia no Mac), se acumulam e vão à produção quando a Amanda pedir.
+- Mudanças que mexem no servidor (banco, funções, acesso, cadastro, conexões) vão inteiras: página e servidor juntos, publicadas no fim do pedido. Só no HTML elas ficariam pela metade e não dariam para testar de verdade.
+- O Claude diz de que tipo é cada pedido; na dúvida, pergunta para decidirem juntos. Em mudança grande ou sensível, avisa antes de publicar.
