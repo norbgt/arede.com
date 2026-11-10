@@ -4248,10 +4248,10 @@ function screenProfile(){
   return header(`<div class="toprow phead"><a class="pme" href="#perfil-ver" aria-label="${pf ? esc(pf.nome) : "Você"}: ver o perfil como os outros veem">
       <span class="av pav" aria-hidden="true">${pf ? siglaDe(pf.nome) : "VC"}</span>
       <span class="pwho"><b>${pf ? esc(pf.nome) : "Você"}${pf ? verifIco(pf.verificado) : ""}${ic("back","sm flip")}</b><span class="psub">${pf && pf.cidade ? esc(pf.cidade) + " · " : ""}${S.publico ? "perfil público" : "perfil privado"}</span></span></a><span class="spacer"></span>
-      <span class="pacts">${ME.user
-        ? `<button class="iconbtn pbtn prim" type="button" data-act="publicar" aria-label="Publicar" title="Publicar">${ic("plus")}</button>`
-        : `<a class="iconbtn pbtn prim" href="#conta" data-act="acessar" aria-label="Acessar arede.online" title="Acessar arede.online"><span class="amark" aria-hidden="true">a<i></i></span></a><button class="iconbtn pbtn" type="button" data-act="publicar" aria-label="Publicar" title="Publicar">${ic("plus")}</button>`}
-        <a class="iconbtn pbtn" href="#config" aria-label="Configurações e conta" title="Configurações e conta">${ic("gear")}</a></span></div>
+      <span class="pacts">${/* topo do perfil (10 nov 2026): um botão para cada destino, sem repetir o Criar da navegação.
+          a. (roxo) = sua entrada na arede.online: entrar ou criar conta, ou a sua conta; engrenagem = configurações. Publicar fica só no Criar. */""}
+        <a class="iconbtn pbtn prim" href="#conta" data-act="acessar" aria-label="${ME.user ? "Sua conta na arede.online" : "Acessar arede.online: entrar ou criar conta"}" title="${ME.user ? "Sua conta" : "Acessar arede.online"}"><span class="amark" aria-hidden="true">a<i></i></span></a>
+        <a class="iconbtn pbtn" href="#config" aria-label="Configurações" title="Configurações">${ic("gear")}</a></span></div>
     <div class="tabs" role="tablist" aria-label="Seu conteúdo">${tabsPerfil()}</div>
     <div class="status" id="pstatus">${profStatus()}</div>`)
   + `<div class="container"><div id="pbody">${profBody()}</div></div>`;
@@ -5831,7 +5831,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 10/11 10:34";
+const VERSAO = "v1 registrada · 10/11 10:37";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
