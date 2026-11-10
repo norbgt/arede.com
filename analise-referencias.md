@@ -296,3 +296,19 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - Usuário colaborador (nome escolhido pela Amanda): destaque para quem contribui de forma construtiva. Os critérios indicam, a Amanda confirma: conta com 14 dias, 5 comentários, 10 marcações de útil vindas de 5 pessoas, 2 comentários com fonte e nenhum removido, em 90 dias. Comentários de colaborador, ou com 3 úteis, sobem como “Em destaque”.
 - Sinais para o selo: comentário que confirma ou contesta com fonte, vindo de colaborador ou com 3 úteis, vira um sinal numa fila da curadoria. A nota da notícia só muda quando o sinal é aceito (até 10 pontos por sinal, 30 no total).
 - Os números (5 comentários, 3 úteis, 85 de confiança, critérios do colaborador, limites) são pontos de partida escolhidos pelo Claude, ajustáveis.
+
+## 10/11 · Região com origem visível e relações com o algoritmo no cartão
+- A Amanda via “perto de você” em notícias de São Paulo sem estar lá. Causa: a localização nunca tinha sido ativada no navegador dela; o site usava a cidade cadastrada no perfil como região, sem dizer isso.
+- O cartão diz agora a relação exata: “na sua cidade”, “no seu estado” ou “do seu interesse” (só em notícias de cidade ou estado). Antes dos temas aparece a relação mais forte, como “Você segue”.
+- “Por que apareceu” lista até 3 relações, da mais forte para a mais fraca, diz de onde vem a região (sua localização, escolhida por você ou cidade do perfil) e tem o botão Ajustar.
+- A região ficou fácil de achar: Configurações › Seu feed › Sua região, que abre a folha com “Usar minha localização”.
+
+## 10/11 · Correção: cartões de chamado centralizados e estreitos
+- O cabeçalho dos comentários (criado às 17:59) usava a classe `.ch`, o mesmo nome do cartão de chamado. O estilo dos comentários passou a valer nos chamados: conteúdo centralizado e o recorte colorido (quanto falta, barra e Quero ajudar) estreito no meio do cartão. O cabeçalho dos comentários passou a se chamar `.comh`; o recorte voltou a ocupar a largura toda do cartão, no celular e no computador.
+- Cuidado para as próximas: nomes de classe novos são conferidos contra os existentes antes de entrar.
+
+## 10/11 · Histórico, selo ajustado pela comunidade e prioridade no feed
+- O selo continua baseado nas fontes verificadas e passa a ser incrementado por comentários com fonte. Decisão da Amanda: automático com limite. Contas com histórico 65 ou mais ajustam a nota sozinhas (de 2 a 5 pontos, pela força do histórico), até 10 pontos automáticos por notícia e uma vez por pessoa em cada notícia; o que passa disso vai para a fila da curadoria, onde tudo pode ser desfeito. O cartão avisa quando a nota teve contribuição da comunidade.
+- Histórico (reputação) de 0 a 100, calculado no servidor, nos últimos 90 dias: começa em 40; somam tempo de conta (até 15), pessoas diferentes que marcaram comentários como úteis (até 25, o que mais pesa), comentários com fonte (até 10), destaque de colaborador (10) e verificação (5); cada comentário removido tira 15. Decisão da Amanda: a pessoa vê o próprio número, na conta, com o que ajuda a subir. Ninguém mais vê; o feed recebe só a faixa.
+- Prioridade no feed, decisão da Amanda: em todo lugar, inclusive com o algoritmo desligado. Faixas: 80+ sobe 12 horas na ordem, 65+ sobe 6 horas, abaixo de 30 desce 6 horas. O “Como funciona” ganhou a regra “Bom histórico conta”, porque o espaço aberto deixou de ser critério idêntico para todo mundo (a regra é a mesma para todos).
+- Os números (40, pesos, 65, 80, 30, horas) são pontos de partida escolhidos pelo Claude.

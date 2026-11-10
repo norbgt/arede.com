@@ -620,8 +620,13 @@ h1 .fic{font-size:11px;vertical-align:4px}
 .caviso{padding:12px;border-radius:var(--r);background:var(--surface-2);font-size:13.5px;line-height:1.45}.caviso[hidden]{display:none}.caviso p{margin:0 0 10px}.caviso b{font-weight:600}
 .cmsg{margin:0}.cmsg:empty{display:none}.cvazio{margin:0;font-size:13.5px;color:var(--muted)}
 .com{display:flex;gap:10px}.com.dest{padding:10px;border-radius:var(--r);background:var(--surface)}
-.cav{width:32px;height:32px;border-radius:50%;font-size:12px}.cb{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
-.ch{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;font-size:13.5px}.ch .cn{font-weight:600}.ch small{font-size:12px;color:var(--muted)}
+.cav{width:32px;height:32px;border-radius:50%;font-size:12px}
+/* a conta da própria rede comenta com a marca "a." roxa, como no topo do perfil */
+.cav.rede{background:var(--accent);color:var(--on-accent)}.cav.rede .amark{font-size:17px;margin:-2px 0 0 0}.cb{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+/* cabeçalho do comentário: nome próprio (.comh), para não colidir com o cartão de chamado (.ch) */
+.comh{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;font-size:13.5px}
+.comh .vfy{margin-left:-5px;vertical-align:0}.comh .vfy .icon{width:15px;height:15px}   /* selo colado ao nome, no tamanho do texto */
+.comh .cn{font-weight:600}.comh small{font-size:12px;color:var(--muted)}
 .colab{padding:1px 8px;border-radius:99px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font-size:11.5px;font-weight:600}
 .ctags{display:flex;flex-wrap:wrap;gap:6px}.ctag{font-size:11.5px;font-weight:500;color:var(--muted);padding:1px 8px;border-radius:99px;background:var(--surface-2)}.ctag.d{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
 .ctx{margin:0;font-size:14.5px;line-height:1.5;white-space:pre-line;overflow-wrap:anywhere}
@@ -629,6 +634,10 @@ h1 .fic{font-size:11px;vertical-align:4px}
 .cacts{display:flex;flex-wrap:wrap;gap:0 16px}.cacts .linkbtn{min-height:32px;padding:4px 0;font-size:13px;display:inline-flex;align-items:center;gap:5px}.cacts .icon{width:14px;height:14px}
 .cutil[aria-pressed="true"]{color:var(--accent)}.cutil[aria-pressed="true"] .icon{fill:var(--accent);stroke:none}.cutil:disabled{opacity:.6}
 .curh{margin:20px 0 8px;font-size:15px;font-weight:600}
+.hist{display:flex;align-items:center;gap:14px}.hnum{flex:none;display:flex;align-items:baseline;gap:4px;white-space:nowrap}.hnum b{font-size:40px;font-weight:700;line-height:1;letter-spacing:-.02em}.hnum small{font-size:13px;color:var(--muted)}
+.htx{display:flex;flex-direction:column;gap:2px}.htx b{font-size:15px}.htx small{font-size:13px;color:var(--muted);line-height:1.4}
+.hbar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}.hbar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.hlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}.hlist li{display:flex;flex-direction:column}.hlist b{font-size:14px;font-weight:600}.hlist small{font-size:12.5px;color:var(--muted)}
 .sealbox.sbmini{background:none;padding:0}
 .sealbox.sbmini summary{min-height:40px;gap:9px}
 .sealbox.sbmini .t{flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:0 6px}
@@ -3328,12 +3337,10 @@ async function localAtualiza(silencio){ let c;
   else if (!silencio) toast(`Região: ${txt}.`);
   return txt; }
 function sheetLocal(para){ openSheet(shead("Usar minha localização") + `<div class="cform sform">
-    <div class="dnota"><b>${ic("pin","sm")} O que acontece com a sua posição</b><ul>
-      <li>O navegador vai pedir a sua permissão. Você pode negar, e nada muda.</li>
-      <li>O site usa a posição só para descobrir a sua cidade. A conta é feita aqui, no aparelho: a posição exata não é enviada nem guardada.</li>
-      <li>Fora do Brasil, a posição arredondada (cerca de 1 km) vai ao servidor da rede só para achar a cidade. Ela não é guardada.</li>
-      <li>Fica guardada só a cidade, e só neste aparelho. Você pode mudar ou apagar quando quiser.</li>
-      <li>Com a permissão dada, a cidade se atualiza sozinha quando você abre o site.</li></ul></div>
+    <div class="dnota"><b>${ic("pin","sm")} Sua posição fica com você</b><ul>
+      <li>Usamos só para saber a sua cidade.</li>
+      <li>Guardamos só a cidade, e só neste aparelho.</li>
+      <li>Você muda ou desliga quando quiser.</li></ul></div>
     <button class="btn primary block" type="button" data-act="localpermite" data-para="${esc(para || "")}">${ic("pin","sm")} Permitir localização</button>
     <button class="btn ghost block" type="button" data-act="close">Agora não</button></div>`, "Usar minha localização"); }
 const localLinha = () => `<div class="lrow"><button class="btn sm" type="button" data-act="localpede" data-para="origens"${S.perto ? "" : " disabled"}>${ic("pin","sm")} Usar minha localização</button>
@@ -3382,7 +3389,7 @@ function origensOrdem(){ const R = minhaRegiao();
     <div class="orow col"><label class="olbl" for="regiao">Sua região</label>
       <input id="regiao" class="input" type="text" list="capitais" autocomplete="address-level2" placeholder="Cidade, UF" value="${esc(R.txt)}"${S.perto ? "" : " disabled"}>
       <datalist id="capitais">${CAPITAIS.map(c=>`<option value="${c}">`).join("")}</datalist>
-      <small class="ohint">${R.txt ? (R.uf ? `Cidade ${esc(R.txt.replace(/\s*[,\-–]?\s*[A-Za-z]{2}$/,""))}, estado ${esc(UF_NOME[R.uf])}.` : "Escreva com a sigla do estado (ex.: Curitiba, PR) para valer também o estado.") : "Sem região, vale só a proximidade com o Brasil."}</small>${localLinha()}</div>${lugaresBloco()}</div>`; }
+      <small class="ohint">${regiaoOrigem()==="perfil" ? "Hoje vem da cidade do seu perfil. Use a localização ou escreva outra cidade. " : regiaoOrigem()==="localizacao" ? "Hoje vem da sua localização. " : ""}${R.txt ? (R.uf ? `Cidade ${esc(R.txt.replace(/\s*[,\-–]?\s*[A-Za-z]{2}$/,""))}, estado ${esc(UF_NOME[R.uf])}.` : "Escreva com a sigla do estado (ex.: Curitiba, PR) para valer também o estado.") : "Sem região, vale só a proximidade com o Brasil."}</small>${localLinha()}</div>${lugaresBloco()}</div>`; }
 function sheetOrigens(){
   openSheet(shead("Origem das notícias") + `<p class="lnote osub">Escolha os idiomas de origem. Todas as notícias passam pelo mesmo selo de confiança e aparecem na língua original, com o link para a matéria completa. O que organizações e pessoas publicam na rede aparece sempre.</p>
     <h3 class="osec">Idiomas de origem</h3>${origensLista()}
@@ -3486,7 +3493,7 @@ function sealChecks(it){
 }
 function sealBox(it, compacto){
   const s = sealOf(it), o = ORG[it.org];
-  const extra = compacto ? [it.daArte ? "" : it.daRede ? "fonte individual · " + REDES[it.rede].nome : it.tema, reforco(it) ? "reforço internacional " + it.paises.map(bandeira).join("") : "", it.lingua && it.lingua!=="pt" ? "em " + (LINGUA_NOME[it.lingua] || it.lingua) : "", o && o.linha ? (/ativista/i.test(o.linha) ? "Mídia ativista" : "Linha editorial declarada") : "", it.seloAjuste ? "nota ajustada após revisão de contribuições da comunidade" : ""].filter(Boolean) : [];
+  const extra = compacto ? [it.daArte ? "" : it.daRede ? "fonte individual · " + REDES[it.rede].nome : it.tema, reforco(it) ? "reforço internacional " + it.paises.map(bandeira).join("") : "", it.lingua && it.lingua!=="pt" ? "em " + (LINGUA_NOME[it.lingua] || it.lingua) : "", o && o.linha ? (/ativista/i.test(o.linha) ? "Mídia ativista" : "Linha editorial declarada") : "", it.seloAjuste ? "nota ajustada por contribuições da comunidade com fonte" : ""].filter(Boolean) : [];
   return `<details class="sealbox${compacto?" sbmini":""}" ${s.lv==="bad"?"open":""}><summary>${sealIco(s,compacto?22:26)}<span class="t"><b>${s.label}</b><small>${s.sc!==null?`Nota ${s.sc} de 100`+(compacto?"":" · verificado"):(s.lv==="pend" ? "Publicação original, ainda não verificada" : it.arte ? "Arte e expressão" : it.daRede ? "Crítica, gosto ou coleção" : "Pergunta, pedido ou opinião")}${extra.map(x=>" · "+esc(x)).join("")}</small></span><span class="linkbtn">Detalhes</span></summary>
     ${s.sc!==null?`<div class="scale" role="img" aria-label="Nota ${s.sc} de 100"><i style="left:${s.sc}%"></i></div><div class="scalelbl"><span>Baixa</span><span>Moderada</span><span>Alta</span></div>`:""}
     <div class="checks">${sealChecks(it)}</div>
@@ -3606,9 +3613,9 @@ function why(it, mode){
   if (mode==="algo"){
     /* padrão único: "Apareceu porque você …" */
     if (it.daRede) return `<div class="why">${ic("info")}<span>Apareceu porque você ${it.minha ? "conectou o seu " + REDES[it.rede].nome + " e escolheu mostrar no feed" : "acompanha " + esc(o.nome) + " no " + REDES[it.rede].nome}.</span></div>`;
-    const pr = S.perto ? prox(it) : 0, R = minhaRegiao();
-    const t = S.follow.has(it.org) && S.usarOrgs ? `participa de ${o.nome}` : pr >= 2 && R.txt ? `está ${pr===3 ? "em" : "perto de"} ${esc(pr===3 ? R.txt.replace(/\s*[,\-–]?\s*[A-Za-z]{2}$/,"") : UF_NOME[R.uf] || R.txt)}` : `escolheu o tema ${it.tema}`;
-    return `<div class="why">${ic("info")}<span>Apareceu porque você ${t}.</span></div>`;
+    const rs = relacoes(it).slice(0, 3), temLoc = rs.some(x=>x.loc);
+    const txt = rs.length ? "Por que apareceu: " + rs.map(x=>x.frase).join("; ") + "." : "Sem relação forte com o seu algoritmo: apareceu pela ordem geral do feed.";
+    return `<div class="why">${ic("info")}<span>${txt} <button class="linkbtn inl" type="button" data-act="${temLoc ? "origens" : "adjust"}">Ajustar</button></span></div>`;
   }
   if (mode==="amplo"){ const out = !S.follow.has(it.org) && !S.temas.includes(it.tema);
     const onde = it.daArte ? ["arte do acervo do " + o.nome] : [it.tema, o.cidade].filter(Boolean);
@@ -3692,13 +3699,27 @@ function tagsDe(it){ if (TAGS_CACHE.has(it.id)) return TAGS_CACHE.get(it.id);
   if (it.tema && it.tema !== "Geral") out.push(it.tema);
   for (const [k, re] of Object.entries(TEMA_PALAVRAS)) if (!out.includes(k) && re.test(t)) out.push(k);
   TAGS_CACHE.set(it.id, out); return out; }
+/* RELAÇÕES COM O ALGORITMO (10 nov 2026): o pé do cartão e o "por que apareceu" dizem o que liga a notícia a você,
+   das relações mais fortes para as mais fracas, e de onde vem a sua região (localização, escolhida por você ou a cidade do perfil). */
+const regiaoOrigem = () => S.regiao ? (S.localAuto ? "localizacao" : "escolhida") : (ME.perfil && ME.perfil.cidade) ? "perfil" : "";
+const REG_ORIGEM = {localizacao:"pela sua localização", escolhida:"escolhida por você", perfil:"cidade do seu perfil"};
+const segueOrg = it => { const o = ORG[it.org] || {}; return S.follow.has(it.org) && (o.fonte || S.usarOrgs); };
+function relacoes(it){ if (!S.algo || it.daArte || it.anuncio) return [];
+  const o = ORG[it.org] || {}, R = minhaRegiao(), out = [], pr = S.perto && R.txt ? prox(it) : 0;
+  if (segueOrg(it)) out.push({f:3, tag:"Você segue", frase:`você segue ${esc(o.nome)}`});
+  if (pr===3) out.push({f:3, frase:`é de ${esc(R.txt)}, ${REG_ORIGEM[regiaoOrigem()] || "a sua região"}`, loc:"na sua cidade"});
+  else if (pr===2) out.push({f:2, frase:`é do seu estado, ${esc(UF_NOME[R.uf] || R.txt)}`, loc:"no seu estado"});
+  else if (lugarInteresse(it) >= 1.5) out.push({f:2, frase:`você costuma abrir notícias de ${esc(lugarDe(it))}`, loc:"do seu interesse"});
+  const meus = meusInteresses(), t = tagsDe(it).find(x=>meus.has(x)); if (t) out.push({f:2, frase:`você escolheu o tema ${esc(t)}`});
+  return out.sort((a,b)=>b.f - a.f); }
 function footCtx(it){
   const L = (it.daArte || it.daRede || it.anuncio) ? null : docLocal(it), meus = meusInteresses();
   const tags = tagsDe(it).map(t=>({t, meu:meus.has(t)})).sort((a,b)=>b.meu - a.meu);
-  const loc = L ? `<span class="tloc lv-${L.k}">${ic(L.k==="int"?"globe":"pin","sm")}<b>${L.k==="nac" ? "Nacional" : esc(L.lugar)}</b>${prox(it) >= 2 ? "<em>perto de você</em>" : lugarInteresse(it) >= 1.5 ? `<em title="Você costuma se interessar por este lugar">do seu interesse</em>` : ""}</span>` : "";
+  const loc = L ? `<span class="tloc lv-${L.k}">${ic(L.k==="int"?"globe":"pin","sm")}<b>${L.k==="nac" ? "Nacional" : esc(L.lugar)}</b>${(()=>{ const r = (L.k==="mun" || L.k==="est") && relacoes(it).find(x=>x.loc); return r ? `<em title="${r.frase.replace(/"/g, "&quot;")}">${r.loc}</em>` : ""; })()}</span>` : "";
   const tg = tags.map(x=>`<span class="ftag${x.meu ? " meu" : ""}"${x.meu ? ' title="Está nos seus interesses"' : ""}>${x.meu ? ic("heart","sm") : "#"}${esc(x.t)}</span>`).join("");
   const extra = it.daRede ? `<span class="indtag">fonte individual</span>` : reforcoTag(it);
-  return `<span class="fctx">${loc}${tg}${extra}${!loc && !tg && !extra ? `<span class="ftag">#Geral</span>` : ""}</span>`; }
+  const rel = relacoes(it).filter(x=>x.tag).map(x=>`<span class="ftag meu">${ic("check","sm")}${x.tag}</span>`).join("");   /* relação mais forte vem antes dos temas */
+  return `<span class="fctx">${loc}${rel}${tg}${extra}${!loc && !tg && !extra ? `<span class="ftag">#Geral</span>` : ""}</span>`; }
 const tempoRel = min => min < 60 ? "há " + Math.max(1, min) + " min" : min < 1440 ? "há " + Math.round(min/60) + " h" : min < 2880 ? "ontem" : "há " + Math.round(min/1440) + " dias";
 function footInfo(it){
   const o = ORG[it.org], I = (...xs) => `<span class="finfo">${xs.filter(Boolean).map(x=>`<span>${x}</span>`).join("")}</span>`;
@@ -3974,7 +3995,7 @@ function source(fl=S.filt, types=tabTypes()){
     if (S.ord==="padrao") l = mixFormats(l);
   }
   /* publicações das contas reais vêm primeiro, das mais novas às mais antigas */
-  const reais = l.filter(it=>it.conta); if (reais.length) l = reais.sort((a,b)=>a.min-b.min).concat(l.filter(it=>!it.conta));
+  const reais = l.filter(it=>it.conta); if (reais.length) l = reais.sort((a,b)=>(a.min - prioDe(a) * PRIO_HORAS * 60) - (b.min - prioDe(b) * PRIO_HORAS * 60)).concat(l.filter(it=>!it.conta));
   /* variedade: a mesma fonte não aparece em sequência (olha até 8 itens à frente para trocar a ordem) */
   if (S.ord==="padrao" && S.tab!=="agenda"){ const fila = l.slice(), out = [];
     while (fila.length){ const ult = out.slice(-2).map(x=>x.org); let i = fila.findIndex((x,k)=>k < 8 && (x.conta || !ult.includes(x.org))); if (i < 0) i = 0; out.push(fila.splice(i,1)[0]); }
@@ -4640,6 +4661,7 @@ function screenConfig(){
     <h2 class="sectitle">Seu feed</h2>
     <div class="list">
       ${switchRow("algo","Algoritmo", (S.algo?"Ligado":"Desligado")+" · sua escolha fica salva")}
+      <button class="setting l1" type="button" data-act="origens"><span class="t"><b>Sua região</b><small>${(()=>{ const R = minhaRegiao(), o = regiaoOrigem(); return R.txt ? esc(R.txt) + " · " + REG_ORIGEM[o] : "Não definida · use a localização ou escreva"; })()}</small></span>${ic("pin")}</button>
       <button class="setting l1" type="button" data-act="adjust"><span class="t"><b>Meu algoritmo</b><small>${S.temas.length} temas · ${S.mix}% organizações</small></span>${ic("sliders")}</button>
       ${switchRow("pausas","Pausas no feed",`Parada a cada ${PAUSE_EVERY} publicações`)}
       ${switchRow("autoplay","Reproduzir vídeos automaticamente","Sem som, com as prévias")}
@@ -4779,15 +4801,15 @@ const comCor = id => CORES_CONTA[parseInt(String(id || "0").replace(/-/g,"").sli
 async function comsCarrega(key){ const [col, id] = key.split(":"), st = COMS.get(key) || {aberto:false};
   if (!SB || ME.offline){ COMS.set(key, Object.assign(st, {lista:[], meus:new Set(), fora:true})); return; }
   let lista = [], meus = new Set(), erro = false;
-  try{ const r = await SB.from("comentarios").select("id,texto,marca,fonte_url,uteis,criado_em,autor,perfis(nome,verificado,colaborador)").eq(col, id).eq("status","publicado").order("criado_em",{ascending:false}).limit(200);
+  try{ const r = await SB.from("comentarios").select("id,texto,marca,fonte_url,uteis,criado_em,autor,perfis(nome,verificado,colaborador,papel)").eq(col, id).eq("status","publicado").order("criado_em",{ascending:false}).limit(200);
     if (r.error) erro = true; else lista = r.data || [];
     if (ME.user && lista.length){ const u = await SB.from("comentario_uteis").select("comentario_id").in("comentario_id", lista.map(c=>c.id)); if (!u.error) meus = new Set((u.data || []).map(x=>x.comentario_id)); } }catch(e){ erro = true; }
   COMS.set(key, Object.assign(st, {lista, meus, erro, fora:false})); }
 const comDest = c => !!((c.perfis || {}).colaborador) || c.uteis >= COM_DEST;
 function comHTML(c, st){ const pf = c.perfis || {}, meu = ME.user && c.autor===ME.user.id, adm = ME.perfil && ME.perfil.papel==="admin", dest = comDest(c), url = /^https:\/\//.test(c.fonte_url || "") ? c.fonte_url : "", on = st.meus.has(c.id);
   return `<article class="com${dest ? " dest" : ""}" data-com="${c.id}">
-    <span class="av cav" style="background:${comCor(c.autor)}" aria-hidden="true">${esc(siglaDe(pf.nome))}</span>
-    <div class="cb"><div class="ch"><span class="cn">${esc(pf.nome || "Conta da rede")}</span>${verifBtn(pf.verificado)}${pf.colaborador ? `<span class="colab" title="Usuário colaborador: destaque dado pela rede a quem contribui de forma construtiva">Colaborador</span>` : ""}<small>${quando(c.criado_em)}</small></div>
+    ${pf.papel==="admin" ? `<span class="av cav rede" aria-hidden="true"><span class="amark">a<i></i></span></span>` : `<span class="av cav" style="background:${comCor(c.autor)}" aria-hidden="true">${esc(siglaDe(pf.nome))}</span>`}
+    <div class="cb"><div class="comh"><span class="cn">${esc(pf.nome || "Conta da rede")}</span>${verifBtn(pf.verificado)}${pf.colaborador ? `<span class="colab" title="Usuário colaborador: destaque dado pela rede a quem contribui de forma construtiva">Colaborador</span>` : ""}<small>${quando(c.criado_em)}</small></div>
       ${dest || c.marca ? `<div class="ctags">${dest ? `<span class="ctag d">Em destaque</span>` : ""}${c.marca && MARCAS[c.marca] ? `<span class="ctag">${MARCAS[c.marca]}</span>` : ""}</div>` : ""}
       <p class="ctx">${esc(c.texto)}</p>
       ${url ? `<a class="cfonte" href="${esc(url)}" target="_blank" rel="noopener nofollow ugc">Fonte: ${esc(hostOf(url).replace(/^www\./,""))} ${ic("ext","sm")}</a>` : ""}
@@ -4813,7 +4835,7 @@ async function comsPreenche(el){ el.dataset.ok = "1"; const key = el.dataset.com
 const comKey = b => { const s = b.closest("[data-coms]"); return s ? s.dataset.coms : ""; };
 let extraRaf = 0;
 new MutationObserver(()=>{ if (extraRaf) return; extraRaf = requestAnimationFrame(()=>{ extraRaf = 0;
-  $$("[data-pent]:not([data-ok])").forEach(pentPreenche); $$("[data-coms]:not([data-ok])").forEach(comsPreenche); }); }).observe(document.body, {childList:true, subtree:true});
+  $$("[data-pent]:not([data-ok])").forEach(pentPreenche); historicoPreenche(); $$("[data-coms]:not([data-ok])").forEach(comsPreenche); }); }).observe(document.body, {childList:true, subtree:true});
 function detailHTML(it, uid, mode, inline){
   const o = ORG[it.org], on = S.saved.has(uid), f = S.follow.has(o.id);
   const isVid = it.tipo==="video", isImg = it.tipo==="imagem" || isVid, orig = ORIGEM[it.id], links = linksOf(it);
@@ -4952,7 +4974,7 @@ const layoutAllPins = () => $$(".pin").forEach(layoutPin);
    O texto do manifesto é o original, sem edição: aqui só muda a apresentação.
    Fonte dos textos: manifesto.md e como-funciona.md.
    ===================================================================== */
-const ENV = {"inaug": ["Tudo o que criamos aqui é bem intencionado. Nosso código não tem intenção, nem nunca terá, de fazer mal a ninguém, nem a nenhuma sociedade. Pelo contrário, nossa intenção é salvar a humanidade."], "inter": [["Dizem que bons movimentos políticos partem ou devem partir de um manifesto.", "Difícil é começar dele, visto que seja o primeiro barulho falho, dificilmente voltará à tona com alguma força de modo que seja manifesto mas também um movimento."], ["Tratamos disso. O movimento das coisas a fascinante mutabilidade daquilo que está vivo."], ["O ano é 2026. Escrevemos inicialmente no dia 7 de novembro. É um sábado quente de pancadas de chuva e grandes sinais de mudança."], ["Neste ano, as eleições de outubro começaram com a câmara e o senado tomados por candidatos da direita ou extrema direita, filiados ao PL.", "Pânico."], ["A capital, maior cidade da América Latina, calou."], ["O sentimento ainda era de puro desalento quando os estudantes começaram a sair pelas ruas do Brasil, chamando as pessoas para o voto em defesa da democracia e da soberania nacional."], ["Quinze dias de manifestação.", "Maiores a cada dia."], ["Enquanto a grande mídia brasileira e a Meta, a que tudo indica, tinham grande preferência pelo candidato extremista e submisso ao mercado e aos Estados Unidos, a população saía às ruas."], ["No segundo turno, no dia 25 de outubro, iniciada a apuração e já era possível perceber que alguma coisa progredia de maneira diferente do primeiro turno, tanto numericamente quanto no que era visto pelas redes sociais: o Brasil se movia, de vermelho, para votar."], ["Conseguimos 4 milhões de votos de vantagem após um primeiro turno de derrota, seguido de um dos menores níveis de abstenção da história."], ["Parece finalmente um suspiro."], ["O derrotado, que não reconhece a decisão das urnas, sai em fuga do país menos de 48h depois do dia da eleição. Foge evitando sobrevoar o Brasil, pela Argentina, e sobe até os Estados Unidos."], ["Publica uma carta desastrosa, feita por inteligência artificial, que prova além de todo o resto, que não sabe nem o nome oficial do próprio país, “Estados Unidos do Brasil”."], ["O presidente, em seu quarto mandato e reeleito com o maior número de votos de sua história, é ovacionado mundialmente junto ao povo brasileiro, sendo reconhecida a vitória da democracia por força da ação popular que se movimentou para elegê-lo e dar início ao freio sobre o novo fascismo que havia voltado a perpetuar no mundo."], ["Espalha, então, do Brasil para o mundo a força da possibilidade."], ["As manifestações que também já aconteciam em outros lugares do mundo ganham mais esperança e avançam para os Estados Unidos."], ["Eleições de meio mandato e a onda azul.", "Tsunami, dizem."], ["Texas e Georgia? Gone blue."], ["E a primavera parece ainda mais forte."], ["Pareço então me <s>iludir</s> inspirar outra vez.", "Este é o cenário."], ["Devo então escrever este manifesto."]], "estIntro": "As Estruturas são os princípios que sustentam a rede e orientam cada decisão sobre ela.", "estr": [{"n": "1", "t": "Vale sempre lembrar, o poder emana do povo (Constituição Federal de 1988, art. 1º)."}, {"n": "2", "t": "Este manifesto é estruturado de duas formas, uma em palavras, outra em sua forma digital. Por estes meios, este manifesto se movimenta pelo povo e pelo bem-estar social."}, {"n": "3", "t": "A representatividade pode refletir o poder que emana do povo de maneira cada vez mais simultânea."}, {"n": "4", "t": ["Nem tudo é liberdade de expressão e respeito é a base.", "Qualquer ordem que fere o direito de um, fere o direito de todos e nunca deverá ser considerada representatividade."]}, {"n": "5", "t": "Nenhum poder é hereditário."}, {"n": "6", "t": ["Todo caráter é individual.", "Cada indivíduo é responsável por suas ações. O que resulta de sua ação pode também ser responsabilidade de outra pessoa, mas o indivíduo nunca será dissociado da responsabilidade sobre suas ações."]}, {"n": "7", "t": ["Nossa marca é “arede.online”.", "Nosso manifesto não pertence a nenhum estado ou país. Pertence a todas as nações e circula pela rede internacional enquanto tenta facilitar a capilarização do movimento social transnacional e o estabelecimento de mais conexões humanas."]}, {"n": "8", "t": ["Nem todo movimento político sabe que é um movimento político.", "A rede também provê conteúdo de entretenimento, memes, celebridades, além de conteúdos originais ou pessoais, publicados pelos próprios usuários em sua rede pessoal ou profissional."]}, {"n": "9", "t": "Enquanto as redes sociais atuais estimulam indivíduos e conteúdos extremamente algorítmicos, na rede os indivíduos podem se organizar em comunidades nas quais indivíduos compartilham interesses."}, {"n": "10", "t": ["A rede centraliza um mundo de informações e ajuda a verificar a veracidade do que é compartilhado.", "Os próprios usuários podem fazer curadoria do conteúdo e a lógica de concordância entre as denúncias precisa ser cruzada com fontes diversas para garantir que não há uma ação organizada para influenciar e repercutir negativamente bons assuntos, seja por ação mal intencionada humana, ou programação de agentes de automatização."]}], "regras": [], "fintro": ["arede.online ajuda organizações democráticas a se organizarem: conversar, chamar gente, marcar encontros e decidir juntas.", "Aprendemos com as redes que todo mundo já usa, como Facebook, Instagram e WhatsApp, e com o Pinterest, pela navegação limpa e pela grade. Aqui a navegação é simples e o feed não acaba.", "O algoritmo aprende com o que você faz, mas quem decide é você: dá para ajustar, desligar ou navegar num espaço aberto, que mostra conteúdo de todas as organizações com critérios iguais para todo mundo. É assim que se sai da bolha."], "frules": [{"t": "O algoritmo é seu", "p": "Você liga, desliga e ajusta quando quiser. Todo conteúdo mostra por que apareceu para você. Com ele ligado, o que acontece perto de você (sua cidade, seu estado, o Brasil) sobe no feed. arede.online não tenta adivinhar suas opiniões e, com o algoritmo desligado, não usa nada do seu perfil."}, {"t": "Reforço internacional", "p": "Quando a mesma notícia é publicada por fontes de mais de um país, ela ganha a marca de reforço internacional, com as bandeiras de quem publicou. O mesmo texto republicado por várias fontes conta uma vez só."}, {"t": "Outras redes", "p": "Você pode trazer para o seu perfil o que publica no Letterboxd, no Substack, no Medium e no Pinterest, e acompanhar no feed perfis abertos dessas redes. arede.online lê só o que é público e não publica nada lá em seu nome. Esse conteúdo passa pelo mesmo selo de confiança das notícias e leva a marca de fonte individual."}, {"t": "Qualquer membro pode propor uma votação", "p": "A proposta precisa do apoio de 20% dos membros com direito a voto. Com esse apoio, ela vira votação formal automaticamente."}, {"t": "Participação em tempo real", "p": "Votos, apoios, presenças e voluntários aparecem assim que acontecem."}, {"t": "Denúncias são revisadas automaticamente", "p": "Um conteúdo denunciado por ferir direitos continua no ar enquanto é revisado. A revisão é automática, sem interferência humana, e o resultado fica registrado publicamente. Quem publicou pode recorrer: o recurso passa por uma segunda revisão, independente da primeira. Ordens judiciais são sempre cumpridas."}, {"t": "Mandatos têm prazo", "p": "Toda coordenação é eleita e tem mandato com data para acabar. Em eleições e disputas entre chapas, se o mandato vencer sem nova eleição, a oposição assume por até 30 dias, e a eleição precisa acontecer nesse prazo. Assembleias e votações simples seguem o processo normal."}, {"t": "Sua privacidade vem primeiro", "p": "O voto é secreto e o perfil começa privado. Suas curtidas e compartilhamentos, só você vê. No perfil, você escolhe mostrar até 5 interesses. Participar de uma organização política é um dado sensível e é tratado como tal."}]};
+const ENV = {"inaug": ["Tudo o que criamos aqui é bem intencionado. Nosso código não tem intenção, nem nunca terá, de fazer mal a ninguém, nem a nenhuma sociedade. Pelo contrário, nossa intenção é salvar a humanidade."], "inter": [["Dizem que bons movimentos políticos partem ou devem partir de um manifesto.", "Difícil é começar dele, visto que seja o primeiro barulho falho, dificilmente voltará à tona com alguma força de modo que seja manifesto mas também um movimento."], ["Tratamos disso. O movimento das coisas a fascinante mutabilidade daquilo que está vivo."], ["O ano é 2026. Escrevemos inicialmente no dia 7 de novembro. É um sábado quente de pancadas de chuva e grandes sinais de mudança."], ["Neste ano, as eleições de outubro começaram com a câmara e o senado tomados por candidatos da direita ou extrema direita, filiados ao PL.", "Pânico."], ["A capital, maior cidade da América Latina, calou."], ["O sentimento ainda era de puro desalento quando os estudantes começaram a sair pelas ruas do Brasil, chamando as pessoas para o voto em defesa da democracia e da soberania nacional."], ["Quinze dias de manifestação.", "Maiores a cada dia."], ["Enquanto a grande mídia brasileira e a Meta, a que tudo indica, tinham grande preferência pelo candidato extremista e submisso ao mercado e aos Estados Unidos, a população saía às ruas."], ["No segundo turno, no dia 25 de outubro, iniciada a apuração e já era possível perceber que alguma coisa progredia de maneira diferente do primeiro turno, tanto numericamente quanto no que era visto pelas redes sociais: o Brasil se movia, de vermelho, para votar."], ["Conseguimos 4 milhões de votos de vantagem após um primeiro turno de derrota, seguido de um dos menores níveis de abstenção da história."], ["Parece finalmente um suspiro."], ["O derrotado, que não reconhece a decisão das urnas, sai em fuga do país menos de 48h depois do dia da eleição. Foge evitando sobrevoar o Brasil, pela Argentina, e sobe até os Estados Unidos."], ["Publica uma carta desastrosa, feita por inteligência artificial, que prova além de todo o resto, que não sabe nem o nome oficial do próprio país, “Estados Unidos do Brasil”."], ["O presidente, em seu quarto mandato e reeleito com o maior número de votos de sua história, é ovacionado mundialmente junto ao povo brasileiro, sendo reconhecida a vitória da democracia por força da ação popular que se movimentou para elegê-lo e dar início ao freio sobre o novo fascismo que havia voltado a perpetuar no mundo."], ["Espalha, então, do Brasil para o mundo a força da possibilidade."], ["As manifestações que também já aconteciam em outros lugares do mundo ganham mais esperança e avançam para os Estados Unidos."], ["Eleições de meio mandato e a onda azul.", "Tsunami, dizem."], ["Texas e Georgia? Gone blue."], ["E a primavera parece ainda mais forte."], ["Pareço então me <s>iludir</s> inspirar outra vez.", "Este é o cenário."], ["Devo então escrever este manifesto."]], "estIntro": "As Estruturas são os princípios que sustentam a rede e orientam cada decisão sobre ela.", "estr": [{"n": "1", "t": "Vale sempre lembrar, o poder emana do povo (Constituição Federal de 1988, art. 1º)."}, {"n": "2", "t": "Este manifesto é estruturado de duas formas, uma em palavras, outra em sua forma digital. Por estes meios, este manifesto se movimenta pelo povo e pelo bem-estar social."}, {"n": "3", "t": "A representatividade pode refletir o poder que emana do povo de maneira cada vez mais simultânea."}, {"n": "4", "t": ["Nem tudo é liberdade de expressão e respeito é a base.", "Qualquer ordem que fere o direito de um, fere o direito de todos e nunca deverá ser considerada representatividade."]}, {"n": "5", "t": "Nenhum poder é hereditário."}, {"n": "6", "t": ["Todo caráter é individual.", "Cada indivíduo é responsável por suas ações. O que resulta de sua ação pode também ser responsabilidade de outra pessoa, mas o indivíduo nunca será dissociado da responsabilidade sobre suas ações."]}, {"n": "7", "t": ["Nossa marca é “arede.online”.", "Nosso manifesto não pertence a nenhum estado ou país. Pertence a todas as nações e circula pela rede internacional enquanto tenta facilitar a capilarização do movimento social transnacional e o estabelecimento de mais conexões humanas."]}, {"n": "8", "t": ["Nem todo movimento político sabe que é um movimento político.", "A rede também provê conteúdo de entretenimento, memes, celebridades, além de conteúdos originais ou pessoais, publicados pelos próprios usuários em sua rede pessoal ou profissional."]}, {"n": "9", "t": "Enquanto as redes sociais atuais estimulam indivíduos e conteúdos extremamente algorítmicos, na rede os indivíduos podem se organizar em comunidades nas quais indivíduos compartilham interesses."}, {"n": "10", "t": ["A rede centraliza um mundo de informações e ajuda a verificar a veracidade do que é compartilhado.", "Os próprios usuários podem fazer curadoria do conteúdo e a lógica de concordância entre as denúncias precisa ser cruzada com fontes diversas para garantir que não há uma ação organizada para influenciar e repercutir negativamente bons assuntos, seja por ação mal intencionada humana, ou programação de agentes de automatização."]}], "regras": [], "fintro": ["arede.online ajuda organizações democráticas a se organizarem: conversar, chamar gente, marcar encontros e decidir juntas.", "Aprendemos com as redes que todo mundo já usa, como Facebook, Instagram e WhatsApp, e com o Pinterest, pela navegação limpa e pela grade. Aqui a navegação é simples e o feed não acaba.", "O algoritmo aprende com o que você faz, mas quem decide é você: dá para ajustar, desligar ou navegar num espaço aberto, que mostra conteúdo de todas as organizações com critérios iguais para todo mundo. É assim que se sai da bolha."], "frules": [{"t": "Bom histórico conta", "p": "Comentários construtivos, com fonte e marcados como úteis por outras pessoas formam o seu histórico. Em todo o feed, inclusive no espaço aberto, publicações de quem tem bom histórico sobem um pouco, e as de quem teve comentários removidos descem um pouco. A regra é a mesma para todo mundo, e você vê o seu histórico na sua conta. Comentários com fonte de quem tem bom histórico também ajudam a ajustar o selo de confiança das notícias, até 10 pontos por notícia."}, {"t": "O algoritmo é seu", "p": "Você liga, desliga e ajusta quando quiser. Todo conteúdo mostra por que apareceu para você. Com ele ligado, o que acontece perto de você (sua cidade, seu estado, o Brasil) sobe no feed. arede.online não tenta adivinhar suas opiniões e, com o algoritmo desligado, não usa nada do seu perfil."}, {"t": "Reforço internacional", "p": "Quando a mesma notícia é publicada por fontes de mais de um país, ela ganha a marca de reforço internacional, com as bandeiras de quem publicou. O mesmo texto republicado por várias fontes conta uma vez só."}, {"t": "Outras redes", "p": "Você pode trazer para o seu perfil o que publica no Letterboxd, no Substack, no Medium e no Pinterest, e acompanhar no feed perfis abertos dessas redes. arede.online lê só o que é público e não publica nada lá em seu nome. Esse conteúdo passa pelo mesmo selo de confiança das notícias e leva a marca de fonte individual."}, {"t": "Qualquer membro pode propor uma votação", "p": "A proposta precisa do apoio de 20% dos membros com direito a voto. Com esse apoio, ela vira votação formal automaticamente."}, {"t": "Participação em tempo real", "p": "Votos, apoios, presenças e voluntários aparecem assim que acontecem."}, {"t": "Denúncias são revisadas automaticamente", "p": "Um conteúdo denunciado por ferir direitos continua no ar enquanto é revisado. A revisão é automática, sem interferência humana, e o resultado fica registrado publicamente. Quem publicou pode recorrer: o recurso passa por uma segunda revisão, independente da primeira. Ordens judiciais são sempre cumpridas."}, {"t": "Mandatos têm prazo", "p": "Toda coordenação é eleita e tem mandato com data para acabar. Em eleições e disputas entre chapas, se o mandato vencer sem nova eleição, a oposição assume por até 30 dias, e a eleição precisa acontecer nesse prazo. Assembleias e votações simples seguem o processo normal."}, {"t": "Sua privacidade vem primeiro", "p": "O voto é secreto e o perfil começa privado. Suas curtidas e compartilhamentos, só você vê. No perfil, você escolhe mostrar até 5 interesses. Participar de uma organização política é um dado sensível e é tratado como tal."}]};
 const envBar = r => `<header class="ebar"><button class="ebtn" type="button" data-act="envexit" aria-label="Voltar para a rede">${ic("back")}<span class="emark">arede<i class="ldot"></i><span class="com">online</span></span></button>
   <nav class="elinks" aria-label="Sobre arede.online"><a href="#manifesto" ${r==="manifesto"?'aria-current="page"':""}>Manifesto</a><a href="#funciona" ${r==="funciona"?'aria-current="page"':""}>Como funciona</a></nav></header>`;
 const envFoot = () => `<footer class="efoot"><span class="emark big">arede<i class="ldot"></i><span class="com">online</span></span>
@@ -5159,11 +5181,20 @@ function itemDaPublicacao(p){
   RESUMO[id] = (p.texto || "").split(/\n\s*\n/)[0]; BODY[id] = (p.texto || "").split(/\n\s*\n/).filter(Boolean); SEAL[id] = null;
   return it;
 }
+/* HISTÓRICO E PRIORIDADE (10 nov 2026): cada conta tem uma reputação de 0 a 100, calculada no servidor pelo histórico na rede
+   (úteis recebidos de pessoas diferentes, comentários com fonte, tempo de conta, destaque e verificação; comentários removidos pesam contra).
+   Só a própria pessoa vê o número. O feed recebe apenas a faixa de cada autora (2, 1, 0 ou -1) e, em todo lugar, inclusive com o
+   algoritmo desligado, publicações de quem tem bom histórico sobem algumas horas na ordem, e as de quem teve comentários removidos descem. */
+const PRIO = {}, PRIO_HORAS = 6;
+const prioDe = it => it.conta && it.autorId ? (PRIO[it.autorId] || 0) : 0;
+async function prioridadesCarrega(ids){ const falta = [...new Set(ids)].filter(Boolean); if (!SB || !falta.length) return;
+  try{ const r = await SB.rpc("prioridades", {p_autores:falta}); if (!r.error && r.data){ falta.forEach(id=>{ PRIO[id] = r.data[id] || 0; }); } }catch(e){} }
 async function publicacoesCarrega(){ if (!SB) return;
   const {data, error} = await SB.from("publicacoes").select("*, perfis(id, nome, cidade, bio, verificado)").order("criada_em", {ascending:false}).limit(200);
   if (error || !data) return;
   for (let i = POOL.length - 1; i >= 0; i--) if (POOL[i].conta) POOL.splice(i, 1);
   data.slice().reverse().forEach(p=>POOL.unshift(itemDaPublicacao(p)));
+  await prioridadesCarrega(data.map(p=>p.autor));
   F.key = null; if (route()==="inicio" || route()==="") render(); }
 
 /* NOTÍCIAS DO COLETOR (servidor, atualizado a cada 15 minutos): entram no feed como as notícias da curadoria.
@@ -5502,11 +5533,16 @@ function sheetEntender(id){ const x = ENT_BASE.find(y=>y.id===id) || {}, limpa =
 /* curadoria da conversa: denúncias de comentários, candidatas a colaborador e sinais para o selo */
 async function curadoriaConversa(box){
   const [d, c, s] = await Promise.all([SB.from("comentario_denuncias").select("comentario_id,motivo,criado_em,comentarios(id,texto,status,perfis(nome))").eq("status","aberta").order("criado_em").limit(200), SB.rpc("colaborador_candidatos"),
-    SB.from("sinais").select("id,tipo,fonte_url,peso,criado_em,comentarios(texto,perfis(nome,colaborador)),noticias(titulo,selo_ajuste,fontes(nome,nota))").eq("status","aberto").order("peso", {ascending:false}).limit(100)]);
+    SB.from("sinais").select("id,tipo,status,ajuste,fonte_url,peso,criado_em,comentarios(texto,perfis(nome,colaborador)),noticias(titulo,selo_ajuste,fontes(nome,nota))").in("status",["aberto","auto"]).order("criado_em", {ascending:false}).limit(150)]);
   if (d.error && c.error && s.error) return box.innerHTML = `<p class="empty">${esc(erroAuth(d.error))}</p>`;
   const den = {}; (d.data || []).forEach(x=>{ if (!x.comentarios) return; (den[x.comentario_id] = den[x.comentario_id] || {c:x.comentarios, n:0}).n++; });
-  const cand = (c.data || {}).contas || [], cr = (c.data || {}).criterios || {}, sin = s.data || [];
+  const cand = (c.data || {}).contas || [], cr = (c.data || {}).criterios || {}, sinT = s.data || [], sin = sinT.filter(x=>x.status==="aberto").sort((a,b)=>b.peso - a.peso), aut = sinT.filter(x=>x.status==="auto");
   box.innerHTML = `<h2 class="curh">Sinais para o selo · ${sin.length}</h2><p class="curnota">Contribuições com fonte que confirmam ou contestam uma notícia, vindas de colaboradores ou marcadas como úteis por várias pessoas. Abra a fonte antes de decidir. Aceitar muda a nota daquela notícia; a nota da fonte você ajusta em Saúde das fontes.</p>
+    ${aut.length ? `<h2 class="curh">Ajustes automáticos · ${aut.length}</h2><p class="curnota">Contas com bom histórico (65 ou mais) ajustam a nota sozinhas, até 10 pontos por notícia e uma vez por pessoa em cada notícia. Confira e desfaça o que não fizer sentido.</p>
+      ${aut.map(x=>{ const n = x.noticias || {}, cm = x.comentarios || {}, pf = cm.perfis || {}, url = /^https:\/\//.test(x.fonte_url || "") ? x.fonte_url : "";
+        return `<article class="curitem"><div><small>${x.ajuste > 0 ? "+" : ""}${x.ajuste} na nota · ${esc(pf.nome || "Conta")} · ${quando(x.criado_em)}</small><b>${esc(n.titulo || "")}</b><p>${esc(cm.texto || "")}</p>
+          ${url ? `<a href="${esc(url)}" target="_blank" rel="noopener nofollow">Fonte indicada: ${esc(hostOf(url))} ${ic("ext","sm")}</a>` : ""}
+          <div class="row"><button class="btn sm ghost" type="button" data-act="sinaldesfaz" data-id="${x.id}">Desfazer</button></div></div></article>`; }).join("")}<h2 class="curh">Na fila</h2>` : ""}
     ${sin.map(x=>{ const n = x.noticias || {}, cm = x.comentarios || {}, pf = cm.perfis || {}, url = /^https:\/\//.test(x.fonte_url || "") ? x.fonte_url : "";
       return `<article class="curitem"><div><small>${x.tipo==="contesta" ? "Contesta" : "Confirma"} · peso ${x.peso} · ${esc(pf.nome || "Conta")}${pf.colaborador ? " (colaborador)" : ""} · ${quando(x.criado_em)}</small><b>${esc(n.titulo || "")}</b>
         <small>${esc((n.fontes || {}).nome || "")} · nota da fonte ${(n.fontes || {}).nota ?? "?"}${n.selo_ajuste ? " · ajuste atual " + (n.selo_ajuste > 0 ? "+" : "") + n.selo_ajuste : ""}</small><p>${esc(cm.texto || "")}</p>
@@ -5713,7 +5749,7 @@ function screenConta(){
       <button class="btn block" type="button" data-act="create">${ic("plus","sm")} Criar uma publicação real</button>
       ${pf.papel==="admin" ? `<a class="btn block" href="#curadoria">${ic("check","sm")} Curadoria do coletor</a>` : ""}
       <div class="note">${ic("lock")}<span>Seu e-mail não aparece para ninguém. O que você publica fica no servidor da rede e qualquer pessoa vê no site; você pode apagar quando quiser.</span></div>
-      ${acessoCard()}${contaSeguranca()}
+      ${acessoCard()}<div id="histbox"></div>${contaSeguranca()}
       <button class="btn ghost block" type="button" data-act="sair">Sair da conta</button></div>`; }
   const t = S.contaTab || "entrar";
   return topo + `<div class="container cform">
@@ -5764,6 +5800,16 @@ function contaSeguranca(){ const u = ME.user, ult = u.last_sign_in_at ? new Date
     <section class="acard" aria-labelledby="hdados"><h2 id="hdados">Seus dados</h2><div class="list">
       <button class="setting l1" type="button" data-act="baixadados"><span class="t"><b>Baixar meus dados</b><small>Tudo o que a rede guarda sobre você</small></span>${chev}</button>
       ${nivel()==="admin" ? "" : `<button class="setting l1 perigo" type="button" data-act="apagaconta"><span class="t"><b>Apagar minha conta</b><small>Apaga tudo. Não tem volta.</small></span>${chev}</button>`}</div></section>`; }
+/* o seu histórico na rede: o número (0 a 100) e o que ajuda a subir. Só você vê. */
+async function historicoPreenche(){ const box = $("#histbox"); if (!box || box.dataset.ok || !SB || !ME.user) return; box.dataset.ok = "1";
+  let h = null; try{ const r = await SB.rpc("minha_reputacao"); if (!r.error) h = r.data; }catch(e){} if (!h || !box.isConnected) return;
+  const faixa = h.nota >= 80 ? "Muito bom" : h.nota >= 65 ? "Bom" : h.nota >= 30 ? "Em formação" : "Baixo", efeito = h.nota >= 80 ? "As suas publicações sobem bastante no feed." : h.nota >= 65 ? "As suas publicações sobem um pouco no feed." : h.nota >= 30 ? "As suas publicações seguem a ordem normal do feed." : "As suas publicações descem um pouco no feed.";
+  const li = (t, d) => `<li><b>${t}</b><small>${d}</small></li>`;
+  box.innerHTML = `<section class="acard" aria-labelledby="hhist"><h2 id="hhist">Seu histórico na rede</h2>
+    <div class="hist"><span class="hnum" aria-label="${h.nota} de 100"><b>${h.nota}</b><small>de 100</small></span><span class="htx"><b>${faixa}</b><small>${efeito}${h.nota >= 65 ? " Seus comentários com fonte ajudam a ajustar o selo de confiança das notícias." : ""}</small></span></div>
+    <div class="hbar" aria-hidden="true"><i style="width:${h.nota}%"></i></div>
+    <ul class="hlist">${li(h.pessoas + (h.pessoas===1 ? " pessoa marcou" : " pessoas marcaram"), "comentários seus como úteis (o que mais pesa)")}${li(h.com_fonte + " com fonte", "comentários que trazem o endereço de onde veio a informação")}${li(h.dias + (h.dias===1 ? " dia" : " dias"), "de conta")}${h.removidos ? li(h.removidos + (h.removidos===1 ? " removido" : " removidos"), "comentários tirados do ar pela moderação, nos últimos 90 dias") : ""}</ul>
+    <p class="inota">${ic("lock","sm")}<span>Só você vê o seu número. Para as outras pessoas aparece apenas o selo Colaborador, quando a rede o confirma.</span></p></section>`; }
 const sheetErro = t => { const e = $("#layer .ferr"); if (e){ e.textContent = t; e.hidden = !t; } };
 function screenNovaSenha(){
   return header(`<div class="toprow"><h1 class="pagehead">Nova senha</h1></div>`) + `<div class="container cform">
@@ -6018,6 +6064,7 @@ const A = {
     if (tira){ const r = await SB.from("comentarios").update({status:"oculto"}).eq("id", id); if (r.error){ ocupado(b, false); return toast(erroAuth(r.error)); } }
     const {error} = await SB.from("comentario_denuncias").update({status:b.dataset.s}).eq("comentario_id", id).eq("status", "aberta"); ocupado(b, false);
     if (error) return toast(erroAuth(error)); COMS.clear(); toast(tira ? "Comentário ocultado." : "Comentário mantido."); curadoriaCarrega(); },
+  sinaldesfaz: async b => { ocupado(b, true, "…"); const {error} = await SB.rpc("sinal_desfaz", {p_id:b.dataset.id}); ocupado(b, false); if (error) return toast(erroAuth(error)); toast("Ajuste desfeito."); curadoriaCarrega(); },
   colabdefine: async b => { ocupado(b, true, "…"); const {error} = await SB.rpc("colaborador_define", {p_user:b.dataset.id, p_valor:b.dataset.v==="1"}); ocupado(b, false);
     if (error) return toast(erroAuth(error)); COMS.clear(); toast(b.dataset.v==="1" ? "Destaque de colaborador confirmado." : "Destaque retirado."); curadoriaCarrega(); },
   sinaldecide: async b => { ocupado(b, true, "…"); const {error} = await SB.rpc("sinal_decide", {p_id:b.dataset.id, p_aceita:b.dataset.a==="1", p_ajuste:parseInt(b.dataset.j || "0", 10)}); ocupado(b, false);
@@ -6403,7 +6450,7 @@ if (!location.hash){ const ini = store.get("ultima", "") || START; if (ini && in
 window.addEventListener("hashchange", render);
 if (S.localAuto && navigator.permissions && navigator.permissions.query) navigator.permissions.query({name:"geolocation"}).then(q=>{ if (q.state==="granted" && Date.now() - (S.localQuando || 0) > 6 * 3600e3) localAtualiza(true); }).catch(()=>{});
 contaInicia();
-if (/[?&]teste=1/.test(location.search)) window.__arede = {prox, footCtx, footInfo, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
+if (/[?&]teste=1/.test(location.search)) window.__arede = {prox, footCtx, footInfo, PRIO, prioDe, historicoPreenche, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
 window.addEventListener("scroll", ()=>{ const t = $("#top"); if (t) t.classList.toggle("scrolled", window.scrollY > 4); }, {passive:true});
 window.addEventListener("resize", debounce(()=>{
   placeLogoDots();
@@ -6446,7 +6493,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 10/11 17:59";
+const VERSAO = "v1 registrada · 10/11 19:48";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
