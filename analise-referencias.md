@@ -268,3 +268,6 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 ## 10/11 · O movimento da marca também no celular
 - Antes, no toque (celular), a marca aparecia sempre completa e parada, “arede.online”; o ponto só se movia com mouse. Agora o repouso é “a.rede” em qualquer aparelho, e no toque o ponto corre sozinho: a marca se completa (“arede.online”) por uns 2,5 segundos e volta. Acontece ao abrir o site, ao tocar na marca (que também abre “Sobre arede.online”) e ao voltar ao topo da página.
 - Com mouse, nada muda: continua ao passar o mouse. Quem pede menos movimento no aparelho vê a marca completa, parada.
+
+## 10/11 · Pé do cartão com menos negrito
+- O pé do cartão perdeu peso: o lugar e o nome da fonte ficam em peso médio; as etiquetas de tema (com ou sem coração) e a data, em peso normal. A cor continua fazendo a distinção.

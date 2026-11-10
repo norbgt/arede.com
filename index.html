@@ -412,8 +412,10 @@ button.setting{width:100%;border:0;text-align:left;color:var(--ink)}
 .fctx > *,.finfo > *{flex:none;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .fctx .tloc{overflow:visible}.fctx .tloc b{overflow:visible}
 .finfo > span + span::before{content:"·";margin-right:8px;color:var(--muted)}
-.finfo b{font-weight:600;color:var(--ink)}
-.ftag{display:inline-flex;align-items:center;gap:3px;font-weight:600;color:var(--muted)}
+.finfo b{font-weight:500;color:var(--ink)}
+/* pé do cartão sem peso (10 nov 2026): o lugar e a fonte ficam em peso médio; as etiquetas, em peso normal */
+.ftag{display:inline-flex;align-items:center;gap:3px;font-weight:400;color:var(--muted)}
+.fctx .tloc b{font-weight:500}.fctx .tloc em{font-weight:500}
 .ftag.meu{color:var(--ink)}.ftag.meu .icon{color:var(--accent);fill:var(--accent)}
 .ftag .icon{width:12px;height:12px;fill:currentColor;stroke:none}
 .tmeta{font-size:clamp(11px,2.2cqw,13px);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -6223,7 +6225,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 10/11 14:43";
+const VERSAO = "v1 registrada · 10/11 14:46";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
