@@ -2,7 +2,7 @@
 // É a reserva da localização automática: o site resolve a cidade no próprio aparelho, com a lista de municípios do Brasil,
 // e só chama esta função quando a lista não resolve (fora do Brasil, por exemplo).
 // Nada é guardado: nem a posição, nem o endereço de rede (dele fica só um código embaralhado, por um dia, para limitar abuso).
-// A cidade vem do Nominatim (OpenStreetMap), consultado pelo servidor: o serviço de mapas não vê quem perguntou.
+// A cidade vem de mapas abertos (Nominatim e, na falta dele, Photon), consultados pelo servidor: o serviço de mapas não vê quem perguntou.
 // GET ?lat=-23.55&lon=-46.63
 import { createClient } from "npm:@supabase/supabase-js@2";
 
@@ -33,17 +33,22 @@ Deno.serve(async (req: Request) => {
   const { data: pode, error } = await SB.rpc("local_ritmo", { p_chave: await embaralha(ip + "|" + new Date().toISOString().slice(0, 10)) });
   if (error || pode === false) return resp({ erro: "muitas consultas; tente mais tarde" }, 429);
   const falta = 1100 - (Date.now() - ultima); if (falta > 0) await espera(falta); ultima = Date.now();   // o Nominatim pede no máximo 1 consulta por segundo
-  try {
-    const c = new AbortController(), t = setTimeout(() => c.abort(), 8000);
-    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=10&addressdetails=1&accept-language=pt-BR&lat=${la}&lon=${lo}`, { signal: c.signal, headers: { "user-agent": UA, accept: "application/json" } });
-    clearTimeout(t);
-    if (!r.ok) return resp({ erro: "serviço de mapas indisponível" }, 502);
-    const j = await r.json(), a = (j && j.address) || {};
-    const iso = String(a["ISO3166-2-lvl4"] || "");
-    const out = { cidade: String(a.city || a.town || a.village || a.municipality || a.county || "").slice(0, 80), uf: /^BR-[A-Z]{2}$/.test(iso) ? iso.slice(3) : "",
-      estado: String(a.state || "").slice(0, 80), pais: String(a.country || "").slice(0, 60), pais_codigo: String(a.country_code || "").toUpperCase().slice(0, 2) };
-    if (cache.size > 500) cache.clear();
-    cache.set(k, out);
-    return resp(out);
-  } catch (_e) { return resp({ erro: "serviço de mapas indisponível" }, 502); }
+  // dois mapas abertos, um suprindo o outro: Nominatim (OpenStreetMap) e Photon (Komoot, sobre os mesmos dados)
+  const pega = async (url: string) => { const c = new AbortController(), t = setTimeout(() => c.abort(), 7000);
+    try { const r = await fetch(url, { signal: c.signal, headers: { "user-agent": UA, accept: "application/json" } }); return r.ok ? await r.json() : { falha: r.status }; }
+    catch (e) { return { falha: String((e as Error).name || e) }; } finally { clearTimeout(t); } };
+  const corta = (v: unknown, n: number) => String(v || "").slice(0, n);
+  const falhas: unknown[] = [];
+  let out: Record<string, string> | null = null;
+  const n = await pega(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=10&addressdetails=1&accept-language=pt-BR&lat=${la}&lon=${lo}`);
+  if (n && n.address) { const a = n.address, iso = String(a["ISO3166-2-lvl4"] || "");
+    out = { cidade: corta(a.city || a.town || a.village || a.municipality || a.county, 80), uf: /^BR-[A-Z]{2}$/.test(iso) ? iso.slice(3) : "", estado: corta(a.state, 80), pais: corta(a.country, 60), pais_codigo: corta(a.country_code, 2).toUpperCase() };
+  } else falhas.push({ nominatim: n && n.falha });
+  if (!out || !out.cidade) { const f = await pega(`https://photon.komoot.io/reverse?lat=${la}&lon=${lo}&limit=1`), q = f && f.features && f.features[0] && f.features[0].properties;
+    if (q) out = { cidade: corta(q.city || q.town || q.village || q.county || (["city", "town", "village", "locality"].includes(q.type) ? q.name : ""), 80), uf: "", estado: corta(q.state, 80), pais: corta(q.country, 60), pais_codigo: corta(q.countrycode, 2).toUpperCase() };
+    else falhas.push({ photon: f && f.falha }); }
+  if (!out || !out.cidade) return resp({ erro: "serviço de mapas indisponível", falhas }, 502);
+  if (cache.size > 500) cache.clear();
+  cache.set(k, out);
+  return resp(out);
 });

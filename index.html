@@ -3280,7 +3280,7 @@ async function localAtualiza(silencio){ let c;
     if (!silencio) toast(e && e.code===1 ? "A localização não foi permitida. Você pode escrever a cidade." : "Não deu para obter a localização agora. Você pode escrever a cidade."); return null; }
   const lat = Math.round(c.latitude * 100) / 100, lon = Math.round(c.longitude * 100) / 100; c = null;   /* arredonda e descarta a posição exata */
   let L = cidadeNoAparelho(lat, lon);
-  if (!L || L.km > 60){ const sv = await cidadeNoServidor(lat, lon); if (sv) L = {cidade:sv.cidade, uf:sv.uf || "", pais:sv.pais || ""}; else if (L && L.km > 250) L = null; }
+  if (!L || L.km > 60){ const sv = await cidadeNoServidor(lat, lon); if (sv) L = {cidade:sv.cidade, uf:sv.uf || (Object.entries(UF_NOME).find(([sg, nm])=>/^bra[sz]il$/i.test(sv.pais || "") && semAcento(nm)===semAcento(sv.estado || "")) || [""])[0], pais:sv.pais || ""}; else if (L && L.km > 250) L = null; }
   if (!L){ if (!silencio) toast("Não encontrei a cidade desta posição. Você pode escrever a cidade."); return null; }
   const txt = L.uf ? `${L.cidade}, ${L.uf}` : L.pais && !/^bra[sz]il$/i.test(L.pais) ? `${L.cidade}, ${L.pais}` : L.cidade, mudou = txt !== S.regiao;
   S.regiao = txt; persist("regiao"); S.localQuando = Date.now(); persist("localQuando");
@@ -6162,7 +6162,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 10/11 14:21";
+const VERSAO = "v1 registrada · 10/11 14:24";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
