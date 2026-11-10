@@ -1142,6 +1142,14 @@ a.setting{color:var(--ink);text-decoration:none}
 .pinside{display:flex;flex-direction:column;gap:12px;min-width:0;padding:0 var(--gutter) 24px}
 .pinside:empty{display:none}
 .pinbar{display:flex;align-items:center;gap:2px;min-height:52px}
+.pinbar .orgline.topo{flex:1;min-width:0;margin:0;padding:0;border:0;gap:10px}
+.pinbar .orgline.topo .av{width:40px;height:40px;flex:none}
+.pinbar .orgline.topo .t{min-width:0}.pinbar .orgline.topo .who{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pinbar .orgline.topo small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pinbar .segue{display:inline;min-height:0;padding:0;font-size:inherit;color:var(--accent)}.pinbar .segue.on{color:inherit}
+.xcard .pinbar + .pinhead{margin-top:2px}
+@media (max-width:560px){.pinbar [data-act="page"]{display:none}.pinbar > .iconbtn,.pinbar > .actbtn{margin:0 -3px}.pinbar > :last-child{margin-right:0}}
+
 .pinbar [data-act="save"][aria-pressed="true"]{color:var(--accent)}
 .actbtn{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:44px;height:44px;padding:0 8px;border:0;border-radius:14px;background:none;color:var(--ink);font-size:13px;font-weight:500;font-variant-numeric:tabular-nums}
 .actbtn.on{color:#E0245E}
@@ -4854,11 +4862,13 @@ function detailHTML(it, uid, mode, inline){
   const linkRow = l => l.url ? `<a class="lk" href="${l.url}" target="_blank" rel="noopener"><span class="lkic">${ic(l.k==="Mapa"?"pin":"doc")}</span><span class="t"><b>${esc(l.t)}</b><span>${l.k} · ${esc(l.d)}</span></span>${ic("ext","sm")}</a>` : `<div class="lk ex"><span class="lkic">${ic(l.k==="Mapa"?"pin":"doc")}</span><span class="t"><b>${l.t}</b><span>${l.k} · ${l.d}</span></span><span class="fic" title="Vínculo de um conteúdo de exemplo, sem destino real">exemplo</span></div>`;
   const sibRow = p => `<button class="lk" type="button" data-act="open" data-uid="${p.uid}"><span class="lkic">${p.tipo==="imagem"?art(p,1,false):ic(p.tipo==="evento"?"clock":"doc")}</span><span class="t"><b>${p.titulo}</b><span>${kindOf(p)} · ${o.nome}</span></span>${ic("back","sm flip")}</button>`;
   const vis = isImg ? `<div class="pinvis">${isVid && it.yt ? `<div class="ytbox xvid"${S.ytAuto===it.yt ? " data-auto" : ""}>${ytCapa(it)}${ytPlayBtn(it, true)}</div>` : isVid && !it.src ? `<a class="xvid" href="${it.ext ? it.ext.url : "#"}" target="_blank" rel="noopener" aria-label="Assistir: ${esc(it.titulo)}">${art(it, .5625, false)}<span class="xplay big">${ic("play")}<span>Assistir ${it.plat?"no "+esc(it.plat):""}</span></span></a>` : isVid?`<video class="pinvid" ${inline?"":'id="pinvid"'} src="${it.src}" poster="${it.poster}" controls playsinline preload="metadata" style="--ar:${(1/it.ar).toFixed(4)}" aria-label="Vídeo: ${esc(it.titulo)}"></video>`:(it.foto && it.tipo==="imagem" ? `<img class="pinarte" src="${esc(it.foto)}" alt="${esc(it.titulo)}${it.artista ? ", arte de " + esc(it.artista) : ""}" style="aspect-ratio:${(1/(it.ar||1.41)).toFixed(4)}" referrerpolicy="no-referrer">` : art(it, it.ph))}${inline?"":`<button class="iconbtn solid floatback" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button>`}</div>` : "";
+  /* autoria no topo, alinhada aos ícones; seguir vira link discreto na linha de baixo */
+  const autor = it.daArte ? `<div class="spacer"></div>` : `<div class="orgline topo">${avatar(o)}<span class="t"><span class="whorow"><button class="who" type="button" data-act="openorg" data-org="${o.id}">${o.nome}</button>${verifBtn(o.verificado)}</span>${ficTag(o)}<small>${it.ext ? dLabel(it.ext.data) : tempo(it.min)}${o.pessoa ? "" : ` · <button class="linkbtn segue${f?" on":""}" type="button" data-act="follow" data-org="${o.id}">${f?(o.real?"Seguindo":"Participando"):(o.real?"Seguir":"Participar")}</button>`}</small></span></div>`;
   const bar = inline
-    ? `<div class="pinbar"><div class="spacer"></div>
+    ? `<div class="pinbar">${autor}
         <button class="iconbtn" type="button" data-act="page" data-uid="${uid}" aria-label="Abrir em página própria" title="Abrir em página própria">${ic("expand")}</button>${likeBtn(it)}<button class="iconbtn" type="button" data-act="share" data-uid="${uid}" aria-label="Copiar link">${ic("share")}</button>${saveBtn(uid)}${podeApagar(it) ? `<button class="iconbtn" type="button" data-act="apagarreal" data-uid="${uid}" aria-label="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}" title="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}">${ic("trash")}</button>` : ""}
         <button class="iconbtn xclose" type="button" data-act="xclose" aria-label="Fechar">${ic("close")}</button></div>`
-    : `<div class="pinbar"><button class="iconbtn barback" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button><div class="spacer"></div>
+    : `<div class="pinbar"><button class="iconbtn barback" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button>${autor}
         ${likeBtn(it)}<button class="iconbtn" type="button" data-act="share" data-uid="${uid}" aria-label="Copiar link">${ic("share")}</button>${saveBtn(uid)}${podeApagar(it) ? `<button class="iconbtn" type="button" data-act="apagarreal" data-uid="${uid}" aria-label="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}" title="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}">${ic("trash")}</button>` : ""}</div>`;
   const TitleTag = inline ? "h2" : "h1", open = !!S.textOpen[uid];
   const text = `<div class="pintext ${open?"open":""}">${bodyOf(it).map(p=>`<p class="pinbody">${esc(p)}</p>`).join("")}</div>
@@ -4868,8 +4878,7 @@ function detailHTML(it, uid, mode, inline){
     <div class="pr"><div class="pinmain">${bar}
       <div class="pinhead"><span class="fkind pinkind" style="--k:${it.tipo==="votacao"?"var(--ink)":o.cor}">${kindOf(it)}</span>
         <${TitleTag} class="pintitle">${esc(it.titulo)}</${TitleTag}></div>
-      ${it.daArte ? artistaLinha(it) : `<div class="orgline">${avatar(o)}<span class="t"><span class="whorow"><button class="who" type="button" data-act="openorg" data-org="${o.id}">${o.nome}</button>${verifBtn(o.verificado)}</span>${ficTag(o)}<small>${orgMeta(o)} · ${it.ext ? "publicado em " + dLabel(it.ext.data) : tempo(it.min)}</small></span>
-        ${o.pessoa ? "" : `<button class="btn ${f?"ghost":"ink"}" type="button" data-act="follow" data-org="${o.id}">${f?(o.real?"Seguindo":"Participando"):(o.real?"Seguir":"Participar")}</button>`}</div>`}
+      ${it.daArte ? artistaLinha(it) : ""}
       ${it.foto && !isImg ? `<figure class="dfoto"><img src="${esc(it.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer">${it.credito ? `<figcaption>Foto: ${esc(it.credito)} · via ${esc(it.ext ? it.ext.dom : "fonte")}</figcaption>` : ""}</figure>` : ""}
       ${it.daArte ? `<div class="pintext" hidden></div><button class="linkbtn moretext" type="button" hidden></button>` : text}
       ${pentSlot(it)}
@@ -6502,7 +6511,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 10/11 20:07";
+const VERSAO = "v1 registrada · 10/11 20:14";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();

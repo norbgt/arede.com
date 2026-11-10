@@ -326,3 +326,8 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 ## 10/11 · Apagar virou ícone
 - “Apagar publicação” saiu do bloco de confiança e virou uma lixeira no canto superior direito do cartão, junto de salvar e fechar. Só aparece para quem publicou e para a administração.
 - O primeiro toque deixa a lixeira vermelha e avisa; o segundo apaga. Sem um segundo toque em 6 segundos, volta ao normal.
+
+## 10/11 · Autoria no topo do cartão
+- Quem escreveu passa para a primeira linha do cartão aberto, alinhado aos ícones do canto superior direito. Depois vêm o tipo, o título e o texto.
+- “Seguir” virou um link discreto ao lado da data, para caber na linha de cima.
+- No celular, o ícone de abrir em página própria sai da linha de cima para o nome não ser cortado.
