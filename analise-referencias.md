@@ -242,3 +242,12 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - A aba Arte fica, por enquanto, só para a administradora. As artes saíram da página pública (que ficou com metade do tamanho). No servidor, a regra que fecha a leitura das artes aguarda confirmação da Amanda.
 - Limite honesto: a contagem é da interface e fica no aparelho. Para valer contra ação em massa, precisa ir para o servidor (próximo passo, registrado no painel).
 - Segurança: a biblioteca de login passou a vir em versão fixa, conferida por assinatura (SRI). Avaliação geral do ambiente em 10/11: grau Médio, 3 de 5; detalhes, próximos passos e análises sugeridas ficam no painel de controle, em Segurança.
+
+## 10/11 · Cadastro maduro e acesso cobrado no servidor
+- Cadastro em 3 passos: seus dados, confirme o e-mail, conta ativa. Senha de no mínimo 10 caracteres, com medidor; recusa as mais comuns e as que repetem nome ou e-mail. Uma nota “Seus dados” diz, no próprio formulário, o que acontece com e-mail e senha.
+- O cadastro responde do mesmo jeito para e-mail novo ou já cadastrado. Numa rede de organização política, saber quem tem conta é informação sensível.
+- Conta: cartão “Seu acesso” com os 3 níveis; pedido de verificação que entra numa fila da administração, sem enviar documento (o método ainda será definido); trocar a senha (pede a atual e tira a conta dos outros aparelhos); sair de todos os aparelhos; baixar meus dados; apagar minha conta (pede a senha e a palavra APAGAR; apaga tudo do servidor na hora).
+- Servidor: as notícias saem por uma função que entrega na medida do nível (visitante 30 e 8 vídeos; conta com e-mail até 100 novas por hora, com memória de 7 dias; verificada e administração, o conjunto completo). A leitura direta das notícias e das artes ficou só para a administração. Há limite de chamadas por conta e por endereço de rede, que é guardado embaralhado e trocado a cada dia.
+- Servidor: limite de publicações por conta (5 por hora e 20 por dia; verificada, 20 e 100; decisão da Amanda), aceite do cadastro registrado com versão e data, e o papel (admin) fora da leitura pública de perfis.
+- A página “Privacidade e seus dados” fica em rascunho até a Amanda aprovar; o cadastro mantém a frase de aceite de antes.
+- Ficam na interface: o ritmo de 30 por aba e a cota de vídeos tocados (o vídeo é do YouTube). Segundo fator, desafio contra robôs e método de verificação com documento são próximos passos (painel › Segurança).

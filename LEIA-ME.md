@@ -14,7 +14,7 @@ Estes ambientes andam juntos e estão sempre na versão mais recente (o número 
 
 O painel de controle mostra tudo isso em Visão geral › A plataforma, com o status de cada ambiente.
 
-**Acesso por nível:** visitante vê 30 publicações por aba e 8 vídeos; conta com e-mail, 30 novas por aba e 100 no total por hora, e 15 vídeos a cada 12 horas; conta verificada com documento, sem esses limites. A aba Arte é só da administradora. A avaliação de segurança fica no painel, em Segurança.
+**Acesso por nível:** visitante vê 30 publicações por aba e 8 vídeos; conta com e-mail, 30 novas por aba e 100 no total por hora, e 15 vídeos a cada 12 horas; conta verificada com documento, sem esses limites. A aba Arte é só da administradora. Desde 10 nov 2026 o servidor cobra essa regra: as notícias saem pela função `conteudo`, na medida do nível de quem pede. A avaliação de segurança fica no painel, em Segurança.
 
 ## Estrutura desta pasta
 - `index.html`: o site (a mesma versão de https://arede.online/, com o painel embutido só aqui).
