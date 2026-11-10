@@ -74,7 +74,7 @@ Substitui a grade regular com destaques 2×2.
 - A mesma regra de texto vale no mosaico (Buscar, organizações, relacionados, aba Vídeos): textual com até 7 linhas de leitura; imagem 3 linhas; vídeo 2. O selo dos cartões textuais fica no topo, junto do tipo, nas duas grades.
 
 ## Marca
-"arede.online" (desde 10 nov 2026; antes "a rede.com"), sempre em minúsculas: "arede" em peso forte, o ponto é um nó da rede (cor de destaque), "online" mais leve. O nome é também o endereço. Símbolo compacto "a." no trilho lateral e no ícone do navegador.
+"arede.online" (desde 10 nov 2026; antes "a rede.com"), sempre em minúsculas: "arede" em peso forte, o ponto é um nó da rede (cor de destaque), "online" mais leve. O nome é também o endereço. Com mouse, a marca aparece compacta, "a.rede", e ao passar o cursor o ponto corre para entre "rede" e "online": "arede.online". Sem mouse (celular), aparece completa. Símbolo compacto "a." no trilho lateral e no ícone do navegador.
 
 ## Versão
 O rodapé do Perfil e o console do navegador mostram a versão (data e hora). O arquivo da pasta é atualizado a cada mudança; recarregue a página (⌘R) para ver a mais nova.

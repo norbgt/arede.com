@@ -226,6 +226,6 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 
 ## 10/11 · Marca arede.online e endereço principal
 - A marca passa a ser **arede.online**, sempre em minúsculas (antes “a rede.com”). O nome é também o endereço. Como a marca já começa com “a”, ela aparece sem artigo antes: “Como arede.online funciona”, “Acessar arede.online”, “e-mail da arede.online”.
-- Logo: “arede” em peso forte, o ponto (nó da rede, na cor de destaque) e “online” mais leve. O ponto deixou de correr entre “a·rede” e “rede·com”. O símbolo compacto “a.” continua no trilho lateral e no ícone.
+- Logo: “arede” em peso forte, o ponto (nó da rede, na cor de destaque) e “online” mais leve. Como antes, o ponto se move: com mouse, a marca fica compacta, “a.rede”, e ao passar o cursor o ponto corre para “arede.online”; no celular aparece completa. O símbolo compacto “a.” continua no trilho lateral e no ícone.
 - Endereço principal: https://arede.online/ (o site fica na raiz do repositório). O /prototipo e o endereço norbgt.github.io/arede.com saíram; o login do Supabase aceita só arede.online.
 - Trocada também no manifesto do projeto (Estrutura #7 e Comando #2), nos e-mails, nas funções do servidor (identificação nas leituras de feed), no perfil oficial e no painel. Falta o documento oficial do manifesto no Google Docs.
