@@ -81,7 +81,7 @@ Todo caráter é individual.
 Cada indivíduo é responsável por suas ações. O que resulta de sua ação pode também ser responsabilidade de outra pessoa, mas o indivíduo nunca será dissociado da responsabilidade sobre suas ações.
 
 **Estrutura #7**
-Nossa marca é “a rede.com”.
+Nossa marca é “arede.online”.
 
 Nosso manifesto não pertence a nenhum estado ou país. Pertence a todas as nações e circula pela rede internacional enquanto tenta facilitar a capilarização do movimento social transnacional e o estabelecimento de mais conexões humanas.
 

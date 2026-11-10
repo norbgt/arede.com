@@ -1,10 +1,10 @@
-// a rede.com · REDES: lê o feed público de um perfil em outra rede (Letterboxd, Substack, Medium, Pinterest)
+// arede.online · REDES: lê o feed público de um perfil em outra rede (Letterboxd, Substack, Medium, Pinterest)
 // e devolve as publicações em formato único. Só leitura, só o que já é público, nada é guardado aqui.
 // O endereço do feed é montado pela função a partir da rede e do nome de usuário: ela não busca endereços arbitrários.
 // GET ?rede=letterboxd&usuario=amanda
 import { XMLParser } from "npm:fast-xml-parser@4.4.1";
 
-const UA = "Mozilla/5.0 (compatible; arede-redes/1.0; +https://norbgt.github.io/arede.com/)";
+const UA = "Mozilla/5.0 (compatible; arede-redes/1.0; +https://arede.online/)";
 const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "authorization, apikey, content-type, x-client-info", "access-control-allow-methods": "GET, OPTIONS" };
 const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_", textNodeName: "#text", processEntities: true, htmlEntities: true });
 const lista = (x: any) => (Array.isArray(x) ? x : x == null ? [] : [x]);

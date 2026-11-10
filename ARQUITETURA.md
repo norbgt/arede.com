@@ -1,4 +1,4 @@
-# Protótipo: arquitetura (v2, 7 nov 2026)
+# arede.online: arquitetura (v2, 7 nov 2026; atualizada em 10 nov 2026)
 
 ## Princípio: mobile first
 Todo estilo base é escrito para o celular, a partir de 320px. Telas maiores só acrescentam camadas, sempre com `min-width`:
@@ -33,7 +33,7 @@ Regras fixas:
 Larguras 320, 360, 375, 390, 430, 600, 768, 1024, 1366, 1920 e celular deitado (844×390), em todas as telas: sem rolagem horizontal e sem erros. Fluxos testados: abas, switch do algoritmo, abrir conteúdo e voltar, enquete, votação formal com comprovante, criar publicação, busca e temas no Explorar, abas da organização, tema escuro.
 
 ## Vídeo (adicionado em 7 nov 2026)
-- Arquivos em `prototipo/media/` (placeholders abstratos de 9s, com som).
+- Vídeos de exemplo embutidos no index.html (placeholders abstratos de 9s, com som; os originais ficam na pasta media do Mac).
 - Reprodução automática sem som só quando o cartão está 60% visível; pausa ao sair da tela.
 - Controles próprios no cartão, pensados para o toque (área de toque ampliada); um vídeo com som por vez.
 - Respeita "reduzir movimento" e a preferência de reprodução automática no Perfil.
@@ -74,7 +74,7 @@ Substitui a grade regular com destaques 2×2.
 - A mesma regra de texto vale no mosaico (Buscar, organizações, relacionados, aba Vídeos): textual com até 7 linhas de leitura; imagem 3 linhas; vídeo 2. O selo dos cartões textuais fica no topo, junto do tipo, nas duas grades.
 
 ## Marca
-"a rede.com": "a rede" em peso forte, o ponto é um nó da rede (cor de destaque), "com" mais leve. Com mouse, aparece "a rede" e se completa ao passar o cursor. Símbolo compacto "a." no trilho lateral e no ícone do navegador.
+"arede.online" (desde 10 nov 2026; antes "a rede.com"), sempre em minúsculas: "arede" em peso forte, o ponto é um nó da rede (cor de destaque), "online" mais leve. O nome é também o endereço. Símbolo compacto "a." no trilho lateral e no ícone do navegador.
 
 ## Versão
 O rodapé do Perfil e o console do navegador mostram a versão (data e hora). O arquivo da pasta é atualizado a cada mudança; recarregue a página (⌘R) para ver a mais nova.

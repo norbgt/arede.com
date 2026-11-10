@@ -1,44 +1,42 @@
-# a rede
+# arede.online
 
-Ambiente local onde idealizamos tudo do projeto.
-Cada nova versão vai ao ar em https://arede.online, com o código em https://github.com/norbgt/arede.online.
+Ambiente local onde idealizamos tudo do projeto (no Mac: Mesa › arede.online).
+Cada nova versão vai ao ar em https://arede.online/, com o código em https://github.com/norbgt/arede.online.
+A marca é sempre **arede.online**, em minúsculas (desde 10 nov 2026; antes “a rede.com”).
 
 ## Pares: sempre na mesma versão
 Estes ambientes andam juntos e estão sempre na versão mais recente (o número aparece no rodapé do site):
-- **Site:** https://arede.online (domínio no Cloudflare, servido pelo GitHub Pages).
+- **Site:** https://arede.online/ (domínio no Cloudflare, servido pelo GitHub Pages com HTTPS). Não há outro endereço: o antigo (/prototipo e norbgt.github.io/arede.com) foi retirado.
 - **Repositório:** https://github.com/norbgt/arede.online (antes norbgt/arede.com).
-- **Servidor:** Supabase, projeto arede (zbmzabgdejylpmabujad): banco, login, funções coletor, canais, redes e artes. A tabela `ambiente` registra os pares, a versão no ar e o commit.
-- **Acompanham:** a prévia no Claude e a pasta "a rede.com" no Mac (que guarda também o painel de controle, que nunca vai para o online).
-- **E-mail:** contato@arede.online é o único endereço público.
+- **Servidor:** Supabase, projeto arede (zbmzabgdejylpmabujad, São Paulo, plano gratuito): banco, login, funções coletor, canais, redes e artes, agendamentos. A tabela `ambiente` registra os pares, a versão no ar e o commit.
+- **Domínio e e-mail:** arede.online no Cloudflare, renovação automática, vence em 10 nov 2027; contato@arede.online é o único endereço público.
+- **Acompanham:** a prévia no Claude, o Projeto “Político” no Claude e esta pasta no Mac (que guarda também o painel de controle, que nunca vai para o online).
 
-- `manifesto.md`: o manifesto, construído aos poucos.
-- `analise-referencias.md`: análise de Facebook, Instagram, WhatsApp e Pinterest e proposta inicial da rede.
-- `prototipo/index.html`: protótipo navegável (abre direto no navegador).
-- `prototipo/ARQUITETURA.md`: princípios mobile first e organização do código.
+O painel de controle mostra tudo isso em Visão geral › A plataforma, com o status de cada ambiente.
+
+## Estrutura desta pasta
+- `index.html`: o site (a mesma versão de https://arede.online/, com o painel embutido só aqui).
+- `painel/index.html`: painel de controle (só local).
+- `ARQUITETURA.md`, `manifesto.md`, `como-funciona.md`, `analise-referencias.md`: documentos.
+- `coletor/`, `canais/`, `redes/`, `artes/`: funções do servidor (Supabase).
+- `dados/`, `emails/`: dados de partida e modelos de e-mail.
 
 ## Quando publicar
-
-Publicamos quando houver grandes mudanças que devem ser salvas ou que precisam ser testadas em produção.
-Tanto a Amanda quanto o Claude podem sinalizar que chegou a hora. (Acordo provisório, a ser ajustado com o tempo.)
-
-## Protótipo online
-
-https://arede.online (público; domínio próprio desde 10 nov 2026, registrado no Cloudflare e publicado pelo GitHub Pages a partir da branch main). O endereço antigo, https://norbgt.github.io/arede.com/, leva ao novo. A cada nova publicação no repositório, o site se atualiza sozinho em cerca de um minuto.
+A cada nova versão: site, repositório e servidor vão juntos, sempre na mais recente (decisão de 10 nov 2026).
 
 ## Painel de controle (só local)
-
-`painel/index.html` é o nosso painel de controle: fontes verificadas, verificação do selo, denúncias e moderação, organizações e mandatos, parâmetros de governança, transparência e LGPD, e análise do produto (completude, gaps, evolução, receita e riscos).
-- Abre direto no navegador, ou pelo protótipo aberto desta pasta (logo "a rede.com" › Painel de controle, ou Configurações › Sobre a rede.com).
-- **Nunca vai para o online:** está no `.gitignore` e o link só aparece quando o protótipo é aberto pela pasta do Mac.
+`painel/index.html` é o nosso painel de controle: a plataforma e seus ambientes, decisões, servidor, manifesto, fontes verificadas, verificação do selo, denúncias e moderação, organizações e mandatos, parâmetros de governança, transparência e LGPD, permissões e análise do produto.
+- Abre direto no navegador, ou pelo site aberto desta pasta (logo “arede.online” › Painel de controle).
+- **Nunca vai para o online:** fica fora do repositório, e o link só aparece quando o site é aberto pela pasta do Mac.
 - O que você muda no painel (fontes, pesos do selo) fica salvo neste navegador.
 
 ## Permissões
-- Amanda é admin de todos os ambientes: protótipo, link público, repositório norbgt/arede.online, domínio arede.online, painel de controle e prévia no Claude.
+- Amanda é admin de todos os ambientes: site, repositório norbgt/arede.online, servidor, domínio arede.online, painel de controle e prévia no Claude.
 - Ajustes são feitos a partir deste Mac: direto nos arquivos ou pelos consoles logados nele, como o Claude e o GitHub.
 - Detalhes no painel, em Permissões.
 
 ## Versões publicadas
-- **v1 registrada (10 nov 2026):** a primeira versão no domínio próprio, arede.online. Traz vídeos de canais oficiais do YouTube (Canal UOL, TV Senado, Câmara dos Deputados, TV Brasil, BBC News Brasil, DW Brasil, Brasil de Fato, Intercept Brasil, Repórter Brasil, Agência Pública e Aos Fatos), tocados aqui, um de cada vez, com o detalhe da publicação junto; Documentação cidadã com a localidade de cada documento; tema e local nos cartões de notícia; e espaços de anunciantes de exemplo, discretos, 1 a cada 8 cartões.
+- **v1 registrada (10 nov 2026):** a primeira versão no domínio próprio. A marca passa a ser arede.online em tudo e o endereço principal é https://arede.online/. Traz vídeos de canais oficiais do YouTube (Canal UOL, TV Senado, Câmara dos Deputados, TV Brasil, BBC News Brasil, DW Brasil, Brasil de Fato, Intercept Brasil, Repórter Brasil, Agência Pública e Aos Fatos), tocados aqui, um de cada vez, com o detalhe da publicação junto; Documentação cidadã com a localidade de cada documento; tema e local nos cartões de notícia; e espaços de anunciantes de exemplo, discretos, 1 a cada 8 cartões.
 - **v1.2 (8 nov 2026, 16h35):** contas reais com confirmação por e-mail e publicações originais guardadas no servidor (Supabase, projeto arede), abertas a quem acessa; feed com fotos das matérias, cartões de tamanhos variados e texto sempre completo; Agenda no perfil; logo com o ponto que se move e roxo da marca unificado. Publicada em https://norbgt.github.io/arede.com/
 - **v1.1 (8 nov 2026, 12h15):** notícias reais, Mobilizar a partir disto, novo manifesto e resumo do algoritmo. Publicada em https://norbgt.github.io/arede.com/
 - **v0.1 (7 nov 2026):** primeira versão.

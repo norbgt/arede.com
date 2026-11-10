@@ -1,16 +1,16 @@
-# E-mails da a rede.com (Supabase, projeto "arede")
+# E-mails da arede.online (Supabase, projeto "arede")
 
 Modelos usados pelo cadastro e pela recuperação de senha. Onde ficam no Supabase:
 Authentication > Emails > Templates.
 
 | Modelo no Supabase | Assunto | Arquivo |
 |---|---|---|
-| Confirm signup | Confirme seu cadastro na a rede.com | confirmar-cadastro.html |
-| Reset password | Crie uma nova senha · a rede.com | nova-senha.html |
+| Confirm signup | Confirme seu cadastro na arede.online | confirmar-cadastro.html |
+| Reset password | Crie uma nova senha · arede.online | nova-senha.html |
 
 Configuração de endereços (Authentication > URL Configuration):
-- Site URL: https://arede.online/prototipo/
-- Redirect URLs: https://arede.online/** e https://norbgt.github.io/arede.com/** (endereço antigo)
+- Site URL: https://arede.online/
+- Redirect URLs: https://arede.online/** (só o endereço principal; o antigo foi retirado em 10 nov 2026)
 
 ## Situação em 08/11/2026
 - Site URL e Redirect URLs já configurados no Supabase (projeto arede).

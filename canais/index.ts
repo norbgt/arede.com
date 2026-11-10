@@ -1,4 +1,4 @@
-// a rede.com · CANAIS: acha o ID de um canal do YouTube a partir do @ (ou de um link oficial) e confere se o RSS público responde.
+// arede.online · CANAIS: acha o ID de um canal do YouTube a partir do @ (ou de um link oficial) e confere se o RSS público responde.
 import { createClient } from "npm:@supabase/supabase-js@2";
 const SB = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36";

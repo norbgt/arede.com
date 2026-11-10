@@ -1,4 +1,4 @@
-// a rede.com · ARTES: lê o acervo público do Design Ativista (designativista.pages.dev/api) e publica cada peça nova
+// arede.online · ARTES: lê o acervo público do Design Ativista (designativista.pages.dev/api) e publica cada peça nova
 // direto (decisão de 9 nov 2026: sem passar pela fila). Aparecem na aba Arte e no feed geral, sempre com crédito a quem criou;
 // a curadoria pode retirar uma peça depois.
 // Chamada pelo agendamento, com a mesma chave do coletor.
@@ -6,7 +6,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 const SB = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 const BASE = "https://designativista.pages.dev";
-const UA = "Mozilla/5.0 (compatible; arede-artes/1.0; +https://norbgt.github.io/arede.com/)";
+const UA = "Mozilla/5.0 (compatible; arede-artes/1.0; +https://arede.online/)";
 
 async function json(path: string) {
   const c = new AbortController(); const t = setTimeout(() => c.abort(), 15000);

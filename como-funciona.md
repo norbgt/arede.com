@@ -1,6 +1,6 @@
-# Como a rede funciona
+# Como arede.online funciona
 
-A rede.com ajuda organizações democráticas a se organizarem: conversar, chamar gente, marcar encontros e decidir juntas.
+arede.online ajuda organizações democráticas a se organizarem: conversar, chamar gente, marcar encontros e decidir juntas.
 
 Aprendemos com as redes que todo mundo já usa, como Facebook, Instagram e WhatsApp, e com o Pinterest, pela navegação limpa e pela grade. Aqui a navegação é simples e o feed não acaba.
 
@@ -8,7 +8,7 @@ O algoritmo aprende com o que você faz, mas quem decide é você: dá para ajus
 
 ## O algoritmo é seu
 
-Você liga, desliga e ajusta quando quiser. Todo conteúdo mostra por que apareceu para você. A rede.com não tenta adivinhar suas opiniões e, com o algoritmo desligado, não usa nada do seu perfil.
+Você liga, desliga e ajusta quando quiser. Todo conteúdo mostra por que apareceu para você. arede.online não tenta adivinhar suas opiniões e, com o algoritmo desligado, não usa nada do seu perfil.
 
 ## Qualquer membro pode propor uma votação
 

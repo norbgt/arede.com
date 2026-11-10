@@ -1,4 +1,4 @@
-// a rede.com · COLETOR de notícias
+// arede.online · COLETOR de notícias
 // Lê os feeds (RSS/Atom) das fontes com selo, guarda só título, chamada do veículo, um trecho de até 800 caracteres, data, imagem de capa e link,
 // evita repetidas, agrupa a mesma notícia em fontes diferentes (cobertura cruzada) e manda para o feed ou para a fila.
 // Modos: ?modo=descobrir (acha o feed de cada fonte) · ?modo=coletar (padrão) · ?modo=agrupar (junta a mesma notícia entre idiomas).
@@ -9,7 +9,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { XMLParser } from "npm:fast-xml-parser@4.4.1";
 
 const SB = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
-const UA = "Mozilla/5.0 (compatible; arede-coletor/1.0; +https://norbgt.github.io/arede.com/)";
+const UA = "Mozilla/5.0 (compatible; arede-coletor/1.0; +https://arede.online/)";
 const LOTES = 10, DIAS = 4, NOTA_DIRETO = 80, IDIOMAS = ["pt", "en", "es"];
 
 type Res = { ok: boolean; status: number; url: string; ct: string; txt: string; err?: string };
