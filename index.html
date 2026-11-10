@@ -606,6 +606,29 @@ h1 .fic{font-size:11px;vertical-align:4px}
 .srclink .icon{width:15px;height:15px}
 .srclink:hover{text-decoration:underline;text-underline-offset:3px}
 .pinseal{display:flex;flex-direction:column;gap:2px;padding:8px 0 2px;border-top:1px solid var(--line)}
+/* Para entender: nota de contexto no detalhe do cartão */
+.pent{display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:var(--r);background:color-mix(in srgb,var(--accent) 7%,var(--surface));border-left:3px solid var(--accent)}
+.pent[hidden]{display:none}
+.penth{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}.penth .icon{width:14px;height:14px}
+.pent h3{margin:0;font-size:16px;font-weight:600;line-height:1.3}.pent p{margin:0;font-size:14.5px;line-height:1.5}
+.pentf{display:flex;flex-direction:column;gap:4px;margin-top:2px;font-size:13px}.pentf a{display:inline-flex;align-items:center;gap:4px;font-weight:500}.pentf a .icon{width:13px;height:13px}.pentf small{font-size:12px;color:var(--muted)}
+/* Conversa: comentários */
+.coms{display:flex;flex-direction:column;gap:12px;padding-top:12px;border-top:1px solid var(--line)}.coms[hidden]{display:none}.coms .pinh{margin:0}
+.cnovo{display:flex;flex-direction:column;gap:8px;align-items:flex-start}.cnovo .input{width:100%}.cnovo .ctxt{min-height:64px;resize:vertical}
+.cnovo.fora{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 14px;font-size:13.5px;color:var(--muted)}
+.cmarcas{gap:6px}.cmarcas .chip{font-size:12.5px;min-height:32px}.cmarcas .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.caviso{padding:12px;border-radius:var(--r);background:var(--surface-2);font-size:13.5px;line-height:1.45}.caviso[hidden]{display:none}.caviso p{margin:0 0 10px}.caviso b{font-weight:600}
+.cmsg{margin:0}.cmsg:empty{display:none}.cvazio{margin:0;font-size:13.5px;color:var(--muted)}
+.com{display:flex;gap:10px}.com.dest{padding:10px;border-radius:var(--r);background:var(--surface)}
+.cav{width:32px;height:32px;border-radius:50%;font-size:12px}.cb{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.ch{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;font-size:13.5px}.ch .cn{font-weight:600}.ch small{font-size:12px;color:var(--muted)}
+.colab{padding:1px 8px;border-radius:99px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);font-size:11.5px;font-weight:600}
+.ctags{display:flex;flex-wrap:wrap;gap:6px}.ctag{font-size:11.5px;font-weight:500;color:var(--muted);padding:1px 8px;border-radius:99px;background:var(--surface-2)}.ctag.d{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.ctx{margin:0;font-size:14.5px;line-height:1.5;white-space:pre-line;overflow-wrap:anywhere}
+.cfonte{display:inline-flex;align-items:center;gap:4px;font-size:13px;overflow-wrap:anywhere}.cfonte .icon{width:13px;height:13px}
+.cacts{display:flex;flex-wrap:wrap;gap:0 16px}.cacts .linkbtn{min-height:32px;padding:4px 0;font-size:13px;display:inline-flex;align-items:center;gap:5px}.cacts .icon{width:14px;height:14px}
+.cutil[aria-pressed="true"]{color:var(--accent)}.cutil[aria-pressed="true"] .icon{fill:var(--accent);stroke:none}.cutil:disabled{opacity:.6}
+.curh{margin:20px 0 8px;font-size:15px;font-weight:600}
 .sealbox.sbmini{background:none;padding:0}
 .sealbox.sbmini summary{min-height:40px;gap:9px}
 .sealbox.sbmini .t{flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:0 6px}
@@ -3463,7 +3486,7 @@ function sealChecks(it){
 }
 function sealBox(it, compacto){
   const s = sealOf(it), o = ORG[it.org];
-  const extra = compacto ? [it.daArte ? "" : it.daRede ? "fonte individual · " + REDES[it.rede].nome : it.tema, reforco(it) ? "reforço internacional " + it.paises.map(bandeira).join("") : "", it.lingua && it.lingua!=="pt" ? "em " + (LINGUA_NOME[it.lingua] || it.lingua) : "", o && o.linha ? (/ativista/i.test(o.linha) ? "Mídia ativista" : "Linha editorial declarada") : ""].filter(Boolean) : [];
+  const extra = compacto ? [it.daArte ? "" : it.daRede ? "fonte individual · " + REDES[it.rede].nome : it.tema, reforco(it) ? "reforço internacional " + it.paises.map(bandeira).join("") : "", it.lingua && it.lingua!=="pt" ? "em " + (LINGUA_NOME[it.lingua] || it.lingua) : "", o && o.linha ? (/ativista/i.test(o.linha) ? "Mídia ativista" : "Linha editorial declarada") : "", it.seloAjuste ? "nota ajustada após revisão de contribuições da comunidade" : ""].filter(Boolean) : [];
   return `<details class="sealbox${compacto?" sbmini":""}" ${s.lv==="bad"?"open":""}><summary>${sealIco(s,compacto?22:26)}<span class="t"><b>${s.label}</b><small>${s.sc!==null?`Nota ${s.sc} de 100`+(compacto?"":" · verificado"):(s.lv==="pend" ? "Publicação original, ainda não verificada" : it.arte ? "Arte e expressão" : it.daRede ? "Crítica, gosto ou coleção" : "Pergunta, pedido ou opinião")}${extra.map(x=>" · "+esc(x)).join("")}</small></span><span class="linkbtn">Detalhes</span></summary>
     ${s.sc!==null?`<div class="scale" role="img" aria-label="Nota ${s.sc} de 100"><i style="left:${s.sc}%"></i></div><div class="scalelbl"><span>Baixa</span><span>Moderada</span><span>Alta</span></div>`:""}
     <div class="checks">${sealChecks(it)}</div>
@@ -4723,6 +4746,74 @@ function interact(it){
     default: return "";
   }
 }
+/* PARA ENTENDER E CONVERSA (10 nov 2026), no detalhe do cartão.
+   PARA ENTENDER: uma nota curta que explica algo ligado ao conteúdo (por exemplo, quem responde pela segurança pública),
+   com a fonte oficial. Não aparece sempre: só quando o assunto pede e a confiança é alta. Quem decide e escreve é o servidor
+   (função "entender"), sempre a partir de notas aprovadas pela curadoria; a fonte mostrada vem dessa base, nunca da IA.
+   CONVERSA: comentários. Só quem tem conta comenta; todo mundo lê. O comentário mostra o nome do perfil (aviso no primeiro uso).
+   Comentários de usuário colaborador, ou marcados como úteis por várias pessoas, sobem como "Em destaque".
+   Muita conversa e comentários muito marcados como úteis dizem à rede onde prestar atenção: é o que faz o servidor
+   reavaliar se aquele conteúdo merece um Para entender. Contribuições com fonte (confirma ou contesta) viram sinais
+   que a curadoria revisa antes de mexer no selo. Tudo o que vem de pessoas é escapado antes de ir para a tela. */
+const uuidDe = h => h.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, "$1-$2-$3-$4-$5");
+function alvoDe(it){ if (!it) return null;
+  if (it.coletada && /^n[0-9a-f]{32}$/.test(String(it.id))) return {col:"noticia_id", id:uuidDe(String(it.id).slice(1))};
+  if (it.conta && it.uuid) return {col:"publicacao_id", id:it.uuid}; return null; }
+const pentSlot = it => { const a = alvoDe(it); return a && a.col==="noticia_id" ? `<aside class="pent" data-pent="${a.id}" aria-label="Para entender" hidden></aside>` : ""; };
+const comsSlot = it => { const a = alvoDe(it); return a ? `<section class="coms" data-coms="${a.col}:${a.id}" aria-label="Conversa"></section>` : ""; };
+const PENT = new Map();
+function pentBusca(id){ if (PENT.has(id)) return PENT.get(id);
+  const pr = (async () => { if (!SB || ME.offline) return null;
+    try{ const r = await SB.from("entender").select("titulo,texto,fonte_nome,fonte_url,origem").eq("noticia_id", id).eq("status","publicada").maybeSingle(); if (!r.error && r.data) return r.data; }catch(e){}
+    try{ const r = await fetch(`${SB_URL}/functions/v1/entender?id=${id}`, {headers:{apikey:SB_KEY}}); if (r.ok){ const j = await r.json(); return (j && j.nota) || null; } }catch(e){}
+    return null; })();
+  PENT.set(id, pr); return pr; }
+function pentHTML(n){ const url = /^https:\/\//.test(n.fonte_url || "") ? n.fonte_url : "";
+  return `<span class="penth">${ic("info","sm")} Para entender</span><h3>${esc(n.titulo)}</h3><p>${esc(n.texto)}</p>
+    <div class="pentf">${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">Fonte: ${esc(n.fonte_nome)} ${ic("ext","sm")}</a>` : `<span>Fonte: ${esc(n.fonte_nome)}</span>`}
+      <small>${n.origem==="ia" ? "Escrito por IA a partir de uma nota conferida pela curadoria da rede." : "Nota da curadoria da rede."}</small></div>`; }
+async function pentPreenche(el){ el.dataset.ok = "1"; const n = await pentBusca(el.dataset.pent); if (!n || !el.isConnected) return; el.innerHTML = pentHTML(n); el.hidden = false; }
+
+const COMS = new Map(), COM_DEST = 3, MARCAS = {contexto:"Acrescenta contexto", confirma:"Confirma", contesta:"Contesta"};
+const comCor = id => CORES_CONTA[parseInt(String(id || "0").replace(/-/g,"").slice(0,6), 16) % CORES_CONTA.length];
+async function comsCarrega(key){ const [col, id] = key.split(":"), st = COMS.get(key) || {aberto:false};
+  if (!SB || ME.offline){ COMS.set(key, Object.assign(st, {lista:[], meus:new Set(), fora:true})); return; }
+  let lista = [], meus = new Set(), erro = false;
+  try{ const r = await SB.from("comentarios").select("id,texto,marca,fonte_url,uteis,criado_em,autor,perfis(nome,verificado,colaborador)").eq(col, id).eq("status","publicado").order("criado_em",{ascending:false}).limit(200);
+    if (r.error) erro = true; else lista = r.data || [];
+    if (ME.user && lista.length){ const u = await SB.from("comentario_uteis").select("comentario_id").in("comentario_id", lista.map(c=>c.id)); if (!u.error) meus = new Set((u.data || []).map(x=>x.comentario_id)); } }catch(e){ erro = true; }
+  COMS.set(key, Object.assign(st, {lista, meus, erro, fora:false})); }
+const comDest = c => !!((c.perfis || {}).colaborador) || c.uteis >= COM_DEST;
+function comHTML(c, st){ const pf = c.perfis || {}, meu = ME.user && c.autor===ME.user.id, adm = ME.perfil && ME.perfil.papel==="admin", dest = comDest(c), url = /^https:\/\//.test(c.fonte_url || "") ? c.fonte_url : "", on = st.meus.has(c.id);
+  return `<article class="com${dest ? " dest" : ""}" data-com="${c.id}">
+    <span class="av cav" style="background:${comCor(c.autor)}" aria-hidden="true">${esc(siglaDe(pf.nome))}</span>
+    <div class="cb"><div class="ch"><span class="cn">${esc(pf.nome || "Conta da rede")}</span>${verifBtn(pf.verificado)}${pf.colaborador ? `<span class="colab" title="Usuário colaborador: destaque dado pela rede a quem contribui de forma construtiva">Colaborador</span>` : ""}<small>${quando(c.criado_em)}</small></div>
+      ${dest || c.marca ? `<div class="ctags">${dest ? `<span class="ctag d">Em destaque</span>` : ""}${c.marca && MARCAS[c.marca] ? `<span class="ctag">${MARCAS[c.marca]}</span>` : ""}</div>` : ""}
+      <p class="ctx">${esc(c.texto)}</p>
+      ${url ? `<a class="cfonte" href="${esc(url)}" target="_blank" rel="noopener nofollow ugc">Fonte: ${esc(hostOf(url).replace(/^www\./,""))} ${ic("ext","sm")}</a>` : ""}
+      <div class="cacts"><button class="linkbtn cutil" type="button" data-act="comutil" data-id="${c.id}" aria-pressed="${on}"${meu ? " disabled" : ""} aria-label="Marcar como útil${c.uteis ? ". " + c.uteis + " pessoas marcaram" : ""}">${ic("heart","sm")} Útil${c.uteis ? " · " + c.uteis : ""}</button>
+        ${meu || adm ? `<button class="linkbtn muted" type="button" data-act="comapaga" data-id="${c.id}">${meu ? "Apagar" : "Remover (moderação)"}</button>` : ME.user ? `<button class="linkbtn muted" type="button" data-act="comdenuncia" data-id="${c.id}">${ic("flag","sm")} Denunciar</button>` : ""}</div></div></article>`; }
+function comForm(){ if (!ME.user) return `<div class="cnovo fora"><span>Só quem tem conta comenta. Ler é livre.</span><a class="linkbtn" href="#conta" data-act="criarconta">Criar conta</a><a class="linkbtn" href="#conta" data-act="acessar">Entrar</a></div>`;
+  return `<div class="cnovo"><textarea class="input ctxt" rows="2" maxlength="1000" placeholder="Acrescente algo construtivo" aria-label="Seu comentário"></textarea>
+    <div class="chips cmarcas" role="group" aria-label="Tipo de contribuição, opcional">${Object.entries(MARCAS).map(([k,t])=>`<button class="chip" type="button" data-act="commarca" data-m="${k}" aria-pressed="false">${t}</button>`).join("")}</div>
+    <input class="input cfon" type="url" inputmode="url" placeholder="Endereço da fonte (https://…)" maxlength="500" aria-label="Endereço da fonte" hidden>
+    <div class="caviso" hidden><p><b>Seu comentário é público.</b> Ele aparece com o nome do seu perfil para qualquer pessoa, mesmo com o perfil privado. Você pode apagar quando quiser.</p>
+      <div class="row"><button class="btn sm primary" type="button" data-act="comenvia" data-ciente="1">Entendi, comentar</button><button class="btn sm ghost" type="button" data-act="comcancela">Cancelar</button></div></div>
+    <p class="rmsg cmsg" role="alert"></p><button class="btn sm primary cbt" type="button" data-act="comenvia">Comentar</button></div>`; }
+function comsHTML(key){ const st = COMS.get(key); if (!st || !st.lista) return `<h3 class="pinh">Conversa</h3><p class="cvazio">Carregando…</p>`;
+  if (st.fora) return "";
+  const L = st.lista.slice().sort((a,b)=>(comDest(b) - comDest(a)) || (comDest(a) ? b.uteis - a.uteis : 0) || (new Date(b.criado_em) - new Date(a.criado_em))), n = L.length, vis = st.aberto ? L : L.slice(0, 4);
+  return `<h3 class="pinh">Conversa${n ? " · " + n : ""}</h3>${comForm()}${st.erro ? `<p class="cvazio">Não deu para carregar os comentários agora.</p>` : n ? vis.map(c=>comHTML(c, st)).join("") : `<p class="cvazio">Ninguém comentou ainda.</p>`}
+    ${n > vis.length ? `<button class="linkbtn" type="button" data-act="commais">Ver mais ${n - vis.length}</button>` : ""}`; }
+/* redesenha sem perder o que a pessoa estava escrevendo */
+function comsDesenha(key){ $$(`[data-coms="${key}"]`).forEach(el=>{ const t = el.querySelector(".ctxt"), f = el.querySelector(".cfon"), m = el.querySelector('.cmarcas [aria-pressed="true"]'), r = {t:t ? t.value : "", f:f ? f.value : "", m:m ? m.dataset.m : ""};
+    const h = comsHTML(key); el.hidden = !h; el.innerHTML = h;
+    const t2 = el.querySelector(".ctxt"); if (t2 && r.t) t2.value = r.t; if (r.m){ const b = el.querySelector(`.cmarcas [data-m="${r.m}"]`); if (b) b.setAttribute("aria-pressed", "true"); const f2 = el.querySelector(".cfon"); if (f2){ f2.hidden = false; f2.value = r.f; } } }); }
+async function comsPreenche(el){ el.dataset.ok = "1"; const key = el.dataset.coms; el.innerHTML = comsHTML(key); if (!COMS.has(key) || !COMS.get(key).lista) await comsCarrega(key); if (el.isConnected) comsDesenha(key); }
+const comKey = b => { const s = b.closest("[data-coms]"); return s ? s.dataset.coms : ""; };
+let extraRaf = 0;
+new MutationObserver(()=>{ if (extraRaf) return; extraRaf = requestAnimationFrame(()=>{ extraRaf = 0;
+  $$("[data-pent]:not([data-ok])").forEach(pentPreenche); $$("[data-coms]:not([data-ok])").forEach(comsPreenche); }); }).observe(document.body, {childList:true, subtree:true});
 function detailHTML(it, uid, mode, inline){
   const o = ORG[it.org], on = S.saved.has(uid), f = S.follow.has(o.id);
   const isVid = it.tipo==="video", isImg = it.tipo==="imagem" || isVid, orig = ORIGEM[it.id], links = linksOf(it);
@@ -4750,6 +4841,7 @@ function detailHTML(it, uid, mode, inline){
       ${podeApagar(it) ? `<button class="btn ghost block" type="button" data-act="apagarreal" data-uid="${uid}">${ME.user && it.autorId===ME.user.id ? "Apagar minha publicação" : "Remover publicação (moderação)"}</button>` : ""}
       ${it.foto && !isImg ? `<figure class="dfoto"><img src="${esc(it.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer">${it.credito ? `<figcaption>Foto: ${esc(it.credito)} · via ${esc(it.ext ? it.ext.dom : "fonte")}</figcaption>` : ""}</figure>` : ""}
       ${it.daArte ? `<div class="pintext" hidden></div><button class="linkbtn moretext" type="button" hidden></button>` : text}
+      ${pentSlot(it)}
       ${it.daArte ? `<div class="srcblock">${it.campanha ? `<span class="atag camp">Campanha · ${esc(it.campanha)}</span>` : ""}
           <a class="btn ghost srcbtn" href="${it.ext.url}" target="_blank" rel="noopener">Ver e baixar no acervo ${ic("ext","sm")}</a>
           <span class="srcnote">Acervo do Design Ativista · publicada em ${dLabel(it.ext.data)}${it.copia ? " · imagem reduzida na prévia sem internet" : ""}</span></div>`
@@ -4758,6 +4850,7 @@ function detailHTML(it, uid, mode, inline){
         : `<div class="srcblock">${orig ? `<div class="native">${ic("ext","sm")}<span>Original em ${orig}</span><span class="fic" title="Endereço de exemplo, sem destino real">exemplo</span></div>` : `<div class="native">${ic("check","sm")}<span>Publicado direto na rede por ${o.nome}</span></div>`}</div>`}
       ${interact(it)}
       <section class="pinseal">${sealBox(it, true)}<div class="pinfoot">${why(it, mode)}${reportBox(it)}</div></section>
+      ${comsSlot(it)}
     </div></div>
     <div class="pinside">${links.length||sibs.length ? `<section class="pinsec s"><h3 class="pinh">${it.ext ? "Outras fontes sobre isto" : "Conteúdos vinculados"}</h3><div class="lks">${links.map(linkRow).join("")}${sibs.map(sibRow).join("")}</div></section>` : ""}</div>
     ${it.ext && o.fonte ? `<div class="pinend">${mobBox(it)}</div>` : ""}</article>`;
@@ -5114,7 +5207,7 @@ function noticiasAplica(data, ref){
     if (yt) Object.assign(it, {tipo:"video", yt, src:null, plat:"YouTube", dur:"", ar:16/9, ph:.75, art:"stripes", capa:n.imagem_url || ("https://i.ytimg.com/vi/" + yt + "/hqdefault.jpg")});
     else if (n.imagem_url){ it.foto = n.imagem_url; it.credito = f.nome; }
     const arruma = t => (t || "").replace(/[ \t]+([,.;:!?])/g, "$1").replace(/[ \t]{2,}/g, " ");   /* o feed às vezes deixa espaço antes da vírgula */
-    RESUMO[id] = arruma(n.chamada); BODY[id] = n.resumo ? n.resumo.split(/\n\s*\n/).map(arruma).filter(Boolean) : n.chamada ? [arruma(n.chamada)] : []; it.texto = RESUMO[id]; SEAL[id] = f.nota;
+    RESUMO[id] = arruma(n.chamada); BODY[id] = n.resumo ? n.resumo.split(/\n\s*\n/).map(arruma).filter(Boolean) : n.chamada ? [arruma(n.chamada)] : []; it.texto = RESUMO[id]; SEAL[id] = Math.max(0, Math.min(100, f.nota + (n.selo_ajuste || 0))); if (n.selo_ajuste) it.seloAjuste = n.selo_ajuste;   /* ajuste: sinais da comunidade aceitos pela curadoria */
     POOL.push(it); });
   F.key = null; if (route()==="inicio" || route()==="") render(); }
 
@@ -5376,6 +5469,56 @@ function sealChecksArte(it, L){
     + L("na", "Afirmações checadas", "Arte: o selo avalia fatos, não expressão artística."); }
 /* curadoria das artes */
 /* fila de pedidos de verificação: só a administração vê. Nenhum documento é guardado; o método ainda será definido. */
+/* curadoria do Para entender: a base de conhecimento (rascunho → aprovada), as notas que já apareceram e onde a conversa pede atenção */
+let ENT_BASE = [];
+async function curadoriaEntender(box){
+  const [b, n, a] = await Promise.all([SB.from("entender_base").select("*").order("criada_em"), SB.from("entender").select("noticia_id,titulo,texto,origem,confianca,status,criada_em,noticias(titulo)").order("criada_em", {ascending:false}).limit(40), SB.rpc("atencao_lista")]);
+  if (b.error) return box.innerHTML = `<p class="empty">${esc(erroAuth(b.error))}</p>`;
+  ENT_BASE = b.data || []; const grupo = s => ENT_BASE.filter(x=>x.status===s), limpa = r => esc(String(r || "").replace(/^\(|\)$/g, "").replace(/\\y/g, "").replace(/\|/g, ", "));
+  const item = x => `<article class="curitem"><div><small>${x.status==="aprovada" ? "Aprovada" : x.status==="arquivada" ? "Arquivada" : "Rascunho"}${x.revisada_em ? " · revisada " + quando(x.revisada_em) : ""}</small><b>${esc(x.titulo)}</b><p>${esc(x.texto)}</p>
+      <a href="${esc(x.fonte_url)}" target="_blank" rel="noopener">Fonte: ${esc(x.fonte_nome)} ${ic("ext","sm")}</a>
+      <small>Assunto: ${limpa(x.assunto)}</small>${x.polemica ? `<small>Sinal de polêmica: ${limpa(x.polemica)}</small>` : ""}
+      <div class="row">${x.status!=="aprovada" ? `<button class="btn sm primary" type="button" data-act="entstatus" data-id="${x.id}" data-s="aprovada">Aprovar</button>` : ""}<button class="btn sm" type="button" data-act="enteditar" data-id="${x.id}">Editar</button>${x.status!=="arquivada" ? `<button class="btn sm ghost" type="button" data-act="entstatus" data-id="${x.id}" data-s="arquivada">Arquivar</button>` : `<button class="btn sm ghost" type="button" data-act="entstatus" data-id="${x.id}" data-s="rascunho">Voltar a rascunho</button>`}</div></div></article>`;
+  const notas = n.error ? [] : n.data || [], at = a.error ? [] : a.data || [];
+  box.innerHTML = `<p class="curnota">O bloco “Para entender” só usa o que está aprovado aqui. Cada nota precisa de uma fonte oficial. Confira o texto e a fonte antes de aprovar: a rede fala em nome próprio. A nota aparece quando a notícia trata do assunto e traz um sinal de polêmica, ou quando a conversa na notícia está grande.</p>
+    <button class="btn sm" type="button" data-act="enteditar">${ic("plus","sm")} Nova nota</button>
+    <h2 class="curh">Rascunhos · ${grupo("rascunho").length}</h2>${grupo("rascunho").map(item).join("") || `<p class="empty">Nenhum rascunho esperando.</p>`}
+    <h2 class="curh">Aprovadas · ${grupo("aprovada").length}</h2>${grupo("aprovada").map(item).join("") || `<p class="empty">Nenhuma nota aprovada: o bloco ainda não aparece em nenhuma notícia.</p>`}
+    ${grupo("arquivada").length ? `<h2 class="curh">Arquivadas · ${grupo("arquivada").length}</h2>${grupo("arquivada").map(item).join("")}` : ""}
+    <h2 class="curh">Onde a conversa pede atenção</h2><p class="curnota">Notícias com mais comentários e com comentários mais marcados como úteis nos últimos 7 dias. Boas candidatas a uma nota nova.</p>
+    ${at.length ? `<div class="list">${at.map(x=>`<div class="setting static"><span class="t"><b>${esc(x.titulo)}</b><small>${esc(x.fonte)} · ${x.comentarios} ${x.comentarios===1 ? "comentário" : "comentários"} · até ${x.uteis} úteis · ${x.tem_nota ? "com Para entender" : "sem Para entender"}</small></span></div>`).join("")}</div>` : `<p class="empty">Ainda não há conversa suficiente.</p>`}
+    <h2 class="curh">Notas que já apareceram · ${notas.length}</h2>
+    ${notas.map(x=>`<article class="curitem"><div><small>${x.origem==="ia" ? "Escrita por IA · confiança " + x.confianca : "Nota da base"} · ${quando(x.criada_em)}${x.status==="oculta" ? " · oculta" : ""}</small><b>${esc(x.titulo)}</b><p>${esc(x.texto)}</p><small>Na notícia: ${esc((x.noticias || {}).titulo || "")}</small>
+      <div class="row"><button class="btn sm ghost" type="button" data-act="entnota" data-id="${x.noticia_id}" data-s="${x.status==="oculta" ? "publicada" : "oculta"}">${x.status==="oculta" ? "Voltar a mostrar" : "Ocultar nesta notícia"}</button></div></div></article>`).join("") || `<p class="empty">Nenhuma nota apareceu ainda.</p>`}`; }
+function sheetEntender(id){ const x = ENT_BASE.find(y=>y.id===id) || {}, limpa = r => esc(String(r || "").replace(/^\(|\)$/g, "")), v = k => esc(x[k] || "");
+  openSheet(shead(id ? "Editar nota" : "Nova nota") + `<div class="cform sform">
+    <div class="field"><label for="ebtit">Título</label><input id="ebtit" type="text" maxlength="90" value="${v("titulo")}"></div>
+    <div class="field"><label for="ebtxt">Texto (simples, só fatos, até 700 caracteres)</label><textarea id="ebtxt" maxlength="700" rows="6">${v("texto")}</textarea></div>
+    <div class="field"><label for="ebfn">Nome da fonte oficial</label><input id="ebfn" type="text" maxlength="140" value="${v("fonte_nome")}" placeholder="Ex.: Constituição Federal, art. 144"></div>
+    <div class="field"><label for="ebfu">Endereço da fonte</label><input id="ebfu" type="url" maxlength="500" value="${v("fonte_url")}" placeholder="https://"></div>
+    <div class="field"><label for="ebas">Palavras do assunto</label><input id="ebas" type="text" maxlength="590" value="${limpa(x.assunto)}" autocapitalize="off" spellcheck="false"><small class="hint">Separe com | e escreva sem acento. A nota só é considerada se a notícia tiver uma destas palavras. Para valer só a palavra inteira, ponha \\y antes e depois (ex.: \\ysus\\y).</small></div>
+    <div class="field"><label for="ebpo">Sinais de polêmica (opcional)</label><input id="ebpo" type="text" maxlength="590" value="${limpa(x.polemica)}" autocapitalize="off" spellcheck="false"><small class="hint">Palavras que indicam a confusão (por exemplo: presidente|governador|culpa). Sem isso, a nota aparece em toda notícia do assunto.</small></div>
+    <p class="ferr" role="alert" hidden></p><button class="btn primary block" type="button" data-act="entsalva" data-id="${esc(id || "")}">${id ? "Salvar" : "Criar rascunho"}</button></div>`, id ? "Editar nota" : "Nova nota"); }
+/* curadoria da conversa: denúncias de comentários, candidatas a colaborador e sinais para o selo */
+async function curadoriaConversa(box){
+  const [d, c, s] = await Promise.all([SB.from("comentario_denuncias").select("comentario_id,motivo,criado_em,comentarios(id,texto,status,perfis(nome))").eq("status","aberta").order("criado_em").limit(200), SB.rpc("colaborador_candidatos"),
+    SB.from("sinais").select("id,tipo,fonte_url,peso,criado_em,comentarios(texto,perfis(nome,colaborador)),noticias(titulo,selo_ajuste,fontes(nome,nota))").eq("status","aberto").order("peso", {ascending:false}).limit(100)]);
+  if (d.error && c.error && s.error) return box.innerHTML = `<p class="empty">${esc(erroAuth(d.error))}</p>`;
+  const den = {}; (d.data || []).forEach(x=>{ if (!x.comentarios) return; (den[x.comentario_id] = den[x.comentario_id] || {c:x.comentarios, n:0}).n++; });
+  const cand = (c.data || {}).contas || [], cr = (c.data || {}).criterios || {}, sin = s.data || [];
+  box.innerHTML = `<h2 class="curh">Sinais para o selo · ${sin.length}</h2><p class="curnota">Contribuições com fonte que confirmam ou contestam uma notícia, vindas de colaboradores ou marcadas como úteis por várias pessoas. Abra a fonte antes de decidir. Aceitar muda a nota daquela notícia; a nota da fonte você ajusta em Saúde das fontes.</p>
+    ${sin.map(x=>{ const n = x.noticias || {}, cm = x.comentarios || {}, pf = cm.perfis || {}, url = /^https:\/\//.test(x.fonte_url || "") ? x.fonte_url : "";
+      return `<article class="curitem"><div><small>${x.tipo==="contesta" ? "Contesta" : "Confirma"} · peso ${x.peso} · ${esc(pf.nome || "Conta")}${pf.colaborador ? " (colaborador)" : ""} · ${quando(x.criado_em)}</small><b>${esc(n.titulo || "")}</b>
+        <small>${esc((n.fontes || {}).nome || "")} · nota da fonte ${(n.fontes || {}).nota ?? "?"}${n.selo_ajuste ? " · ajuste atual " + (n.selo_ajuste > 0 ? "+" : "") + n.selo_ajuste : ""}</small><p>${esc(cm.texto || "")}</p>
+        ${url ? `<a href="${esc(url)}" target="_blank" rel="noopener nofollow">Fonte indicada: ${esc(hostOf(url))} ${ic("ext","sm")}</a>` : ""}
+        <div class="row">${x.tipo==="contesta" ? `<button class="btn sm primary" type="button" data-act="sinaldecide" data-id="${x.id}" data-a="1" data-j="-5">Aceitar (−5)</button><button class="btn sm" type="button" data-act="sinaldecide" data-id="${x.id}" data-a="1" data-j="-10">Aceitar (−10)</button>` : `<button class="btn sm primary" type="button" data-act="sinaldecide" data-id="${x.id}" data-a="1" data-j="5">Aceitar (+5)</button>`}<button class="btn sm ghost" type="button" data-act="sinaldecide" data-id="${x.id}" data-a="0">Recusar</button></div></div></article>`; }).join("") || `<p class="empty">Nenhum sinal esperando.</p>`}
+    <h2 class="curh">Usuário colaborador</h2><p class="curnota">Os critérios indicam, você confirma. Critérios, nos últimos ${cr.janela_dias || 90} dias: conta com ${cr.dias || 14} dias ou mais, ${cr.comentarios || 5} comentários, ${cr.uteis || 10} marcações de útil vindas de ${cr.pessoas || 5} pessoas diferentes, ${cr.com_fonte || 2} comentários com fonte e nenhum comentário removido.</p>
+    ${cand.map(x=>`<article class="curitem"><div><small>${x.atende ? "Atende aos critérios" : "Ainda não atende"}${x.colaborador ? " · já é colaborador" : ""}</small><b>${esc(x.nome)}</b>
+      <p>${esc(x.cidade || "sem cidade")} · conta há ${x.dias} dias · ${x.comentarios} comentários · ${x.uteis} úteis de ${x.pessoas} pessoas · ${x.com_fonte} com fonte · ${x.removidos} removidos</p>
+      <div class="row">${x.colaborador ? `<button class="btn sm ghost" type="button" data-act="colabdefine" data-id="${x.id}" data-v="0">Tirar o destaque</button>` : `<button class="btn sm${x.atende ? " primary" : ""}" type="button" data-act="colabdefine" data-id="${x.id}" data-v="1">Confirmar colaborador</button>`}</div></div></article>`).join("") || `<p class="empty">Ninguém comentou ainda.</p>`}
+    <h2 class="curh">Comentários denunciados · ${Object.keys(den).length}</h2><p class="curnota">O comentário continua no ar até você decidir.</p>
+    ${Object.entries(den).map(([id, x])=>`<article class="curitem"><div><small>${x.n} ${x.n===1 ? "denúncia" : "denúncias"} · ${esc((x.c.perfis || {}).nome || "Conta")}${x.c.status==="oculto" ? " · já oculto" : ""}</small><p>${esc(x.c.texto)}</p>
+      <div class="row"><button class="btn sm primary" type="button" data-act="dendecide" data-id="${id}" data-s="removido">Ocultar comentário</button><button class="btn sm ghost" type="button" data-act="dendecide" data-id="${id}" data-s="mantido">Manter</button></div></div></article>`).join("") || `<p class="empty">Nenhuma denúncia aberta.</p>`}`; }
 async function curadoriaVerif(box){
   const {data, error} = await SB.from("verificacao_pedidos").select("id,user_id,status,criado_em").order("criado_em", {ascending:true}).limit(300);
   if (error) return box.innerHTML = `<p class="empty">${esc(erroAuth(error))}</p>`;
@@ -5401,13 +5544,15 @@ function screenCuradoria(){
   if (!ME.user || !ME.perfil || ME.perfil.papel!=="admin") return topo + `<div class="container cform"><div class="note">${ic("lock")}<span>Só administradoras da rede veem a curadoria. <a href="#conta">Entrar</a></span></div></div>`;
   const t = S.curTab || "fila";
   return topo + `<div class="container cur">
-    <div class="tabs" role="tablist" aria-label="Curadoria"><button class="tab" type="button" role="tab" data-act="curtab" data-t="fila" aria-selected="${t==="fila"}">Fila de revisão</button><button class="tab" type="button" role="tab" data-act="curtab" data-t="fontes" aria-selected="${t==="fontes"}">Saúde das fontes</button><button class="tab" type="button" role="tab" data-act="curtab" data-t="orgs" aria-selected="${t==="orgs"}">Organizações</button><button class="tab" type="button" role="tab" data-act="curtab" data-t="arte" aria-selected="${t==="arte"}">Arte</button><button class="tab" type="button" role="tab" data-act="curtab" data-t="verif" aria-selected="${t==="verif"}">Verificações</button></div>
+    <div class="tabs" role="tablist" aria-label="Curadoria"><button class="tab" type="button" role="tab" data-act="curtab" data-t="fila" aria-selected="${t==="fila"}">Fila de revisão</button><button class="tab" type="button" role="tab" data-act="curtab" data-t="fontes" aria-selected="${t==="fontes"}">Saúde das fontes</button><button class="tab" type="button" role="tab" data-act="curtab" data-t="orgs" aria-selected="${t==="orgs"}">Organizações</button><button class="tab" type="button" role="tab" data-act="curtab" data-t="arte" aria-selected="${t==="arte"}">Arte</button><button class="tab" type="button" role="tab" data-act="curtab" data-t="verif" aria-selected="${t==="verif"}">Verificações</button><button class="tab" type="button" role="tab" data-act="curtab" data-t="entender" aria-selected="${t==="entender"}">Para entender</button><button class="tab" type="button" role="tab" data-act="curtab" data-t="conversa" aria-selected="${t==="conversa"}">Conversa</button></div>
     <div id="curbody"><p class="empty">Carregando…</p></div></div>`;
 }
 const quando = d => { if (!d) return "nunca"; const m = Math.round(((ALTA_REF || Date.now()) - new Date(d)) / 60000); return m < 60 ? "há " + Math.max(1, m) + " min" : m < 1440 ? "há " + Math.round(m/60) + " h" : "há " + Math.round(m/1440) + " dias"; };
 async function curadoriaCarrega(){ const box = $("#curbody"); if (!box || !SB || !ME.perfil || ME.perfil.papel!=="admin") return;
   if (S.curTab==="arte") return curadoriaArtes(box);
   if (S.curTab==="verif") return curadoriaVerif(box);
+  if (S.curTab==="entender") return curadoriaEntender(box);
+  if (S.curTab==="conversa") return curadoriaConversa(box);
   if (S.curTab==="orgs"){
     const {data, error} = await SB.from("org_pedidos").select("*").order("criada_em", {ascending:false}).limit(100);
     if (error){ box.innerHTML = `<p class="empty">${esc(erroAuth(error))}</p>`; return; }
@@ -5651,6 +5796,8 @@ const ACEITE_VERSAO = "v1-2026-11-10";      /* versão do texto aceito no cadast
 const mailBom = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
 const ERROS_AUTH = [[/invalid login/i,"E-mail ou senha incorretos."],[/email not confirmed/i,"Confirme seu e-mail antes de entrar. Procure a mensagem da arede.online na caixa de entrada (e no spam)."],
   [/already registered|already been registered/i,"Não foi possível criar a conta com esses dados. Se você já tem conta, entre ou recupere a senha."],[/rate limit|too many/i,"Muitas tentativas em pouco tempo. Espere alguns minutos e tente de novo."],
+  [/limite_comentarios.*hora/i,"Você chegou ao limite de comentários desta hora. Tente de novo mais tarde."],[/limite_comentarios/i,"Você chegou ao limite de comentários de hoje."],[/limite_uteis/i,"Muitas marcações em pouco tempo. Tente de novo mais tarde."],
+  [/comentarios_fonte_para_confirmar/i,"Para confirmar ou contestar, informe o endereço da fonte."],[/comentarios_fonte_url_check|fonte_url/i,"O endereço da fonte precisa começar com https://"],
   [/limite_hora/i,"Você chegou ao limite de publicações desta hora. Tente de novo mais tarde."],[/limite_dia/i,"Você chegou ao limite de publicações de hoje. Tente de novo amanhã."],
   [/weak|pwned|leaked|compromised/i,"Essa senha já apareceu em vazamentos de outros sites. Escolha outra."],
   [/password/i,"A senha não foi aceita: use no mínimo 10 caracteres, com letras e números ou símbolos."],[/fetch|network/i,"Sem conexão com o servidor. Verifique a internet."]];
@@ -5827,6 +5974,54 @@ const A = {
   altaassunto: b => { S.altaAberto = b.dataset.n; go("em-alta"); },
   altaabre: b => { S.altaAberto = S.altaAberto===b.dataset.n ? null : b.dataset.n; altaDesenha(); },
   altarec: () => { $("#altabody").innerHTML = `<p class="empty">Atualizando…</p>`; altaCarrega(); },
+  commais: b => { const k = comKey(b), st = COMS.get(k); if (st){ st.aberto = true; comsDesenha(k); } },
+  commarca: b => { const box = b.closest(".cnovo"), on = b.getAttribute("aria-pressed")==="true"; box.querySelectorAll(".cmarcas .chip").forEach(x=>x.setAttribute("aria-pressed", "false")); if (!on) b.setAttribute("aria-pressed", "true");
+    const f = box.querySelector(".cfon"), m = on ? "" : b.dataset.m; f.hidden = !m; f.placeholder = m==="contexto" ? "Endereço da fonte, se tiver (https://…)" : "Endereço da fonte (https://…)"; if (!m) f.value = ""; },
+  comcancela: b => { const box = b.closest(".cnovo"); box.querySelector(".caviso").hidden = true; box.querySelector(".cbt").hidden = false; },
+  comenvia: async b => { const box = b.closest(".cnovo"), k = comKey(b); if (!box || !k || !ME.user) return; const [col, id] = k.split(":"), msg = box.querySelector(".cmsg"), diz = t => { msg.textContent = t; };
+    const texto = box.querySelector(".ctxt").value.trim(), mb = box.querySelector('.cmarcas [aria-pressed="true"]'), marca = mb ? mb.dataset.m : null, fonte = box.querySelector(".cfon").value.trim();
+    if (texto.length < 2) return diz("Escreva o seu comentário.");
+    if (marca && marca!=="contexto" && !fonte) return diz("Para confirmar ou contestar, informe o endereço da fonte.");
+    if (fonte && !/^https:\/\/[^\s]+\.[^\s]+$/.test(fonte)) return diz("O endereço da fonte precisa começar com https://");
+    /* aviso só no primeiro comentário de cada conta, neste aparelho */
+    if (!b.dataset.ciente && !store.get("comAviso:" + ME.user.id, false)){ diz(""); box.querySelector(".caviso").hidden = false; box.querySelector(".cbt").hidden = true; return; }
+    store.set("comAviso:" + ME.user.id, true); diz(""); ocupado(b, true, "Enviando…");
+    const {error} = await SB.from("comentarios").insert({[col]:id, autor:ME.user.id, texto, marca, fonte_url:fonte || null}); ocupado(b, false);
+    if (error) return diz(erroAuth(error));
+    box.querySelector(".ctxt").value = ""; box.querySelectorAll(".cmarcas .chip").forEach(x=>x.setAttribute("aria-pressed", "false")); box.querySelector(".cfon").value = "";
+    await comsCarrega(k); comsDesenha(k); toast("Comentário publicado.");
+    if (col==="noticia_id" && !$(`[data-pent="${id}"]:not([hidden])`)) PENT.delete(id); },   /* a conversa cresceu: o servidor pode reavaliar o Para entender */
+  comutil: async b => { if (!ME.user) return toast("Entre na sua conta para marcar um comentário como útil."); const k = comKey(b), st = COMS.get(k), id = b.dataset.id, c = st && st.lista.find(x=>x.id===id); if (!c) return;
+    const on = st.meus.has(id); b.disabled = true;
+    const r = on ? await SB.from("comentario_uteis").delete().eq("comentario_id", id).eq("user_id", ME.user.id) : await SB.from("comentario_uteis").insert({comentario_id:id, user_id:ME.user.id});
+    if (r.error && !/duplicate|unique/i.test(r.error.message || "")){ b.disabled = false; return toast(/proprio/i.test(r.error.message) ? "Não dá para marcar o próprio comentário." : erroAuth(r.error)); }
+    if (on){ st.meus.delete(id); c.uteis = Math.max(0, c.uteis - 1); } else { st.meus.add(id); c.uteis++; } comsDesenha(k); },
+  comapaga: async b => { if (!b.dataset.conf){ b.dataset.conf = "1"; b.textContent = "Apagar mesmo?"; setTimeout(()=>{ if (b.isConnected){ delete b.dataset.conf; b.textContent = "Apagar"; } }, 4000); return; }
+    const k = comKey(b), {error} = await SB.from("comentarios").delete().eq("id", b.dataset.id); if (error) return toast(erroAuth(error)); await comsCarrega(k); comsDesenha(k); toast("Comentário apagado."); },
+  comdenuncia: async b => { const {error} = await SB.from("comentario_denuncias").insert({comentario_id:b.dataset.id, user_id:ME.user.id}); b.disabled = true;
+    toast(error && /duplicate|unique/i.test(error.message || "") ? "Você já denunciou este comentário." : error ? erroAuth(error) : "Denúncia enviada. O comentário continua no ar enquanto é revisado."); },
+  /* curadoria: Para entender */
+  entstatus: async b => { ocupado(b, true, "…"); const {error} = await SB.from("entender_base").update({status:b.dataset.s, revisada_em:new Date().toISOString(), revisada_por:ME.user.id}).eq("id", b.dataset.id); ocupado(b, false);
+    if (error) return toast(erroAuth(error)); toast(b.dataset.s==="aprovada" ? "Nota aprovada: já pode aparecer nas notícias." : b.dataset.s==="arquivada" ? "Nota arquivada." : "Nota voltou a rascunho."); curadoriaCarrega(); },
+  enteditar: b => sheetEntender(b.dataset.id || ""),
+  entsalva: async b => { const g = i => ($("#" + i) ? $("#" + i).value.trim() : ""), id = b.dataset.id, reg = v => v && !/^\(.*\)$/.test(v) ? "(" + v + ")" : v;
+    const d = {titulo:g("ebtit"), texto:g("ebtxt"), fonte_nome:g("ebfn"), fonte_url:g("ebfu"), assunto:reg(g("ebas")), polemica:reg(g("ebpo")) || null};
+    if (d.titulo.length < 5 || d.texto.length < 40 || !d.fonte_nome || !/^https:\/\//.test(d.fonte_url) || !d.assunto) return sheetErro("Preencha título, texto (40 caracteres ou mais), a fonte com endereço https:// e as palavras do assunto.");
+    for (const x of [d.assunto, d.polemica]) if (x){ try{ new RegExp(x); }catch(e){ return sheetErro("As palavras do assunto ou da polêmica têm um erro de escrita (parênteses ou barras sobrando)."); } }
+    if (!id){ d.chave = semAcento(d.titulo.toLowerCase()).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40); if (d.chave.length < 3) return sheetErro("Dê um título mais longo."); }
+    else { d.revisada_em = new Date().toISOString(); d.revisada_por = ME.user.id; }
+    sheetErro(""); ocupado(b, true, "Salvando…"); const {error} = id ? await SB.from("entender_base").update(d).eq("id", id) : await SB.from("entender_base").insert(d); ocupado(b, false);
+    if (error) return sheetErro(/duplicate|unique/i.test(error.message || "") ? "Já existe uma nota com esse título." : erroAuth(error)); closeSheet(); toast(id ? "Nota atualizada." : "Rascunho criado."); curadoriaCarrega(); },
+  entnota: async b => { const {error} = await SB.from("entender").update({status:b.dataset.s}).eq("noticia_id", b.dataset.id); if (error) return toast(erroAuth(error)); PENT.delete(b.dataset.id); toast(b.dataset.s==="oculta" ? "Nota ocultada dessa notícia." : "Nota voltou a aparecer."); curadoriaCarrega(); },
+  /* curadoria: Conversa */
+  dendecide: async b => { const id = b.dataset.id, tira = b.dataset.s==="removido"; ocupado(b, true, "…");
+    if (tira){ const r = await SB.from("comentarios").update({status:"oculto"}).eq("id", id); if (r.error){ ocupado(b, false); return toast(erroAuth(r.error)); } }
+    const {error} = await SB.from("comentario_denuncias").update({status:b.dataset.s}).eq("comentario_id", id).eq("status", "aberta"); ocupado(b, false);
+    if (error) return toast(erroAuth(error)); COMS.clear(); toast(tira ? "Comentário ocultado." : "Comentário mantido."); curadoriaCarrega(); },
+  colabdefine: async b => { ocupado(b, true, "…"); const {error} = await SB.rpc("colaborador_define", {p_user:b.dataset.id, p_valor:b.dataset.v==="1"}); ocupado(b, false);
+    if (error) return toast(erroAuth(error)); COMS.clear(); toast(b.dataset.v==="1" ? "Destaque de colaborador confirmado." : "Destaque retirado."); curadoriaCarrega(); },
+  sinaldecide: async b => { ocupado(b, true, "…"); const {error} = await SB.rpc("sinal_decide", {p_id:b.dataset.id, p_aceita:b.dataset.a==="1", p_ajuste:parseInt(b.dataset.j || "0", 10)}); ocupado(b, false);
+    if (error) return toast(erroAuth(error)); toast(b.dataset.a==="1" ? "Sinal aceito. A nota muda na próxima leitura das notícias." : "Sinal recusado."); curadoriaCarrega(); },
   curtab: b => { S.curTab = b.dataset.t; render(); },
   arterev: async b => { const id = b.dataset.id, st = b.dataset.s; ocupado(b, true, "…");
     const {error} = await SB.from("artes").update({status:st, revisada_por:ME.user.id, revisada_em:new Date().toISOString()}).eq("id", id); ocupado(b, false);
@@ -5860,11 +6055,11 @@ const A = {
     try{ await SB.auth.signOut({scope:"others"}); }catch(e){} ocupado(b, false); closeSheet(); toast("Senha trocada. Os outros aparelhos saíram da conta."); },
   sairtodos: async () => { try{ await SB.auth.signOut({scope:"global"}); }catch(e){} ME.user = null; ME.perfil = null; ME.acesso = null; toast("Você saiu da conta em todos os aparelhos."); go("conta"); },
   baixadados: async b => { ocupado(b, true); const uid = ME.user.id, q = (t, c, col="user_id") => SB.from(t).select(c).eq(col, uid).then(r=>r.data || []).catch(()=>[]);
-    const [perfil, publicacoes, contas, orgs, aceites, verif] = await Promise.all([q("perfis","id,nome,usuario,cidade,bio,criado_em,verificado,verificado_em","id"), q("publicacoes","*","autor"), q("contas_externas","*"), q("org_pedidos","*"), q("aceites","*"), q("verificacao_pedidos","*")]);
+    const [perfil, publicacoes, contas, orgs, aceites, verif, comentarios] = await Promise.all([q("perfis","id,nome,usuario,cidade,bio,criado_em,verificado,verificado_em,colaborador","id"), q("publicacoes","*","autor"), q("contas_externas","*"), q("org_pedidos","*"), q("aceites","*"), q("verificacao_pedidos","*"), q("comentarios","id,noticia_id,publicacao_id,texto,marca,fonte_url,uteis,status,criado_em","autor")]);
     const local = {}; try{ for (let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if (k.startsWith("arede-")) local[k] = store.get(k.slice(6), null); } }catch(e){}
     const doc = {arquivo:"Dados da sua conta em arede.online", gerado_em:new Date().toISOString(),
       conta:{id:uid, email:ME.user.email, criada_em:ME.user.created_at, email_confirmado_em:ME.user.email_confirmed_at || null, ultimo_acesso:ME.user.last_sign_in_at || null, nivel:nivel()},
-      perfil:perfil[0] || null, publicacoes, contas_de_outras_redes:contas, pedidos_de_organizacao:orgs, aceites, pedido_de_verificacao:verif[0] || null,
+      perfil:perfil[0] || null, publicacoes, comentarios, contas_de_outras_redes:contas, pedidos_de_organizacao:orgs, aceites, pedido_de_verificacao:verif[0] || null,
       guardado_so_neste_aparelho:local, nota:"A senha não está aqui: o servidor guarda só uma versão embaralhada, que ninguém consegue ler."};
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(doc, null, 2)], {type:"application/json"})); a.download = "arede.online-meus-dados.json";
     document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 2000); ocupado(b, false); toast("Arquivo baixado."); },
@@ -6208,7 +6403,7 @@ if (!location.hash){ const ini = store.get("ultima", "") || START; if (ini && in
 window.addEventListener("hashchange", render);
 if (S.localAuto && navigator.permissions && navigator.permissions.query) navigator.permissions.query({name:"geolocation"}).then(q=>{ if (q.state==="granted" && Date.now() - (S.localQuando || 0) > 6 * 3600e3) localAtualiza(true); }).catch(()=>{});
 contaInicia();
-if (/[?&]teste=1/.test(location.search)) window.__arede = {prox, footCtx, footInfo, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
+if (/[?&]teste=1/.test(location.search)) window.__arede = {prox, footCtx, footInfo, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
 window.addEventListener("scroll", ()=>{ const t = $("#top"); if (t) t.classList.toggle("scrolled", window.scrollY > 4); }, {passive:true});
 window.addEventListener("resize", debounce(()=>{
   placeLogoDots();
@@ -6251,7 +6446,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 10/11 17:07";
+const VERSAO = "v1 registrada · 10/11 17:59";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
