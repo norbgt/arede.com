@@ -4,7 +4,7 @@ Ambiente online do projeto **a rede.com**: uma rede social e de notícias que aj
 
 ## Protótipo navegável
 
-**https://arede.online** (abre direto o protótipo, no celular e no computador). O endereço antigo, norbgt.github.io/arede.com, leva ao novo.
+**https://arede.online** (abre direto o protótipo, no celular e no computador). Código em github.com/norbgt/arede.online; servidor no Supabase (projeto arede). Site, repositório e servidor estão sempre na mesma versão.
 
 O protótipo guarda as escolhas de cada pessoa (tema, curtidas, pastas, algoritmo) só no navegador dela. Quem abre o link pela primeira vez vê o mesmo ponto de partida.
 
@@ -17,6 +17,7 @@ O protótipo guarda as escolhas de cada pessoa (tema, curtidas, pastas, algoritm
 - [prototipo/ARQUITETURA.md](prototipo/ARQUITETURA.md): princípios mobile first e organização do código.
 - [LEIA-ME.md](LEIA-ME.md): como o ambiente local e o online se relacionam.
 - [redes/index.ts](redes/index.ts) e [artes/index.ts](artes/index.ts): funções do servidor que leem o feed público de outras redes e o acervo do Design Ativista.
+- [coletor/index.ts](coletor/index.ts) e [canais/index.ts](canais/index.ts): funções do servidor que coletam as notícias e os vídeos dos canais do YouTube, e que acham o endereço de cada canal.
 
 ## Versões
 

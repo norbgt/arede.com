@@ -1,8 +1,15 @@
 # a rede
 
 Ambiente local onde idealizamos tudo do projeto.
-Periodicamente, o que estiver pronto é levado para o ambiente online:
-https://github.com/norbgt/arede.com
+Cada nova versão vai ao ar em https://arede.online, com o código em https://github.com/norbgt/arede.online.
+
+## Pares: sempre na mesma versão
+Estes ambientes andam juntos e estão sempre na versão mais recente (o número aparece no rodapé do site):
+- **Site:** https://arede.online (domínio no Cloudflare, servido pelo GitHub Pages).
+- **Repositório:** https://github.com/norbgt/arede.online (antes norbgt/arede.com).
+- **Servidor:** Supabase, projeto arede (zbmzabgdejylpmabujad): banco, login, funções coletor, canais, redes e artes. A tabela `ambiente` registra os pares, a versão no ar e o commit.
+- **Acompanham:** a prévia no Claude e a pasta "a rede.com" no Mac (que guarda também o painel de controle, que nunca vai para o online).
+- **E-mail:** contato@arede.online é o único endereço público.
 
 - `manifesto.md`: o manifesto, construído aos poucos.
 - `analise-referencias.md`: análise de Facebook, Instagram, WhatsApp e Pinterest e proposta inicial da rede.
@@ -26,7 +33,7 @@ https://arede.online (público; domínio próprio desde 10 nov 2026, registrado 
 - O que você muda no painel (fontes, pesos do selo) fica salvo neste navegador.
 
 ## Permissões
-- Amanda é admin de todos os ambientes: protótipo, link público, repositório norbgt/arede.com, painel de controle e prévia no Claude.
+- Amanda é admin de todos os ambientes: protótipo, link público, repositório norbgt/arede.online, domínio arede.online, painel de controle e prévia no Claude.
 - Ajustes são feitos a partir deste Mac: direto nos arquivos ou pelos consoles logados nele, como o Claude e o GitHub.
 - Detalhes no painel, em Permissões.
 
