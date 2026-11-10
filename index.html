@@ -607,6 +607,7 @@ h1 .fic{font-size:11px;vertical-align:4px}
 .srclink:hover{text-decoration:underline;text-underline-offset:3px}
 .pinseal{display:flex;flex-direction:column;gap:2px;padding:8px 0 2px;border-top:1px solid var(--line)}
 .pinseal > .why{border-top:0;padding-top:2px}
+.iconbtn.armado{color:#fff;background:var(--danger,#c62828)}
 .pinacts{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:0 18px}.pinacts .rep,.pinacts .linkbtn{min-height:32px;padding:0;font-size:13px}.pinacts .repbox{flex-basis:100%}
 .av.rede{background:var(--accent);color:var(--on-accent)}.av.rede .amark{font-size:1.25em;margin:-3px 0 0 0}
 /* Para entender: nota de contexto no detalhe do cartão */
@@ -3057,6 +3058,7 @@ const ICON = {
   search:'<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>',
   message:'<path d="M4.5 5.5h15a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H10l-4.5 3.5v-3.5h-1a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1z"/>',
   close:'<path d="M6 6l12 12M18 6 6 18"/>',
+  trash:'<path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v5.5M14 11v5.5"/>',
   back:'<path d="M15 5l-7 7 7 7"/>',
   lock:'<rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>',
   check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',
@@ -4854,10 +4856,10 @@ function detailHTML(it, uid, mode, inline){
   const vis = isImg ? `<div class="pinvis">${isVid && it.yt ? `<div class="ytbox xvid"${S.ytAuto===it.yt ? " data-auto" : ""}>${ytCapa(it)}${ytPlayBtn(it, true)}</div>` : isVid && !it.src ? `<a class="xvid" href="${it.ext ? it.ext.url : "#"}" target="_blank" rel="noopener" aria-label="Assistir: ${esc(it.titulo)}">${art(it, .5625, false)}<span class="xplay big">${ic("play")}<span>Assistir ${it.plat?"no "+esc(it.plat):""}</span></span></a>` : isVid?`<video class="pinvid" ${inline?"":'id="pinvid"'} src="${it.src}" poster="${it.poster}" controls playsinline preload="metadata" style="--ar:${(1/it.ar).toFixed(4)}" aria-label="Vídeo: ${esc(it.titulo)}"></video>`:(it.foto && it.tipo==="imagem" ? `<img class="pinarte" src="${esc(it.foto)}" alt="${esc(it.titulo)}${it.artista ? ", arte de " + esc(it.artista) : ""}" style="aspect-ratio:${(1/(it.ar||1.41)).toFixed(4)}" referrerpolicy="no-referrer">` : art(it, it.ph))}${inline?"":`<button class="iconbtn solid floatback" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button>`}</div>` : "";
   const bar = inline
     ? `<div class="pinbar"><div class="spacer"></div>
-        <button class="iconbtn" type="button" data-act="page" data-uid="${uid}" aria-label="Abrir em página própria" title="Abrir em página própria">${ic("expand")}</button>${likeBtn(it)}<button class="iconbtn" type="button" data-act="share" data-uid="${uid}" aria-label="Copiar link">${ic("share")}</button>${saveBtn(uid)}
+        <button class="iconbtn" type="button" data-act="page" data-uid="${uid}" aria-label="Abrir em página própria" title="Abrir em página própria">${ic("expand")}</button>${likeBtn(it)}<button class="iconbtn" type="button" data-act="share" data-uid="${uid}" aria-label="Copiar link">${ic("share")}</button>${saveBtn(uid)}${podeApagar(it) ? `<button class="iconbtn" type="button" data-act="apagarreal" data-uid="${uid}" aria-label="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}" title="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}">${ic("trash")}</button>` : ""}
         <button class="iconbtn xclose" type="button" data-act="xclose" aria-label="Fechar">${ic("close")}</button></div>`
     : `<div class="pinbar"><button class="iconbtn barback" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button><div class="spacer"></div>
-        ${likeBtn(it)}<button class="iconbtn" type="button" data-act="share" data-uid="${uid}" aria-label="Copiar link">${ic("share")}</button>${saveBtn(uid)}</div>`;
+        ${likeBtn(it)}<button class="iconbtn" type="button" data-act="share" data-uid="${uid}" aria-label="Copiar link">${ic("share")}</button>${saveBtn(uid)}${podeApagar(it) ? `<button class="iconbtn" type="button" data-act="apagarreal" data-uid="${uid}" aria-label="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}" title="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}">${ic("trash")}</button>` : ""}</div>`;
   const TitleTag = inline ? "h2" : "h1", open = !!S.textOpen[uid];
   const text = `<div class="pintext ${open?"open":""}">${bodyOf(it).map(p=>`<p class="pinbody">${esc(p)}</p>`).join("")}</div>
        <button class="linkbtn moretext" type="button" data-act="moretext" data-uid="${uid}" hidden aria-expanded="${open}">${open?"Mostrar menos":"Mostrar mais"}</button>`;
@@ -4878,7 +4880,7 @@ function detailHTML(it, uid, mode, inline){
           <span class="srcnote">${it.daRede ? `${it.notaFilme ? estrelas(it.notaFilme) + " · " : ""}${it.texto ? "Trecho do" : "Do"} ${it.minha ? "seu feed público no " + REDES[it.rede].nome : "feed público de " + esc(o.nome)}, ${dLabel(it.ext.data)}.${it.exemplo ? " Exemplo, sem conexão." : ""}` : it.yt ? `Descrição publicada pelo canal ${esc(o.nome)} no YouTube, ${dLabel(it.ext.data)}.` : it.coletada ? `Trecho do feed de ${esc(o.nome)}, ${dLabel(it.ext.data)}.` : `${it.base ? `Texto oficial, com as mudanças posteriores · ${esc(it.num)}, de ${dLabel(it.ext.data)}.` : `Resumo da curadoria da rede · ${esc(o.nome)}, ${dLabel(it.ext.data)}.`}`}</span></div>`
         : orig ? `<div class="srcblock"><div class="native">${ic("ext","sm")}<span>Original em ${orig}</span><span class="fic" title="Endereço de exemplo, sem destino real">exemplo</span></div></div>` : ""}
       ${interact(it)}
-      <section class="pinseal">${sealBox(it, true)}${why(it, mode)}<div class="pinacts">${ME.user && it.autorId===ME.user.id ? "" : reportBox(it)}${podeApagar(it) ? `<button class="linkbtn muted" type="button" data-act="apagarreal" data-uid="${uid}">${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}</button>` : ""}</div></section>
+      <section class="pinseal">${sealBox(it, true)}${why(it, mode)}${ME.user && it.autorId===ME.user.id ? "" : `<div class="pinacts">${reportBox(it)}</div>`}</section>
       ${comsSlot(it)}
     </div></div>
     <div class="pinside">${links.length||sibs.length ? `<section class="pinsec s"><h3 class="pinh">${it.ext ? "Outras fontes sobre isto" : "Conteúdos vinculados"}</h3><div class="lks">${links.map(linkRow).join("")}${sibs.map(sibRow).join("")}</div></section>` : ""}</div>
@@ -6185,7 +6187,7 @@ const A = {
     catch(e){ ocupado(b, false); return formErro(erroAuth(e)); }
     ocupado(b, false); closeSheet(); await publicacoesCarrega();
     if (S.tab!=="tudo" && S.tab!=="publicacoes"){ S.tab = "tudo"; persist("tab"); } go("inicio"); toast("Publicado na rede. Já aparece para quem acessa o site."); },
-  apagarreal: async b => { if (b.dataset.ok!=="1"){ b.dataset.ok = "1"; b.textContent = "Toque de novo para apagar de vez"; return; }
+  apagarreal: async b => { if (b.dataset.ok!=="1"){ b.dataset.ok = "1"; if (b.classList.contains("iconbtn")){ b.classList.add("armado"); toast("Toque de novo na lixeira para apagar de vez."); setTimeout(()=>{ b.dataset.ok=""; b.classList.remove("armado"); }, 6000); } else b.textContent = "Toque de novo para apagar de vez"; return; }
     const it = findItem(b.dataset.uid); if (!it) return; ocupado(b, true, "Apagando…");
     const {error} = await SB.from("publicacoes").delete().eq("id", it.uuid); if (error){ ocupado(b, false); return toast(erroAuth(error)); }
     await publicacoesCarrega(); go("inicio"); toast("Publicação apagada."); },
@@ -6500,7 +6502,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 10/11 20:00";
+const VERSAO = "v1 registrada · 10/11 20:07";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();

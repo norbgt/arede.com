@@ -322,3 +322,7 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 ## 10/11 · Sem buracos no feed
 - Quando um bloco tinha um anúncio sem foto ao lado, o anúncio ocupava meio espaço e sobrava um quadrado vazio embaixo. Agora o anúncio sozinho ocupa a coluna inteira.
 - Conferido em três larguras (celular estreito, celular comum e computador), com e sem algoritmo: nenhum espaço em branco.
+
+## 10/11 · Apagar virou ícone
+- “Apagar publicação” saiu do bloco de confiança e virou uma lixeira no canto superior direito do cartão, junto de salvar e fechar. Só aparece para quem publicou e para a administração.
+- O primeiro toque deixa a lixeira vermelha e avisa; o segundo apaga. Sem um segundo toque em 6 segundos, volta ao normal.
