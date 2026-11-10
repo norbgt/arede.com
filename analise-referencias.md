@@ -331,3 +331,22 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - Quem escreveu passa para a primeira linha do cartão aberto, alinhado aos ícones do canto superior direito. Depois vêm o tipo, o título e o texto.
 - “Seguir” virou um link discreto ao lado da data, para caber na linha de cima.
 - No celular, o ícone de abrir em página própria sai da linha de cima para o nome não ser cortado.
+
+## 10/11 · Cartão aberto no estilo Pinterest
+- Referência: cartão aberto do Pinterest. Primeiro vem a imagem ou o vídeo, quando houver. Logo abaixo fica uma linha de ações: curtir com o número, ir para a conversa, compartilhar e “…”. À direita ficam o botão “Salvar” em destaque e o fechar.
+- Quem escreveu vem logo abaixo, menor (avatar pequeno, nome, data e “Seguir”). Depois vêm o tipo, o título e o texto.
+- “Abrir em página própria” e “Apagar” foram para o “…”, com confirmação antes de apagar.
+- Revertido a pedido da Amanda: ela preferiu a versão anterior (autoria na linha de cima, alinhada aos ícones). Voltou a valer a versão das 20:14, que é a que está no site.
+
+## 10/11 · Tipo no topo, autoria como crédito
+- Escolha da Amanda: o tipo (NOTÍCIA, VÍDEO…) fica na linha dos ícones, à esquerda. Logo abaixo vem o título e, embaixo dele, a autoria como linha de crédito pequena: avatar, nome, data e “Seguir”.
+- Bloco do selo mais compacto: “Por que apareceu” e “Denunciar” dividem a mesma linha, sem a linha vazia que sobrava.
+
+## 10/11 · “Por que apareceu” em tags
+- A frase longa (“Apareceu porque você desligou o algoritmo: Saneamento · Belo Horizonte, MG.”) virou tags curtas dos assuntos relacionados: tema, lugar, “Você segue”, “Fora do seu padrão”. O ícone ao lado diz se o algoritmo está ligado (i) ou desligado (bússola).
+- A frase completa continua disponível no ícone, para o leitor de tela e ao passar o mouse.
+
+## 10/11 · Selo em cima, autoria junto da fonte
+- Sugestão da Amanda: o selo de confiabilidade sobe para logo abaixo do título, junto das tags de “por que apareceu” e do Denunciar. Assim, quem lê vê a confiabilidade antes do texto.
+- A autoria (avatar, nome, data, Seguir) desce para logo acima de “Ler a matéria completa”, junto da fonte.
+- Revertido a pedido da Amanda: voltou a ordem anterior (tipo no topo, título, autoria logo abaixo do título, texto, fonte e selo no fim). As tags de “por que apareceu” continuam.

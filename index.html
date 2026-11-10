@@ -606,7 +606,8 @@ h1 .fic{font-size:11px;vertical-align:4px}
 .srclink .icon{width:15px;height:15px}
 .srclink:hover{text-decoration:underline;text-underline-offset:3px}
 .pinseal{display:flex;flex-direction:column;gap:2px;padding:8px 0 2px;border-top:1px solid var(--line)}
-.pinseal > .why{border-top:0;padding-top:2px}
+.pinseal .why{border-top:0;padding-top:0;flex:1 1 auto;min-width:0;align-items:center}
+.pinrod{display:flex;align-items:center;gap:0 12px;margin-top:2px}.pinrod .pinacts{flex:none;flex-wrap:nowrap}.pinrod:has(.repbox:not([hidden])){flex-wrap:wrap}.pinrod .pinacts{margin-left:auto}.pinrod:empty{display:none}
 .iconbtn.armado{color:#fff;background:var(--danger,#c62828)}
 .pinacts{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:0 18px}.pinacts .rep,.pinacts .linkbtn{min-height:32px;padding:0;font-size:13px}.pinacts .repbox{flex-basis:100%}
 .av.rede{background:var(--accent);color:var(--on-accent)}.av.rede .amark{font-size:1.25em;margin:-3px 0 0 0}
@@ -1142,13 +1143,15 @@ a.setting{color:var(--ink);text-decoration:none}
 .pinside{display:flex;flex-direction:column;gap:12px;min-width:0;padding:0 var(--gutter) 24px}
 .pinside:empty{display:none}
 .pinbar{display:flex;align-items:center;gap:2px;min-height:52px}
-.pinbar .orgline.topo{flex:1;min-width:0;margin:0;padding:0;border:0;gap:10px}
-.pinbar .orgline.topo .av{width:40px;height:40px;flex:none}
-.pinbar .orgline.topo .t{min-width:0}.pinbar .orgline.topo .who{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pinbar .orgline.topo small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pinbar .segue{display:inline;min-height:0;padding:0;font-size:inherit;color:var(--accent)}.pinbar .segue.on{color:inherit}
-.xcard .pinbar + .pinhead{margin-top:2px}
-@media (max-width:560px){.pinbar [data-act="page"]{display:none}.pinbar > .iconbtn,.pinbar > .actbtn{margin:0 -3px}.pinbar > :last-child{margin-right:0}}
+.pinbar .toptipo{margin:0;white-space:nowrap}
+.pinbar .barback + .toptipo{margin-left:6px}
+.credito{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:14px;color:var(--muted);min-width:0}
+.credito .av{width:28px;height:28px;flex:none;font-size:11px;border-radius:8px}
+.credito .t{display:flex;align-items:center;flex-wrap:wrap;gap:0 4px;min-width:0}
+.credito .who{font:inherit;font-weight:600;color:var(--ink);padding:0;min-height:0;border:0;background:none;cursor:pointer}
+.credito .segue{display:inline;min-height:0;padding:0;font-size:inherit;color:var(--accent)}.credito .segue.on{color:inherit}
+.xcard .pinbar + .pinhead{margin-top:-8px}
+@media (max-width:420px){.pinbar [data-act="page"]{display:none}.pinbar > .iconbtn,.pinbar > .actbtn{margin:0 -3px}.pinbar > :last-child{margin-right:0}}
 
 .pinbar [data-act="save"][aria-pressed="true"]{color:var(--accent)}
 .actbtn{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:44px;height:44px;padding:0 8px;border:0;border-radius:14px;background:none;color:var(--ink);font-size:13px;font-weight:500;font-variant-numeric:tabular-nums}
@@ -1198,6 +1201,10 @@ a.setting{color:var(--ink);text-decoration:none}
 .flip{transform:rotate(180deg)}
 .why{display:flex;gap:6px;align-items:flex-start;padding-top:8px;border-top:1px dashed var(--line);font-size:12px;color:var(--muted)}
 .why .icon{width:14px;height:14px;margin-top:1px}
+.why.wtags{flex-wrap:wrap;align-items:center;gap:6px}.why.wtags .wic{display:inline-flex;color:var(--muted)}
+.wchip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;background:color-mix(in srgb, var(--ink) 6%, transparent);color:var(--ink);font-size:12px;line-height:1.3;white-space:nowrap}
+.wchip .icon{width:12px;height:12px;margin:0}
+.why.wtags .linkbtn.inl{margin-left:2px;font-size:12px}
 .why.out{color:#B8430F}
 :root[data-theme="dark"] .why.out{color:#FB8F4E}
 .related{margin-top:28px}
@@ -3624,21 +3631,26 @@ function linksOf(it){
   if (it.id===15) L.push({k:"Site oficial", t:"Calendário do orçamento participativo 2027", d:"orcamento.exemplo.gov.br"});
   return L;
 }
+/* "por que apareceu" em tags curtas; a frase completa fica no título do ícone (leitor de tela e passar o mouse) */
+const whyTags = (icone, frase, chips, ajustar) => `<div class="why wtags" title="${frase.replace(/"/g,"&quot;")}"><span class="wic" aria-label="${frase.replace(/"/g,"&quot;")}" role="img">${ic(icone)}</span>${chips.map(c=>`<span class="wchip">${c.ic ? ic(c.ic,"sm") : ""}${c.t}</span>`).join("")}${ajustar || ""}</div>`;
 function why(it, mode){
   const o = ORG[it.org];
   if (mode==="algo"){
-    /* padrão único: "Apareceu porque você …" */
-    if (it.daRede) return `<div class="why">${ic("info")}<span>Apareceu porque você ${it.minha ? "conectou o seu " + REDES[it.rede].nome + " e escolheu mostrar no feed" : "acompanha " + esc(o.nome) + " no " + REDES[it.rede].nome}.</span></div>`;
+    if (it.daRede) return whyTags("info", `Apareceu porque você ${it.minha ? "conectou o seu " + REDES[it.rede].nome + " e escolheu mostrar no feed" : "acompanha " + esc(o.nome) + " no " + REDES[it.rede].nome}.`, [{t: it.minha ? "Seu " + REDES[it.rede].nome : "Você acompanha", ic:"check"}]);
     if (ME.user && it.autorId===ME.user.id) return "";   /* a própria publicação: não há "por que apareceu" */
     const rs = relacoes(it).slice(0, 3), temLoc = rs.some(x=>x.loc);
-    const txt = rs.length ? "Por que apareceu: " + rs.map(x=>x.frase).join("; ") + "." : "Sem relação forte com o seu algoritmo: apareceu pela ordem geral do feed.";
-    return `<div class="why">${ic("info")}<span>${txt} <button class="linkbtn inl" type="button" data-act="${temLoc ? "origens" : "adjust"}">Ajustar</button></span></div>`;
+    const aj = `<button class="linkbtn inl" type="button" data-act="${temLoc ? "origens" : "adjust"}">Ajustar</button>`;
+    return rs.length ? whyTags("info", "Por que apareceu: " + rs.map(x=>x.frase).join("; ") + ".", rs.map(x=>({t:x.chip, ic:x.ic})), aj)
+      : whyTags("info", "Sem relação forte com o seu algoritmo: apareceu pela ordem geral do feed.", [{t:"Ordem geral"}], aj);
   }
   if (mode==="amplo"){ const out = !S.follow.has(it.org) && !S.temas.includes(it.tema);
-    const onde = it.daArte ? ["arte do acervo do " + o.nome] : [it.tema, o.cidade].filter(Boolean);
-    return `<div class="why${out && !it.daArte ?" out":""}">${ic("compass")}<span>Apareceu porque você desligou o algoritmo${out && !it.daArte ?", e está fora do seu padrão":""}${onde.length ? ": " + onde.join(" · ") : ""}.</span></div>`; }
+    const onde = it.daArte ? ["Acervo " + o.nome] : [it.tema, o.cidade].filter(Boolean);
+    const chips = onde.map((x,k)=>({t:esc(x), ic: !it.daArte && k===onde.length-1 && o.cidade ? "pin" : ""}));
+    if (out && !it.daArte) chips.push({t:"Fora do seu padrão"});
+    return whyTags("compass", `Apareceu porque você desligou o algoritmo${out && !it.daArte ?", e está fora do seu padrão":""}${onde.length ? ": " + onde.map(esc).join(" · ") : ""}.`, chips); }
   return "";
 }
+
 /* alguns eventos pedem cadastro extra antes de confirmar presença */
 const INSCR = {
   12: {motivo:"Quem quiser falar na plenária se inscreve antes: a mesa organiza a ordem das falas.",
@@ -3723,11 +3735,11 @@ const REG_ORIGEM = {localizacao:"pela sua localização", escolhida:"escolhida p
 const segueOrg = it => { const o = ORG[it.org] || {}; return S.follow.has(it.org) && (o.fonte || S.usarOrgs); };
 function relacoes(it){ if (!S.algo || it.daArte || it.anuncio) return [];
   const o = ORG[it.org] || {}, R = minhaRegiao(), out = [], pr = S.perto && R.txt ? prox(it) : 0;
-  if (segueOrg(it)) out.push({f:3, tag:"Você segue", frase:`você segue ${esc(o.nome)}`});
-  if (pr===3) out.push({f:3, frase:`é de ${esc(R.txt)}, ${REG_ORIGEM[regiaoOrigem()] || "a sua região"}`, loc:"na sua cidade"});
-  else if (pr===2) out.push({f:2, frase:`é do seu estado, ${esc(UF_NOME[R.uf] || R.txt)}`, loc:"no seu estado"});
-  else if (lugarInteresse(it) >= 1.5) out.push({f:2, frase:`você costuma abrir notícias de ${esc(lugarDe(it))}`, loc:"do seu interesse"});
-  const meus = meusInteresses(), t = tagsDe(it).find(x=>meus.has(x)); if (t) out.push({f:2, frase:`você escolheu o tema ${esc(t)}`});
+  if (segueOrg(it)) out.push({f:3, tag:"Você segue", chip:"Você segue", ic:"check", frase:`você segue ${esc(o.nome)}`});
+  if (pr===3) out.push({f:3, chip:esc(R.txt), ic:"pin", frase:`é de ${esc(R.txt)}, ${REG_ORIGEM[regiaoOrigem()] || "a sua região"}`, loc:"na sua cidade"});
+  else if (pr===2) out.push({f:2, chip:esc(UF_NOME[R.uf] || R.txt), ic:"pin", frase:`é do seu estado, ${esc(UF_NOME[R.uf] || R.txt)}`, loc:"no seu estado"});
+  else if (lugarInteresse(it) >= 1.5) out.push({f:2, chip:esc(lugarDe(it)), ic:"pin", frase:`você costuma abrir notícias de ${esc(lugarDe(it))}`, loc:"do seu interesse"});
+  const meus = meusInteresses(), t = tagsDe(it).find(x=>meus.has(x)); if (t) out.push({f:2, chip:esc(t), ic:"heart", frase:`você escolheu o tema ${esc(t)}`});
   return out.sort((a,b)=>b.f - a.f); }
 function footCtx(it){
   const L = (it.daArte || it.daRede || it.anuncio) ? null : docLocal(it), meus = meusInteresses();
@@ -4862,13 +4874,14 @@ function detailHTML(it, uid, mode, inline){
   const linkRow = l => l.url ? `<a class="lk" href="${l.url}" target="_blank" rel="noopener"><span class="lkic">${ic(l.k==="Mapa"?"pin":"doc")}</span><span class="t"><b>${esc(l.t)}</b><span>${l.k} · ${esc(l.d)}</span></span>${ic("ext","sm")}</a>` : `<div class="lk ex"><span class="lkic">${ic(l.k==="Mapa"?"pin":"doc")}</span><span class="t"><b>${l.t}</b><span>${l.k} · ${l.d}</span></span><span class="fic" title="Vínculo de um conteúdo de exemplo, sem destino real">exemplo</span></div>`;
   const sibRow = p => `<button class="lk" type="button" data-act="open" data-uid="${p.uid}"><span class="lkic">${p.tipo==="imagem"?art(p,1,false):ic(p.tipo==="evento"?"clock":"doc")}</span><span class="t"><b>${p.titulo}</b><span>${kindOf(p)} · ${o.nome}</span></span>${ic("back","sm flip")}</button>`;
   const vis = isImg ? `<div class="pinvis">${isVid && it.yt ? `<div class="ytbox xvid"${S.ytAuto===it.yt ? " data-auto" : ""}>${ytCapa(it)}${ytPlayBtn(it, true)}</div>` : isVid && !it.src ? `<a class="xvid" href="${it.ext ? it.ext.url : "#"}" target="_blank" rel="noopener" aria-label="Assistir: ${esc(it.titulo)}">${art(it, .5625, false)}<span class="xplay big">${ic("play")}<span>Assistir ${it.plat?"no "+esc(it.plat):""}</span></span></a>` : isVid?`<video class="pinvid" ${inline?"":'id="pinvid"'} src="${it.src}" poster="${it.poster}" controls playsinline preload="metadata" style="--ar:${(1/it.ar).toFixed(4)}" aria-label="Vídeo: ${esc(it.titulo)}"></video>`:(it.foto && it.tipo==="imagem" ? `<img class="pinarte" src="${esc(it.foto)}" alt="${esc(it.titulo)}${it.artista ? ", arte de " + esc(it.artista) : ""}" style="aspect-ratio:${(1/(it.ar||1.41)).toFixed(4)}" referrerpolicy="no-referrer">` : art(it, it.ph))}${inline?"":`<button class="iconbtn solid floatback" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button>`}</div>` : "";
-  /* autoria no topo, alinhada aos ícones; seguir vira link discreto na linha de baixo */
-  const autor = it.daArte ? `<div class="spacer"></div>` : `<div class="orgline topo">${avatar(o)}<span class="t"><span class="whorow"><button class="who" type="button" data-act="openorg" data-org="${o.id}">${o.nome}</button>${verifBtn(o.verificado)}</span>${ficTag(o)}<small>${it.ext ? dLabel(it.ext.data) : tempo(it.min)}${o.pessoa ? "" : ` · <button class="linkbtn segue${f?" on":""}" type="button" data-act="follow" data-org="${o.id}">${f?(o.real?"Seguindo":"Participando"):(o.real?"Seguir":"Participar")}</button>`}</small></span></div>`;
+  /* tipo na linha dos ícones; autoria vira linha de crédito logo abaixo do título */
+  const tipoTopo = `<span class="fkind pinkind toptipo" style="--k:${it.tipo==="votacao"?"var(--ink)":o.cor}">${kindOf(it)}</span><div class="spacer"></div>`;
+  const autor = it.daArte ? "" : `<div class="credito">${avatar(o)}<span class="t"><button class="who" type="button" data-act="openorg" data-org="${o.id}">${o.nome}</button>${verifBtn(o.verificado)}${ficTag(o)}<span class="cm"> · ${it.ext ? dLabel(it.ext.data) : tempo(it.min)}${o.pessoa ? "" : ` · <button class="linkbtn segue${f?" on":""}" type="button" data-act="follow" data-org="${o.id}">${f?(o.real?"Seguindo":"Participando"):(o.real?"Seguir":"Participar")}</button>`}</span></span></div>`;
   const bar = inline
-    ? `<div class="pinbar">${autor}
+    ? `<div class="pinbar">${tipoTopo}
         <button class="iconbtn" type="button" data-act="page" data-uid="${uid}" aria-label="Abrir em página própria" title="Abrir em página própria">${ic("expand")}</button>${likeBtn(it)}<button class="iconbtn" type="button" data-act="share" data-uid="${uid}" aria-label="Copiar link">${ic("share")}</button>${saveBtn(uid)}${podeApagar(it) ? `<button class="iconbtn" type="button" data-act="apagarreal" data-uid="${uid}" aria-label="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}" title="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}">${ic("trash")}</button>` : ""}
         <button class="iconbtn xclose" type="button" data-act="xclose" aria-label="Fechar">${ic("close")}</button></div>`
-    : `<div class="pinbar"><button class="iconbtn barback" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button>${autor}
+    : `<div class="pinbar"><button class="iconbtn barback" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button>${tipoTopo}
         ${likeBtn(it)}<button class="iconbtn" type="button" data-act="share" data-uid="${uid}" aria-label="Copiar link">${ic("share")}</button>${saveBtn(uid)}${podeApagar(it) ? `<button class="iconbtn" type="button" data-act="apagarreal" data-uid="${uid}" aria-label="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}" title="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}">${ic("trash")}</button>` : ""}</div>`;
   const TitleTag = inline ? "h2" : "h1", open = !!S.textOpen[uid];
   const text = `<div class="pintext ${open?"open":""}">${bodyOf(it).map(p=>`<p class="pinbody">${esc(p)}</p>`).join("")}</div>
@@ -4876,8 +4889,7 @@ function detailHTML(it, uid, mode, inline){
   return `<article class="pin ${isImg?"two":"one"} ${inline?"xcard":"page"}" data-uid="${uid}" ${inline?`data-x="${uid}"`:'id="pinwrap"'} aria-label="${esc(it.titulo)}">
     ${isImg?`<div class="pl">${vis}</div>`:""}
     <div class="pr"><div class="pinmain">${bar}
-      <div class="pinhead"><span class="fkind pinkind" style="--k:${it.tipo==="votacao"?"var(--ink)":o.cor}">${kindOf(it)}</span>
-        <${TitleTag} class="pintitle">${esc(it.titulo)}</${TitleTag}></div>
+      <div class="pinhead"><${TitleTag} class="pintitle">${esc(it.titulo)}</${TitleTag}>${autor}</div>
       ${it.daArte ? artistaLinha(it) : ""}
       ${it.foto && !isImg ? `<figure class="dfoto"><img src="${esc(it.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer">${it.credito ? `<figcaption>Foto: ${esc(it.credito)} · via ${esc(it.ext ? it.ext.dom : "fonte")}</figcaption>` : ""}</figure>` : ""}
       ${it.daArte ? `<div class="pintext" hidden></div><button class="linkbtn moretext" type="button" hidden></button>` : text}
@@ -4889,7 +4901,7 @@ function detailHTML(it, uid, mode, inline){
           <span class="srcnote">${it.daRede ? `${it.notaFilme ? estrelas(it.notaFilme) + " · " : ""}${it.texto ? "Trecho do" : "Do"} ${it.minha ? "seu feed público no " + REDES[it.rede].nome : "feed público de " + esc(o.nome)}, ${dLabel(it.ext.data)}.${it.exemplo ? " Exemplo, sem conexão." : ""}` : it.yt ? `Descrição publicada pelo canal ${esc(o.nome)} no YouTube, ${dLabel(it.ext.data)}.` : it.coletada ? `Trecho do feed de ${esc(o.nome)}, ${dLabel(it.ext.data)}.` : `${it.base ? `Texto oficial, com as mudanças posteriores · ${esc(it.num)}, de ${dLabel(it.ext.data)}.` : `Resumo da curadoria da rede · ${esc(o.nome)}, ${dLabel(it.ext.data)}.`}`}</span></div>`
         : orig ? `<div class="srcblock"><div class="native">${ic("ext","sm")}<span>Original em ${orig}</span><span class="fic" title="Endereço de exemplo, sem destino real">exemplo</span></div></div>` : ""}
       ${interact(it)}
-      <section class="pinseal">${sealBox(it, true)}${why(it, mode)}${ME.user && it.autorId===ME.user.id ? "" : `<div class="pinacts">${reportBox(it)}</div>`}</section>
+      <section class="pinseal">${sealBox(it, true)}<div class="pinrod">${why(it, mode)}${ME.user && it.autorId===ME.user.id ? "" : `<div class="pinacts">${reportBox(it)}</div>`}</div></section>
       ${comsSlot(it)}
     </div></div>
     <div class="pinside">${links.length||sibs.length ? `<section class="pinsec s"><h3 class="pinh">${it.ext ? "Outras fontes sobre isto" : "Conteúdos vinculados"}</h3><div class="lks">${links.map(linkRow).join("")}${sibs.map(sibRow).join("")}</div></section>` : ""}</div>
@@ -6511,7 +6523,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 10/11 20:14";
+const VERSAO = "v1 registrada · 10/11 20:39";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
