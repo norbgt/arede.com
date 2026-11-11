@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#F2F3EF">
+<meta name="theme-color" content="#F2F3EF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1110" media="(prefers-color-scheme: dark)">
 <title>arede.online</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23141615'/%3E%3Ctext x='15' y='45' font-family='Helvetica Neue,Arial,sans-serif' font-weight='700' font-size='40' fill='%23fff'%3Ea%3C/text%3E%3Ccircle cx='47' cy='41' r='5' fill='%238D9BFF'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -133,7 +134,7 @@ img,svg{max-width:100%}
 .ldot.lg{visibility:hidden}
 .ldot.lga{margin:0 .04em;transition:width .28s ease,margin .28s ease}
 .logo .ldot.lga{width:0;margin:0}   /* sem mouse: "arede" junto */
-.ldot.lmove{position:absolute;left:0;top:0;margin:0;transform:translate(var(--bx,0px),var(--by,0px));transition:transform .32s cubic-bezier(.3,.7,.2,1)}
+.ldot.lmove{position:absolute;left:0;top:0;margin:0;transform:translate(var(--bx,0px),var(--by,0px));transition:transform .32s cubic-bezier(.3,.7,.2,1);will-change:transform}
 /* em repouso, em qualquer aparelho, a marca aparece compacta ("a.rede") e se completa ("arede.online"):
    com mouse, ao passar o mouse; no toque (celular), sozinha ao abrir o site, ao tocar na marca e ao voltar ao topo
    (a classe .abre, posta pelo script, faz no toque o papel do mouse). Quem pede menos movimento vê a marca completa, parada. */
@@ -1467,6 +1468,7 @@ button.cmnpost{display:block;width:100%;border:0;text-align:left;font:inherit;co
 .sheet{display:flex;flex-direction:column;gap:14px;width:100%;max-height:92vh;max-height:92dvh;overflow:auto;overscroll-behavior:contain;
   padding:8px var(--gutter) calc(20px + var(--safe-b));border-radius:var(--r-lg) var(--r-lg) 0 0;background:var(--bg);animation:up .22s ease both}
 @keyframes up{from{transform:translateY(24px)}to{transform:none}}
+@media (max-width:767px){ .scrim::after{content:"";position:fixed;left:0;right:0;bottom:0;height:calc(var(--safe-b) + 14px);background:var(--bg);pointer-events:none;z-index:1} }
 .grab{width:40px;height:5px;margin:4px auto 0;border-radius:9px;background:var(--line);flex:none}
 .shead{display:flex;align-items:center;gap:8px}
 .shead h2{flex:1;font-size:21px}
@@ -4205,7 +4207,7 @@ class Grid {
   add(it){ this.items.push(it.uid); this.obj[it.uid] = it; this.B.push(it.uid); if (this.Bcols) this.placeB(it.uid); }
   cols(){ const m = document.createElement("div"); m.className = "masonry" + (this.n===1 ? " one" : "") + " v-" + this.v; m.style.setProperty("--ncol", this.n); const cs = [];
     for (let i=0;i<this.n;i++){ const c = document.createElement("div"); c.className = "col"; m.appendChild(c); cs.push(c); } return [m, cs]; }
-  placeB(u){ if (this.v==="agenda") this.Bh = this.Bcols.map(c=>c.offsetHeight); /* irregular: encaixa pela altura real */
+  placeB(u){ if (this.v==="agenda" || this.v==="masonry"){ const h = this.Bcols.map(c=>c.offsetHeight); if (h.some(x=>x > 0)) this.Bh = h; }   /* encaixa pela altura real: a estimativa errava com fotos e títulos longos e deixava buracos no celular */
     const i = this.Bh.indexOf(Math.min(...this.Bh)); this.Bcols[i].insertAdjacentHTML("beforeend", cardFor(this.obj[u], this.mode, this.v)); fitTiles(this.Bcols[i].lastElementChild); this.Bh[i] += this.est(u); }
   render(){
     const box = this.box; if (!box) return; box.innerHTML = "";
@@ -5685,7 +5687,7 @@ function goBack(){ NAV.pop(); location.hash = NAV.pop() || "inicio"; }
 /* sair do ambiente do manifesto: volta para a última tela do app (pula as páginas do próprio ambiente) */
 function envExit(){ let h; do { h = NAV.pop(); } while (h && /^(manifesto|funciona)$/.test(h)); location.hash = h || "inicio"; }
 function render(){
-  const r = route(), main = $("#main");
+  const r = route(), main = $("#main"), logoVelho = main.querySelector(".logo");
   if (r!=="inicio"){ document.documentElement.classList.remove("snapvid"); LV_ON = null; }
   const pr = r.split("/")[0];
   if (pr==="painel" && !LOCAL){ location.replace("#inicio"); return; }
@@ -5724,6 +5726,8 @@ function render(){
     F.obs = new IntersectionObserver(es=>{ if (es[0].isIntersecting) more(10); }, {rootMargin:"800px"});
     F.obs.observe($("#sentinel"));
   }
+  const logoNovo = main.querySelector(".logo");   /* a marca é a mesma em toda tela: mantém o elemento antigo, e o movimento segue sem pulo */
+  if (logoVelho && logoNovo && logoVelho !== logoNovo && logoVelho.getAttribute("aria-label")===logoNovo.getAttribute("aria-label")) logoNovo.replaceWith(logoVelho);
   document.title = pr==="painel" ? "Painel de controle · arede.online" : "arede.online";
   window.scrollTo(0, same ? window.scrollY : restore);
   placeLogoDots();
@@ -5780,7 +5784,7 @@ async function contaInicia(){
     if (erroUrl) toast("O link do e-mail expirou ou já foi usado. Entre com e-mail e senha ou peça outro link.");
     else if (ME.user) toast("E-mail confirmado. Sua conta está ativa.");
   }
-  cfgCarrega(); adPrecosCarrega(); usoInicia(); await perfilCarrega(); ME.pronto = true; adVolta(); apoioVolta(); if (route()==="anunciar") adPedidosCarrega(); await publicacoesCarrega(); await noticiasCarrega(); contaAtualiza(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
+  cfgCarrega(); adPrecosCarrega(); usoInicia(); await perfilCarrega(); ME.pronto = true; adVolta(); apoioVolta(); if (route()==="anunciar") adPedidosCarrega(); await publicacoesCarrega(); await noticiasCarrega(); contaAtualiza(); logoInicio(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
   setInterval(()=>{ if (document.visibilityState==="visible") noticiasCarrega(); }, 15 * 60000);
 }
 /* a escolha guardada na conta vale em qualquer aparelho; se a conta ainda não tem, guarda a deste aparelho (quando a pessoa já escolheu) */
@@ -7374,8 +7378,14 @@ function logoAbre(ms=2500){ if (!LOGO_TOQUE.matches) return;
 const logoHerda = () => { if (LOGO_TOQUE.matches && Date.now() < logoAte) $$(".logo:not(.abre)").forEach(l=>l.classList.add("abre")); };
 document.addEventListener("pointerdown", e=>{ if (e.pointerType!=="mouse" && e.target.closest && e.target.closest(".logo")) logoAbre(); }, {passive:true});
 addEventListener("scroll", ()=>{ if (scrollY > 400) logoDesceu = true; else if (scrollY < 8 && logoDesceu){ logoDesceu = false; logoAbre(); } }, {passive:true});
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ layoutAllPins(); fitTiles(); placeLogoDots(); setTimeout(logoAbre, 700); });
-else setTimeout(logoAbre, 900);
+/* ao abrir o site, o movimento só começa quando o carregamento acalma (fontes prontas, notícias desenhadas e o aparelho livre):
+   no celular, ele travava quando as notícias chegavam no meio do movimento */
+let LOGO_INICIO = false;
+function logoInicio(){ if (LOGO_INICIO) return; LOGO_INICIO = true; placeLogoDots();
+  const vai = () => window.requestIdleCallback ? requestIdleCallback(()=>requestAnimationFrame(()=>logoAbre()), {timeout:1200}) : setTimeout(logoAbre, 250);
+  setTimeout(vai, 300); }
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ layoutAllPins(); fitTiles(); placeLogoDots(); });
+setTimeout(logoInicio, 4000);   /* se o servidor demorar, começa assim mesmo */
 
 /* PARTICIPAÇÃO AO VIVO (Estrutura #3): a cada poucos segundos entra um voto, apoio, presença ou voluntário
    num conteúdo visível. No produto real, isso vem do servidor em tempo real; aqui é simulado. */
@@ -7389,7 +7399,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 20:22";
+const VERSAO = "v1 registrada · 11/11 20:37";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
