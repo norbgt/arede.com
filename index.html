@@ -675,6 +675,8 @@ h1 .fic{font-size:11px;vertical-align:4px}
 .sbm .icon{flex:none;width:14px;height:14px;color:var(--muted)}
 .sbm .sbd{color:var(--muted)}
 .sbm[data-m="antigo"]{color:var(--warn)}.sbm[data-m="antigo"] .icon{color:var(--warn)}
+.sbm[data-m="proprio"]{color:var(--warn);font-weight:600}.sbm[data-m="proprio"] .icon{color:var(--warn)}
+.sbexp li[data-m="proprio"] .icon{color:var(--warn)}
 .sbm[data-m="oficial"] .icon{color:var(--ok)}
 /* checagem de agência com mais destaque: fundo verde suave, nome da marca em negrito */
 .sbm[data-m="checado"]{margin-left:-8px;padding:4px 11px 4px 8px;border-radius:999px;background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ink)}
@@ -1624,6 +1626,13 @@ button.setting{width:100%;border:0;text-align:left;font:inherit;color:inherit;cu
 .ichk input{flex:none;width:20px;height:20px;margin:1px 0 0;accent-color:var(--ink)}
 .ferr{margin:0;font-size:var(--fs-sm);color:#B3261E;font-weight:500}
 .imot,.inota{margin:0;font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:flex-start}
+.vform{display:grid;gap:12px;margin-top:12px}
+.vtipo{border:0;margin:0;padding:0;display:grid;gap:8px}.vtipo legend{font-size:13px;font-weight:600;margin-bottom:6px;padding:0}
+.vtipo label{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);cursor:pointer}
+.vtipo label:has(input:checked){border-color:var(--ink);background:var(--surface)}.vtipo input{margin-top:3px;accent-color:var(--ink)}
+.vtipo span{display:grid;gap:2px}.vtipo small{color:var(--muted);font-size:12.5px}
+.vfile{display:grid;gap:6px;font-size:13px;font-weight:600}.vfile input{font:inherit;font-weight:400;font-size:13px;max-width:100%}
+.vmotivo{width:100%;margin-top:8px;font:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
 .iok{margin:0;display:flex;gap:8px;align-items:center;font-weight:600}
 .ilist{display:flex;flex-direction:column;border-radius:var(--r-sm);background:var(--surface-2)}
 .irow{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;font-size:var(--fs-sm)}
@@ -3669,7 +3678,27 @@ const S = {
   rapido:null, adOculta:new Set(), orgTab:"mural", exploreTema:null, exploreQ:"", pinMode:{}, textOpen:{}
 };
 if (!FTABS.some(t=>t[0]===S.tab)) S.tab = "tudo";
-const persist = k => store.set(k, S[k] instanceof Set ? [...S[k]] : S[k]);
+/* DADOS DA CONTA NO SERVIDOR (11 nov 2026): curtidas, salvos, pastas, votos, apoios, presenças e afins seguem a conta entre aparelhos.
+   Quem está fora da conta continua só com o aparelho. Ao entrar, o que já está no servidor vale; o que ainda não está sobe do aparelho. */
+const CONTA_SYNC = ["liked","saved","savedIn","pastas","shared","follow","pollVote","support","formalDone","rsvp","help","inscr"];
+let CD_FILA = new Set(), CD_T = null, CD_DE = null;
+const persist = k => { store.set(k, S[k] instanceof Set ? [...S[k]] : S[k]); if (CONTA_SYNC.includes(k)) contaDadosAgenda(k); };
+const cdValor = k => k==="pastas" ? (store.get("pastas", []) || []) : (S[k] instanceof Set ? [...S[k]] : (S[k] || {}));
+function contaDadosAgenda(k){ if (!SB || !ME.user || CD_DE!==ME.user.id) return; CD_FILA.add(k); clearTimeout(CD_T); CD_T = setTimeout(contaDadosEnvia, 1200); }
+async function contaDadosEnvia(){ if (!SB || !ME.user || CD_DE!==ME.user.id || !CD_FILA.size) return; const ks = [...CD_FILA], uid = ME.user.id; CD_FILA = new Set();
+  try{ const {error} = await SB.from("conta_dados").upsert(ks.map(k=>({user_id:uid, chave:k, valor:cdValor(k), atualizada_em:new Date().toISOString()})));
+    if (error) ks.forEach(k=>CD_FILA.add(k)); }catch(e){ ks.forEach(k=>CD_FILA.add(k)); } }
+async function contaDadosCarrega(){ if (!SB || !ME.user || CD_DE===ME.user.id) return; const uid = ME.user.id; let rows;
+  try{ const r = await SB.from("conta_dados").select("chave,valor").eq("user_id", uid); if (r.error) return; rows = r.data || []; }catch(e){ return; }
+  if (!ME.user || ME.user.id!==uid) return;
+  const sv = Object.fromEntries(rows.map(r=>[r.chave, r.valor])); let mudou = false;
+  CONTA_SYNC.forEach(k=>{ const v = sv[k];
+    if (v==null){ CD_FILA.add(k); return; }   /* ainda não está no servidor: sobe o que está no aparelho */
+    if (k==="pastas"){ const ps = Array.isArray(v) ? v.filter(f=>Array.isArray(f)) : []; store.set("pastas", ps);
+      ps.forEach(f=>{ if (!FOLDERS.some(x=>x[0]===f[0])){ FOLDERS.push([f[0], f[1], [], !!f[3]]); mudou = true; } }); return; }
+    if (S[k] instanceof Set) S[k] = new Set(Array.isArray(v) ? v : []); else S[k] = (v && typeof v==="object" && !Array.isArray(v)) ? v : {};
+    store.set(k, S[k] instanceof Set ? [...S[k]] : S[k]); mudou = true; });
+  CD_DE = uid; contaDadosEnvia(); if (mudou) render(); }
 const sessionStart = Date.now();
 const HOST_THEME = document.documentElement.getAttribute("data-theme");
 function applyTheme(){ const r = document.documentElement;
@@ -3730,6 +3759,27 @@ const SELO_ANTIGO_DIAS = 92, OFICIAL_RE = /governo e diário oficial|dados públ
    Linha 1: ícone, confiança e nota, e "Detalhes". Linha 2: as marcas (antigo, dado oficial, checagem, idioma, reforço
    internacional, linha editorial, ajuste da comunidade), alinhadas ao texto do selo. Os detalhes explicam cada marca.
    O tema sai do selo: já aparece nas etiquetas de "por que apareceu", logo abaixo. */
+/* INTERESSE DECLARADO (11 nov 2026, mapa de donos aprovado pela Amanda no painel): a quem pertence cada fonte e, quando a notícia
+   cita um negócio do mesmo dono, a marca "Fala do próprio dono". Conferência por nomes no título e na chamada, sem IA e sem custo.
+   Só fontes em português da base; o resto entra depois de levantado e aprovado. */
+const DONOS_FONTE = [
+  {nome:/^g1/i, grupo:"Grupo Globo", soube:"o Grupo Globo é dono do g1? O mesmo grupo tem TV Globo, GloboNews, Globoplay, CBN e Extra.", vigia:/\b(grupo globo|tv globo|rede globo|globonews|globoplay|radio cbn|jornal extra)\b/},
+  {nome:/^o globo/i, grupo:"Grupo Globo", soube:"o Grupo Globo é dono do jornal O Globo? O mesmo grupo tem TV Globo, GloboNews, Globoplay, CBN e Extra.", vigia:/\b(grupo globo|tv globo|rede globo|globonews|globoplay|radio cbn|jornal extra)\b/},
+  {nome:/^valor econ/i, grupo:"Grupo Globo", soube:"o Grupo Globo é dono do Valor Econômico? O mesmo grupo tem TV Globo, GloboNews, Globoplay, CBN e Extra.", vigia:/\b(grupo globo|tv globo|rede globo|globonews|globoplay|radio cbn|jornal extra)\b/},
+  {nome:/^(folha de s)/i, grupo:"Grupo Folha · UOL", soube:"a Folha e o UOL são do mesmo grupo, que também controla o PagBank (PagSeguro) e o Datafolha?", vigia:/\b(pagbank|pagseguro|datafolha|grupo folha)\b/},
+  {nome:/^(uol not|canal uol)/i, grupo:"Grupo Folha · UOL", soube:"o UOL controla o banco PagBank (PagSeguro) e é do mesmo grupo da Folha e do Datafolha?", vigia:/\b(pagbank|pagseguro|datafolha|grupo folha)\b/},
+  {nome:/^o estado de s/i, grupo:"Grupo Estado", soube:"o Estadão é do Grupo Estado, um dos grupos de mídia mais antigos do país?", vigia:/\b(grupo estado)\b/},
+  {nome:/^gazeta do povo/i, grupo:"GRPCOM", soube:"a Gazeta do Povo é do GRPCOM, grupo que também tem a Tribuna do Paraná?", vigia:/\b(grpcom|tribuna do parana)\b/},
+  {nome:/^poder360/i, grupo:"Magalu é sócio", soube:"o Magalu (Magazine Luiza) tem 25% do Poder360?", vigia:/\b(magazine luiza|magalu)\b/},
+  {nome:/^bbc news brasil/i, grupo:"BBC · Reino Unido", soube:"a BBC News Brasil é da BBC, emissora pública do Reino Unido?", vigia:null},
+  {nome:/^(agencia brasil|agência brasil|tv brasil)/i, grupo:"EBC · governo federal", soube:"a Agência Brasil e a TV Brasil são da EBC, empresa do governo federal? Quando a notícia fala do governo, é o governo falando de si.", vigia:/\b(ebc|secom|planalto|presidencia da republica|governo federal)\b/},
+  {nome:/^dw brasil/i, grupo:"Deutsche Welle · Alemanha", soube:"a DW é a emissora pública da Alemanha?", vigia:/\b(deutsche welle|governo alemao|governo da alemanha)\b/},
+  {nome:/^rfi brasil/i, grupo:"France Médias Monde · França", soube:"a RFI é da France Médias Monde, empresa pública da França?", vigia:/\b(france medias monde|governo frances|governo da franca)\b/},
+  {nome:/intercept brasil/i, grupo:"sem fins lucrativos", soube:"o Intercept Brasil é uma associação sem fins lucrativos, independente do Intercept americano desde 2022?", vigia:null},
+  {nome:/^brasil de fato/i, grupo:"movimentos populares", soube:"o Brasil de Fato foi criado por movimentos populares, entre eles o MST?", vigia:/\b(mst|movimento dos trabalhadores rurais sem terra)\b/}];
+function donoDe(it){ const o = ORG[it.org] || {}; if (!o.fonte) return null; const d = DONOS_FONTE.find(x=>x.nome.test(o.nome || "")); if (!d) return null;
+  const tx = semAcento((it.titulo || "") + " " + (it.texto || it.chamada || "")), m = d.vigia ? tx.match(d.vigia) : null;
+  return {d, cita:m ? m[0] : null}; }
 function seloMarcas(it){ const o = ORG[it.org] || {}, nat = String(o.natureza || ""), m = [];
   const dias = it.ext ? (it.ext.data && !isNaN(Date.parse(it.ext.data)) ? (Date.now() - Date.parse(it.ext.data))/864e5 : (it.min || 0)/1440) : 0;   /* idade pela data de publicação; sem data, pelo tempo guardado */
   if (dias > SELO_ANTIGO_DIAS) m.push({k:"antigo", ic:"clock", t:"Conteúdo antigo", d:it.ext.data ? "de " + dLabel(it.ext.data) : "", x:"Publicado há mais de 3 meses e voltou a circular. Confira se ainda vale antes de compartilhar."});
@@ -3742,14 +3792,17 @@ function seloMarcas(it){ const o = ORG[it.org] || {}, nat = String(o.natureza ||
   if (o.linha) m.push({k:"linha", ic:"info", t:/ativista/i.test(o.linha) ? "Mídia ativista" : "Linha editorial declarada", d:"", x:esc(o.linha)});
   if (it.daRede) m.push({k:"individual", ic:"people", t:"Fonte individual", d:REDES[it.rede].nome, x:"Perfil pessoal trazido de outra rede, não uma redação."});
   if (it.seloAjuste) m.push({k:"ajuste", ic:"people", t:"Nota ajustada pela comunidade", d:"", x:"Contribuições com fonte mudaram a nota."});
-  return m.filter(x=>x.k==="checado").concat(m.filter(x=>x.k!=="checado")); }   /* checagem de agência vem primeiro: é a marca de mais peso */
+  const dn = donoDe(it);
+  if (dn && dn.cita) m.push({k:"proprio", ic:"info", t:"Fala do próprio grupo", d:dn.d.grupo, x:`A notícia cita “${esc(dn.cita.toUpperCase()===dn.cita ? dn.cita : dn.cita.replace(/\b\w/g, c=>c.toUpperCase()))}”, do mesmo grupo da fonte. Leia sabendo do interesse. <b>Você sabia</b> que ${esc(dn.d.soube)}`});
+  else if (dn) m.push({k:"dono", ic:"people", t:"Você sabia?", d:dn.d.grupo, x:"<b>Você sabia</b> que " + esc(dn.d.soube)});
+  const ordem = ["checado","proprio"]; return m.filter(x=>ordem.includes(x.k)).sort((a,b)=>ordem.indexOf(a.k)-ordem.indexOf(b.k)).concat(m.filter(x=>!ordem.includes(x.k))); }   /* checagem de agência vem primeiro: é a marca de mais peso */
 function sealBox(it, compacto){
   const s = sealOf(it), m = seloMarcas(it);
   const sub = s.sc!==null ? `Nota ${s.sc} de 100` : (s.lv==="pend" ? "Publicação original, ainda não verificada" : it.arte ? "Arte e expressão" : it.daRede ? "Crítica, gosto ou coleção" : "Pergunta, pedido ou opinião");
   return `<details class="sealbox${compacto?" sbmini":""}" ${s.lv==="bad"?"open":""}><summary>${sealIco(s,compacto?22:26)}<span class="t"><b>${s.label}</b><small>${sub}</small></span><span class="linkbtn">Detalhes</span>
     ${m.length ? `<span class="sbmarcas">${m.map(x=>`<span class="sbm" data-m="${x.k}">${ic(x.ic,"sm")}<span class="sbt">${x.t}</span>${x.d ? `<span class="sbd"> · ${esc(x.d)}</span>` : ""}</span>`).join("")}</span>` : ""}</summary>
     ${s.sc!==null?`<div class="scale" role="img" aria-label="Nota ${s.sc} de 100"><i style="left:${s.sc}%"></i></div><div class="scalelbl"><span>Baixa</span><span>Moderada</span><span>Alta</span></div>`:""}
-    ${m.length ? `<ul class="sbexp">${m.map(x=>`<li data-m="${x.k}">${ic(x.ic,"sm")}<span><b>${x.t}</b> ${x.x}</span></li>`).join("")}</ul>` : ""}
+    ${m.length ? `<ul class="sbexp">${m.map(x=>`<li data-m="${x.k}">${ic(x.ic,"sm")}<span>${x.k==="dono" ? "" : `<b>${x.t}</b> `}${x.x}</span></li>`).join("")}</ul>` : ""}
     <div class="checks">${sealChecks(it)}</div>
     <p class="note" style="margin:10px 0"><span>Verificação automática com fontes públicas. Contestações passam por uma nova verificação automática, independente da primeira, com registro público. O selo avalia fatos, nunca opiniões ou posições políticas.</span></p>
     ${it.ext && it.ext.verif.length ? `<div class="vsrc"><b>${ORG[it.org].fonte ? "A mesma notícia em outras fontes" : "Fontes que confirmam"}</b>${it.ext.verif.map(v=>`<a href="${v.url}" target="_blank" rel="noopener"><span>${esc(v.fonte)}<small>${esc(v.papel||"")}${v.o_que_confirma?" · "+esc(v.o_que_confirma):""}</small></span>${ic("ext","sm")}</a>`).join("")}</div>`
@@ -5721,7 +5774,8 @@ async function perfilCarrega(){ if (!SB || !ME.user){ ME.perfil = null; return; 
   const {data} = await SB.from("perfis").select("id,nome,usuario,cidade,bio,criado_em,verificado,verificado_em,vista").eq("id", ME.user.id).maybeSingle(); ME.perfil = data || null;
   vistaDaConta();
   /* papel e nível vêm do servidor, por uma função que só responde sobre a própria conta (o papel saiu da leitura pública) */
-  try{ const a = await SB.rpc("meu_acesso"); if (!a.error && a.data){ ME.acesso = a.data; if (ME.perfil) ME.perfil.papel = a.data.papel || "membro"; } }catch(e){} }
+  try{ const a = await SB.rpc("meu_acesso"); if (!a.error && a.data){ ME.acesso = a.data; if (ME.perfil) ME.perfil.papel = a.data.papel || "membro"; } }catch(e){}
+  contaDadosCarrega(); }
 /* depois de qualquer mudança na conta: redesenha só o que mostra a conta */
 function contaAtualiza(){ navConta(); const r = route();
   if (r==="conta" || r==="nova-senha" || r==="perfil" || r==="curadoria" || r==="em-alta") render(); }
@@ -6240,11 +6294,17 @@ async function curadoriaConversa(box){
     ${Object.entries(den).map(([id, x])=>`<article class="curitem"><div><small>${x.n} ${x.n===1 ? "denúncia" : "denúncias"} · ${esc((x.c.perfis || {}).nome || "Conta")}${x.c.status==="oculto" ? " · já oculto" : ""}</small><p>${esc(x.c.texto)}</p>
       <div class="row"><button class="btn sm primary" type="button" data-act="dendecide" data-id="${id}" data-s="removido">Ocultar comentário</button><button class="btn sm ghost" type="button" data-act="dendecide" data-id="${id}" data-s="mantido">Manter</button></div></div></article>`).join("") || `<p class="empty">Nenhuma denúncia aberta.</p>`}`; }
 async function curadoriaVerif(box){
-  const {data, error} = await SB.from("verificacao_pedidos").select("id,user_id,status,criado_em").order("criado_em", {ascending:true}).limit(300);
+  const {data, error} = await SB.from("verificacao_pedidos").select("id,user_id,status,criado_em,tipo,doc_tipo,doc_path,doc_enviado_em,motivo,decidido_em").order("criado_em", {ascending:true}).limit(300);
   if (error) return box.innerHTML = `<p class="empty">${esc(erroAuth(error))}</p>`;
-  const ids = (data || []).map(p=>p.user_id), pf = ids.length ? ((await SB.from("perfis").select("id,nome,cidade").in("id", ids)).data || []) : [], P = Object.fromEntries(pf.map(x=>[x.id, x]));
-  box.innerHTML = `<p class="curnota">Contas que pediram o nível 3. Nenhum documento foi enviado: a fila espera você definir o método de verificação (painel › Segurança).</p>`
-    + ((data || []).length ? `<div class="list">${data.map(p=>`<div class="setting static"><span class="t"><b>${esc((P[p.user_id] || {}).nome || "Conta")}</b><small>${esc((P[p.user_id] || {}).cidade || "sem cidade")} · pediu em ${new Date(p.criado_em).toLocaleDateString("pt-BR", {day:"numeric", month:"short"})} · ${esc(p.status)}</small></span></div>`).join("")}</div>` : `<p class="empty">Nenhum pedido na fila.</p>`); }
+  const ids = (data || []).map(p=>p.user_id), pf = ids.length ? ((await SB.from("perfis").select("id,nome,cidade,verificado").in("id", ids)).data || []) : [], P = Object.fromEntries(pf.map(x=>[x.id, x]));
+  const pend = (data || []).filter(p=>p.status==="pendente"), outros = (data || []).filter(p=>p.status!=="pendente").slice(-20).reverse();
+  const dt = d => d ? new Date(d).toLocaleDateString("pt-BR", {day:"numeric", month:"short"}) : "";
+  box.innerHTML = `<p class="curnota">Pedidos do nível 3. Abra o documento, confira nome e foto com o perfil e decida. O arquivo é apagado assim que você aprova ou recusa.</p>`
+    + (pend.length ? `<div class="list">${pend.map(p=>{ const pe = P[p.user_id] || {};
+      return `<article class="curitem" data-id="${p.id}"><div><small>${p.tipo==="instituicao" ? "Instituição" : "Pessoa"} · ${p.doc_path ? "documento enviado em " + dt(p.doc_enviado_em) : "na fila desde " + dt(p.criado_em) + ", ainda sem documento"}</small><b>${esc(pe.nome || "Conta")}</b><p>${esc(pe.cidade || "sem cidade")}</p>
+        <div class="row">${p.doc_path ? `<button class="btn sm" type="button" data-act="verifdoc" data-p="${esc(p.doc_path)}">${ic("doc","sm")} Ver documento</button><button class="btn sm primary" type="button" data-act="verifdecide" data-id="${p.id}" data-a="1">Aprovar</button><button class="btn sm ghost" type="button" data-act="verifdecide" data-id="${p.id}" data-a="0">Recusar</button>` : ""}</div>
+        ${p.doc_path ? `<input class="vmotivo" type="text" maxlength="300" placeholder="Motivo, se recusar (a pessoa vê)" aria-label="Motivo da recusa">` : ""}</div></article>`; }).join("")}</div>` : `<p class="empty">Nenhum pedido esperando decisão.</p>`)
+    + (outros.length ? `<h3 class="curh">Decididos</h3><div class="list">${outros.map(p=>`<div class="setting static"><span class="t"><b>${esc((P[p.user_id] || {}).nome || "Conta")}</b><small>${p.status==="aprovada" ? "Aprovado" : "Recusado"} em ${dt(p.decidido_em)}${p.motivo ? " · " + esc(p.motivo) : ""}</small></span></div>`).join("")}</div>` : ""); }
 async function curadoriaArtes(box){
   const {data, error} = await SB.from("artes").select("id,titulo,artista,artista_instagram,categoria,campanha,imagem_url,url,status,criada_na_fonte").in("status",["fila","publicada"]).order("criada_na_fonte", {ascending:false}).limit(80);
   if (error){ box.innerHTML = `<p class="empty">${esc(erroAuth(error))}</p>`; return; }
@@ -6469,13 +6529,21 @@ const seusDadosNota = () => `<div class="dnota"><b>${ic("lock","sm")} Seus dados
 function acessoCard(){ const nv = nivel(), a = ME.acesso || {}, ped = a.pedido, A = ACESSO;
   const li = (n, t, d, on, feito) => `<li class="${feito ? "feito" : on ? "on" : ""}"><span class="nb">${feito ? ic("check","sm") : n}</span><span><b>${t}</b><small>${d}</small></span></li>`;
   const usados = nv==="cadastrado" && a.novos_na_hora !== undefined ? `<p class="inota">${ic("info","sm")}<span>Nesta hora você recebeu ${a.novos_na_hora} de ${A.cadastrado.total} conteúdos novos.</span></p>` : "";
-  const pedido = nv!=="cadastrado" ? "" : ped && ped.status==="pendente"
-    ? `<div class="note okn">${ic("check")}<span><b class="ntit">Pedido de verificação na fila</b>Feito em ${new Date(ped.criado_em).toLocaleDateString("pt-BR", {day:"numeric", month:"long"})}. Nenhum documento é pedido agora: seu pedido espera a verificação abrir.<span class="nact"><button class="linkbtn" type="button" data-act="desisteverif">Desistir do pedido</button></span></span></div>`
-    : `<p class="inota">${ic("info","sm")}<span>O nível 3 é para quem confirma a identidade. A verificação ainda não abriu: você pode entrar na fila agora, sem enviar nenhum documento.</span></p><button class="btn block" type="button" data-act="pedeverif">${ic("vfy","sm")} Pedir verificação</button>`;
+  const pedido = nv!=="cadastrado" ? "" : ped && ped.status==="pendente" && ped.doc
+    ? `<div class="note okn">${ic("check")}<span><b class="ntit">Documento enviado, em análise</b>Enviado em ${new Date(ped.doc_enviado_em || ped.criado_em).toLocaleDateString("pt-BR", {day:"numeric", month:"long"})}. Só a curadoria vê o arquivo, e ele é apagado assim que o pedido é decidido.<span class="nact"><button class="linkbtn" type="button" data-act="desisteverif">Desistir do pedido</button></span></span></div>`
+    : (ped && ped.status==="recusada" ? `<div class="note">${ic("info")}<span><b class="ntit">Pedido não aprovado</b>${ped.motivo ? esc(ped.motivo) + " " : ""}O documento já foi apagado. Você pode enviar de novo.</span></div>`
+      : ped && ped.status==="pendente" ? `<p class="inota">${ic("info","sm")}<span>Você já está na fila. Para a curadoria decidir, envie o documento abaixo.</span></p>`
+      : `<p class="inota">${ic("info","sm")}<span>O nível 3 é para quem confirma a identidade, como pessoa ou como instituição.</span></p>`) + verifForm();
   return `<section class="acard" aria-labelledby="hacesso"><h2 id="hacesso">Seu acesso</h2><ol class="nsteps">
     ${li(1, "Visitante", `${A.visitante.porAba} publicações por aba e ${A.visitante.videos} vídeos`, false, true)}
     ${li(2, "Conta com e-mail", `Até ${A.cadastrado.porAba} publicações novas por aba e ${A.cadastrado.total} no total a cada hora; ${A.cadastrado.videos} vídeos a cada 12 horas`, nv==="cadastrado", nv!=="cadastrado")}
     ${li(3, nv==="admin" ? "Administração" : "Conta verificada", nv==="admin" ? "Tudo, mais a curadoria" : "Sem esses limites", nv!=="cadastrado", false)}</ol>${usados}${pedido}</section>`; }
+function verifForm(){ return `<div class="vform"><fieldset class="vtipo"><legend>Quem pede</legend>
+    <label><input type="radio" name="vtipo" value="pessoa" checked> <span><b>Pessoa</b><small>RG, CNH ou passaporte, com foto e nome legíveis</small></span></label>
+    <label><input type="radio" name="vtipo" value="instituicao"> <span><b>Instituição</b><small>Cartão CNPJ ou documento que mostre que você responde por ela</small></span></label></fieldset>
+  <label class="vfile"><span>Foto ou PDF do documento (até 5 MB)</span><input id="vdoc" type="file" accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"></label>
+  <p class="inota">${ic("lock","sm")}<span>Só a curadoria vê o arquivo. Ele nunca aparece no seu perfil e é apagado assim que o pedido é decidido.</span></p>
+  <p class="ferr" role="alert" hidden></p><button class="btn block" type="button" data-act="enviaverif">${ic("vfy","sm")} Enviar para verificação</button></div>`; }
 function contaSeguranca(){ const u = ME.user, ult = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString("pt-BR", {day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"}) : "";
   const chev = ic("back","sm flip");
   return `<section class="acard" aria-labelledby="hseg"><h2 id="hseg">Segurança da conta</h2><div class="list">
@@ -6772,9 +6840,29 @@ const A = {
     if (row) row.remove(); toast(st==="publicada" ? "Publicada no feed." : "Recusada."); if (st==="publicada") noticiasCarrega(); },
   contatab: b => { S.contaTab = b.dataset.t; ME.pend = null; S.contaAbriu = Date.now(); render(); },
   criarconta: (b, e) => { if (e) e.preventDefault(); closeSheet(); S.contaTab = b && b.dataset.entrar ? "entrar" : "criar"; ME.pend = null; S.contaAbriu = Date.now(); go("conta"); },
+  enviaverif: async b => { const box = b.closest(".vform"), err = box.querySelector(".ferr"), f = ($("#vdoc").files || [])[0], tipo = (box.querySelector('input[name="vtipo"]:checked') || {}).value || "pessoa";
+    const erro = t => { err.textContent = t; err.hidden = false; };
+    err.hidden = true; if (!f) return erro("Escolha a foto ou o PDF do documento."); if (f.size > 5*1024*1024) return erro("O arquivo passa de 5 MB. Tente uma foto menor.");
+    const ext = (f.name.split(".").pop() || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 5) || (f.type==="application/pdf" ? "pdf" : "jpg");
+    if (!/^(jpe?g|png|webp|heic|pdf)$/.test(ext)) return erro("Use foto (JPG, PNG, WEBP, HEIC) ou PDF.");
+    ocupado(b, true, "Enviando…"); const caminho = `${ME.user.id}/${Date.now()}.${ext}`, B = SB.storage.from("verificacao-docs");
+    const up = await B.upload(caminho, f, {contentType:f.type || undefined, upsert:false});
+    if (up.error){ ocupado(b, false); return erro("Não deu para enviar o arquivo. " + erroAuth(up.error)); }
+    const r = await SB.rpc("verificacao_envia", {p_tipo:tipo, p_doc_tipo:tipo==="instituicao" ? "documento da instituição" : "documento com foto", p_path:caminho});
+    if (r.error){ await B.remove([caminho]); ocupado(b, false); return erro(erroAuth(r.error)); }
+    if (r.data) B.remove([r.data]).catch(()=>{});   /* o arquivo de um envio anterior */
+    ocupado(b, false); await perfilCarrega(); toast("Documento enviado. A curadoria vai analisar."); render(); },
+  verifdoc: async b => { ocupado(b, true); const {data, error} = await SB.storage.from("verificacao-docs").createSignedUrl(b.dataset.p, 120); ocupado(b, false);
+    if (error || !data) return toast("Não deu para abrir o documento."); window.open(data.signedUrl, "_blank", "noopener"); },
+  verifdecide: async b => { const art = b.closest(".curitem"), mot = (art.querySelector(".vmotivo") || {}).value || "", aprova = b.dataset.a==="1";
+    ocupado(b, true); const {data, error} = await SB.rpc("verificacao_decide", {p_id:b.dataset.id, p_aprova:aprova, p_motivo:aprova ? null : mot});
+    if (error){ ocupado(b, false); return toast(erroAuth(error)); }
+    if (data) await SB.storage.from("verificacao-docs").remove([data]).catch(()=>{});
+    toast(aprova ? "Conta verificada. Documento apagado." : "Pedido recusado. Documento apagado."); render(); },
   pedeverif: async b => { ocupado(b, true, "Enviando…"); const {error} = await SB.from("verificacao_pedidos").insert({user_id:ME.user.id}); ocupado(b, false);
     if (error && !/duplicate|unique/i.test(error.message || "")) return toast(erroAuth(error)); await perfilCarrega(); toast("Pedido de verificação na fila."); render(); },
-  desisteverif: async b => { const {error} = await SB.from("verificacao_pedidos").delete().eq("user_id", ME.user.id); if (error) return toast(erroAuth(error)); await perfilCarrega(); toast("Pedido retirado."); render(); },
+  desisteverif: async b => { const dp = ((ME.acesso || {}).pedido || {}).doc_path; if (dp) await SB.storage.from("verificacao-docs").remove([dp]).catch(()=>{});
+    const {error} = await SB.from("verificacao_pedidos").delete().eq("user_id", ME.user.id); if (error) return toast(erroAuth(error)); await perfilCarrega(); toast("Pedido retirado."); render(); },
   trocasenha: () => openSheet(shead("Trocar a senha") + `<div class="cform sform">
       <div class="field"><label for="tsat">Senha atual</label><div class="pw"><input id="tsat" type="password" autocomplete="current-password"><button class="linkbtn" type="button" data-act="versenha" data-for="tsat">Mostrar</button></div></div>
       <div class="field"><label for="tsno">Nova senha</label>${senhaCampo("tsno")}</div>
@@ -6788,11 +6876,11 @@ const A = {
     try{ await SB.auth.signOut({scope:"others"}); }catch(e){} ocupado(b, false); closeSheet(); toast("Senha trocada. Os outros aparelhos saíram da conta."); },
   sairtodos: async () => { try{ await SB.auth.signOut({scope:"global"}); }catch(e){} ME.user = null; ME.perfil = null; ME.acesso = null; toast("Você saiu da conta em todos os aparelhos."); go("conta"); },
   baixadados: async b => { ocupado(b, true); const uid = ME.user.id, q = (t, c, col="user_id") => SB.from(t).select(c).eq(col, uid).then(r=>r.data || []).catch(()=>[]);
-    const [perfil, publicacoes, contas, orgs, aceites, verif, comentarios] = await Promise.all([q("perfis","id,nome,usuario,cidade,bio,criado_em,verificado,verificado_em,colaborador","id"), q("publicacoes","*","autor"), q("contas_externas","*"), q("org_pedidos","*"), q("aceites","*"), q("verificacao_pedidos","*"), q("comentarios","id,noticia_id,publicacao_id,texto,marca,fonte_url,uteis,status,criado_em","autor")]);
+    const [perfil, publicacoes, contas, orgs, aceites, verif, comentarios, guardados] = await Promise.all([q("perfis","id,nome,usuario,cidade,bio,criado_em,verificado,verificado_em,colaborador","id"), q("publicacoes","*","autor"), q("contas_externas","*"), q("org_pedidos","*"), q("aceites","*"), q("verificacao_pedidos","*"), q("comentarios","id,noticia_id,publicacao_id,texto,marca,fonte_url,uteis,status,criado_em","autor"), q("conta_dados","chave,valor,atualizada_em")]);
     const local = {}; try{ for (let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if (k.startsWith("arede-")) local[k] = store.get(k.slice(6), null); } }catch(e){}
     const doc = {arquivo:"Dados da sua conta em arede.online", gerado_em:new Date().toISOString(),
       conta:{id:uid, email:ME.user.email, criada_em:ME.user.created_at, email_confirmado_em:ME.user.email_confirmed_at || null, ultimo_acesso:ME.user.last_sign_in_at || null, nivel:nivel()},
-      perfil:perfil[0] || null, publicacoes, comentarios, contas_de_outras_redes:contas, pedidos_de_organizacao:orgs, aceites, pedido_de_verificacao:verif[0] || null,
+      perfil:perfil[0] || null, publicacoes, comentarios, contas_de_outras_redes:contas, pedidos_de_organizacao:orgs, aceites, pedido_de_verificacao:verif[0] || null, curtidas_pastas_e_votos:guardados,
       guardado_so_neste_aparelho:local, nota:"A senha não está aqui: o servidor guarda só uma versão embaralhada, que ninguém consegue ler."};
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(doc, null, 2)], {type:"application/json"})); a.download = "arede.online-meus-dados.json";
     document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 2000); ocupado(b, false); toast("Arquivo baixado."); },
@@ -6801,11 +6889,12 @@ const A = {
       <div class="field"><label for="apsen">Sua senha</label><div class="pw"><input id="apsen" type="password" autocomplete="current-password"><button class="linkbtn" type="button" data-act="versenha" data-for="apsen">Mostrar</button></div></div>
       <div class="field"><label for="aptxt">Para confirmar, escreva APAGAR</label><input id="aptxt" type="text" autocomplete="off" autocapitalize="characters" maxlength="10"></div>
       <p class="ferr" role="alert" hidden></p><button class="btn perigo block" type="button" data-act="apagacontaok">Apagar minha conta para sempre</button></div>`, "Apagar minha conta"),
-  apagacontaok: async b => { const sen = $("#apsen").value, uid = ME.user.id;
+  apagacontaok: async b => { const sen = $("#apsen").value, uid = ME.user.id, dp = ((ME.acesso || {}).pedido || {}).doc_path;
     if (!sen) return sheetErro("Escreva sua senha."); if ($("#aptxt").value.trim().toUpperCase()!=="APAGAR") return sheetErro("Escreva APAGAR para confirmar.");
     sheetErro(""); ocupado(b, true, "Apagando…");
     const c = await SB.auth.signInWithPassword({email:ME.user.email, password:sen}); if (c.error){ ocupado(b, false); return sheetErro(/invalid/i.test(c.error.message) ? "A senha não confere." : erroAuth(c.error)); }
     try{ const l = await SB.storage.from("midia").list(uid, {limit:1000}); if (l.data && l.data.length) await SB.storage.from("midia").remove(l.data.map(f=>uid + "/" + f.name)); }catch(e){}
+    if (dp) await SB.storage.from("verificacao-docs").remove([dp]).catch(()=>{});
     const {error} = await SB.rpc("apagar_conta"); if (error){ ocupado(b, false); return sheetErro(/admin/i.test(error.message) ? "A conta de administração não é apagada pelo site." : /reauth/i.test(error.message) ? "Confirme a senha de novo." : erroAuth(error)); }
     try{ await SB.auth.signOut({scope:"local"}); }catch(e){} try{ localStorage.removeItem("arede-acesso:" + uid); }catch(e){}
     ME.user = null; ME.perfil = null; ME.acesso = null; closeSheet(); toast("Conta apagada. Seus dados saíram do servidor."); await publicacoesCarrega(); go("inicio"); },
@@ -7115,7 +7204,7 @@ const A = {
     if (FOLDERS.some(f=>f[1].toLowerCase()===nome.toLowerCase())){ if (m) m.textContent = "Já existe uma pasta com esse nome."; return; }
     const sec = ($('[data-act="pastasec"]') || {}).getAttribute && $('[data-act="pastasec"]').getAttribute("aria-checked")==="true";
     const k = "p" + Date.now().toString(36); FOLDERS.push([k, nome, [], sec]);
-    store.set("pastas", FOLDERS.filter(f=>/^p[a-z0-9]{5,}$/.test(f[0])).map(f=>[f[0], f[1], [], f[3]]));
+    store.set("pastas", FOLDERS.filter(f=>/^p[a-z0-9]{5,}$/.test(f[0])).map(f=>[f[0], f[1], [], f[3]])); contaDadosAgenda("pastas");
     const uid = b.dataset.uid;
     if (uid){ S.saved.add(uid); S.savedIn[uid] = k; persist("saved"); persist("savedIn"); closeSheet(); refresh(uid); toast(`Pasta “${nome}” criada, com este conteúdo.`); return; }
     closeSheet(); toast(`Pasta “${nome}” criada${sec ? ", secreta" : ""}.`); if (route()==="perfil"){ S.profTab = "salvos"; S.profFolder = null; profShow(); } },
@@ -7196,7 +7285,7 @@ if (!location.hash){ const ini = store.get("ultima", "") || START; if (ini && in
 window.addEventListener("hashchange", render);
 if (S.localAuto && navigator.permissions && navigator.permissions.query) navigator.permissions.query({name:"geolocation"}).then(q=>{ if (q.state==="granted" && Date.now() - (S.localQuando || 0) > 6 * 3600e3) localAtualiza(true); }).catch(()=>{});
 contaInicia();
-if (/[?&]teste=1/.test(location.search)) window.__arede = {S, ME, navConta, LV, aoVivoPinta, adPrecosAplica, USO, uso, usoEnvia, csatTenta, prox, footCtx, footInfo, PRIO, prioDe, historicoPreenche, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
+if (/[?&]teste=1/.test(location.search)) window.__arede = {donoDe, findItem, S, ME, navConta, LV, aoVivoPinta, adPrecosAplica, USO, uso, usoEnvia, csatTenta, prox, footCtx, footInfo, PRIO, prioDe, historicoPreenche, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
 window.addEventListener("scroll", ()=>{ const t = $("#top"); if (t) t.classList.toggle("scrolled", window.scrollY > 4); }, {passive:true});
 window.addEventListener("resize", debounce(()=>{
   placeLogoDots();
@@ -7239,7 +7328,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 18:05";
+const VERSAO = "v1 registrada · 11/11 20:01";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
