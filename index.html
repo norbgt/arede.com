@@ -614,7 +614,7 @@ h1 .fic{font-size:11px;vertical-align:4px}
 .srclink{display:inline-flex;align-items:center;gap:5px;min-height:36px;font-size:15px;font-weight:600;color:var(--accent);text-decoration:none}
 .srclink .icon{width:15px;height:15px}
 .srclink:hover{text-decoration:underline;text-underline-offset:3px}
-.pinseal{display:flex;flex-direction:column;gap:2px;padding:8px 0 2px;border-top:1px solid var(--line)}
+.pinseal{display:flex;flex-direction:column;gap:6px;padding:8px 0 2px;border-top:1px solid var(--line)}
 .pinseal .why{border-top:0;padding-top:0;flex:1 1 auto;min-width:0;align-items:center}
 .pinrod{display:flex;align-items:center;gap:0 12px;margin-top:2px}.pinrod .pinacts{flex:none;flex-wrap:nowrap}.pinrod:has(.repbox:not([hidden])){flex-wrap:wrap}.pinrod .pinacts{margin-left:auto}.pinrod:empty{display:none}
 .iconbtn.armado{color:#fff;background:var(--danger,#c62828)}
@@ -661,6 +661,31 @@ h1 .fic{font-size:11px;vertical-align:4px}
 .sealbox.sbmini .t b{font-size:14px}
 .sealbox.sbmini .t small{font-size:12.5px}
 .sealbox.sbmini[open]{padding-bottom:6px}
+.sealbox summary{flex-wrap:wrap}
+.sbmarcas{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:-2px 0 4px;padding-left:32px;font-size:12.5px;line-height:1.35;color:var(--muted)}
+/* cartão aberto: uma grade só, com a coluna do ícone (22px) e a coluna do texto, que começa no mesmo ponto para
+   confiança, nota, marcas e etiquetas de "por que apareceu" */
+.sealbox.sbmini summary{display:grid;grid-template-columns:22px minmax(0,1fr) auto;column-gap:10px;row-gap:6px;align-items:center;min-height:0;padding:4px 0}
+.sealbox.sbmini summary > :first-child{grid-column:1;align-self:center}
+.sealbox.sbmini summary .t{grid-column:2}
+.sealbox.sbmini summary .linkbtn{grid-column:3;align-self:start;padding:1px 0}
+.sealbox.sbmini .sbmarcas{grid-column:2 / 4;margin:0;padding-left:0}
+.pinseal .why.wtags .wic{width:22px;justify-content:center;margin-right:4px}
+.sbm{display:inline-flex;align-items:center;gap:5px;color:var(--ink)}
+.sbm .icon{flex:none;width:14px;height:14px;color:var(--muted)}
+.sbm .sbd{color:var(--muted)}
+.sbm[data-m="antigo"]{color:var(--warn)}.sbm[data-m="antigo"] .icon{color:var(--warn)}
+.sbm[data-m="oficial"] .icon{color:var(--ok)}
+/* checagem de agência com mais destaque: fundo verde suave, nome da marca em negrito */
+.sbm[data-m="checado"]{margin-left:-8px;padding:4px 11px 4px 8px;border-radius:999px;background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ink)}
+.sbm[data-m="checado"] .icon{color:var(--ok);width:15px;height:15px}
+.sbm[data-m="checado"] .sbt{font-weight:600}
+.sbexp{list-style:none;margin:10px 0 4px;padding:0;display:flex;flex-direction:column;gap:8px;font-size:13px;line-height:1.45}
+.sbexp li{display:flex;gap:8px;align-items:flex-start}
+.sbexp .icon{flex:none;width:15px;height:15px;margin-top:2px;color:var(--muted)}
+.sbexp li[data-m="oficial"] .icon,.sbexp li[data-m="checado"] .icon{color:var(--ok)}
+.sbexp li[data-m="antigo"] .icon{color:var(--warn)}
+.sbexp a{color:var(--accent)}
 .pinend{padding:4px var(--gutter) 24px}
 .pin.cols .pinend{grid-column:1/-1;padding:0 20px 20px 16px}
 .srcbox{margin-top:4px}
@@ -3696,11 +3721,35 @@ function sealChecks(it){
   r += L(verified?"ok":"bad","Histórico da organização", verified ? "Publica correções quando erra." : "2 conteúdos com baixa confiança nos últimos 30 dias.");
   return r;
 }
+/* MARCAS DO SELO (11 nov 2026, decisões aceitas no painel): três avisos ao lado do selo, feitos só com dado que já está na base,
+   sem IA e sem custo. Conteúdo antigo: publicado há mais de SELO_ANTIGO_DIAS (3 meses, decisão de 11/11). Dado oficial: a fonte é governo e diário oficial,
+   dados públicos ou justiça e eleições. Checado por agência: a fonte é uma agência de checagem, ou uma delas cobriu a mesma notícia
+   (com link). Não há veredito escrito: isso pediria leitura automática do texto da checagem. */
+const SELO_ANTIGO_DIAS = 92, OFICIAL_RE = /governo e diário oficial|dados públicos|justiça e eleições/i, CHECA_RE = /checagem de fatos/i;
+/* ARQUITETURA DO SELO (11 nov 2026, 17:45): o selo e tudo o que qualifica a fonte ficam num bloco só.
+   Linha 1: ícone, confiança e nota, e "Detalhes". Linha 2: as marcas (antigo, dado oficial, checagem, idioma, reforço
+   internacional, linha editorial, ajuste da comunidade), alinhadas ao texto do selo. Os detalhes explicam cada marca.
+   O tema sai do selo: já aparece nas etiquetas de "por que apareceu", logo abaixo. */
+function seloMarcas(it){ const o = ORG[it.org] || {}, nat = String(o.natureza || ""), m = [];
+  const dias = it.ext ? (it.ext.data && !isNaN(Date.parse(it.ext.data)) ? (Date.now() - Date.parse(it.ext.data))/864e5 : (it.min || 0)/1440) : 0;   /* idade pela data de publicação; sem data, pelo tempo guardado */
+  if (dias > SELO_ANTIGO_DIAS) m.push({k:"antigo", ic:"clock", t:"Conteúdo antigo", d:it.ext.data ? "de " + dLabel(it.ext.data) : "", x:"Publicado há mais de 3 meses e voltou a circular. Confira se ainda vale antes de compartilhar."});
+  if (o.fonte && OFICIAL_RE.test(nat)) m.push({k:"oficial", ic:"doc", t:"Dado oficial", d:"", x:"Fonte primária: " + nat.replace(/^canal no YouTube · /, "").toLowerCase() + "."});
+  if (o.fonte && CHECA_RE.test(nat)) m.push({k:"checado", ic:"check", t:"Agência de checagem", d:o.nome, x:esc(o.nome) + " é uma agência de checagem de fatos."});
+  else if (it.ext && it.ext.verif && it.ext.verif.length){ const ag = new Set(Object.values(ORG).filter(x=>x && x.fonte && CHECA_RE.test(String(x.natureza || ""))).map(x=>x.nome));
+    const v = it.ext.verif.filter(x=>ag.has(x.fonte)); if (v.length) m.push({k:"checado", ic:"check", t:"Checado por agência", d:"", x:"Checagem sobre o mesmo assunto: " + v.slice(0, 2).map(x=>`<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.fonte)} ↗</a>`).join(", ") + "."}); }
+  if (reforco(it)) m.push({k:"reforco", ic:"globe", t:"Reforço internacional", d:it.paises.map(bandeira).join(""), x:"Fontes de mais de um país publicaram a mesma notícia."});
+  if (it.lingua && it.lingua!=="pt") m.push({k:"lingua", ic:"globe", t:"Em " + (LINGUA_NOME[it.lingua] || it.lingua), d:"", x:"A matéria original não está em português."});
+  if (o.linha) m.push({k:"linha", ic:"info", t:/ativista/i.test(o.linha) ? "Mídia ativista" : "Linha editorial declarada", d:"", x:esc(o.linha)});
+  if (it.daRede) m.push({k:"individual", ic:"people", t:"Fonte individual", d:REDES[it.rede].nome, x:"Perfil pessoal trazido de outra rede, não uma redação."});
+  if (it.seloAjuste) m.push({k:"ajuste", ic:"people", t:"Nota ajustada pela comunidade", d:"", x:"Contribuições com fonte mudaram a nota."});
+  return m.filter(x=>x.k==="checado").concat(m.filter(x=>x.k!=="checado")); }   /* checagem de agência vem primeiro: é a marca de mais peso */
 function sealBox(it, compacto){
-  const s = sealOf(it), o = ORG[it.org];
-  const extra = compacto ? [it.daArte ? "" : it.daRede ? "fonte individual · " + REDES[it.rede].nome : it.tema, reforco(it) ? "reforço internacional " + it.paises.map(bandeira).join("") : "", it.lingua && it.lingua!=="pt" ? "em " + (LINGUA_NOME[it.lingua] || it.lingua) : "", o && o.linha ? (/ativista/i.test(o.linha) ? "Mídia ativista" : "Linha editorial declarada") : "", it.seloAjuste ? "nota ajustada por contribuições da comunidade com fonte" : ""].filter(Boolean) : [];
-  return `<details class="sealbox${compacto?" sbmini":""}" ${s.lv==="bad"?"open":""}><summary>${sealIco(s,compacto?22:26)}<span class="t"><b>${s.label}</b><small>${s.sc!==null?`Nota ${s.sc} de 100`+(compacto?"":" · verificado"):(s.lv==="pend" ? "Publicação original, ainda não verificada" : it.arte ? "Arte e expressão" : it.daRede ? "Crítica, gosto ou coleção" : "Pergunta, pedido ou opinião")}${extra.map(x=>" · "+esc(x)).join("")}</small></span><span class="linkbtn">Detalhes</span></summary>
+  const s = sealOf(it), m = seloMarcas(it);
+  const sub = s.sc!==null ? `Nota ${s.sc} de 100` : (s.lv==="pend" ? "Publicação original, ainda não verificada" : it.arte ? "Arte e expressão" : it.daRede ? "Crítica, gosto ou coleção" : "Pergunta, pedido ou opinião");
+  return `<details class="sealbox${compacto?" sbmini":""}" ${s.lv==="bad"?"open":""}><summary>${sealIco(s,compacto?22:26)}<span class="t"><b>${s.label}</b><small>${sub}</small></span><span class="linkbtn">Detalhes</span>
+    ${m.length ? `<span class="sbmarcas">${m.map(x=>`<span class="sbm" data-m="${x.k}">${ic(x.ic,"sm")}<span class="sbt">${x.t}</span>${x.d ? `<span class="sbd"> · ${esc(x.d)}</span>` : ""}</span>`).join("")}</span>` : ""}</summary>
     ${s.sc!==null?`<div class="scale" role="img" aria-label="Nota ${s.sc} de 100"><i style="left:${s.sc}%"></i></div><div class="scalelbl"><span>Baixa</span><span>Moderada</span><span>Alta</span></div>`:""}
+    ${m.length ? `<ul class="sbexp">${m.map(x=>`<li data-m="${x.k}">${ic(x.ic,"sm")}<span><b>${x.t}</b> ${x.x}</span></li>`).join("")}</ul>` : ""}
     <div class="checks">${sealChecks(it)}</div>
     <p class="note" style="margin:10px 0"><span>Verificação automática com fontes públicas. Contestações passam por uma nova verificação automática, independente da primeira, com registro público. O selo avalia fatos, nunca opiniões ou posições políticas.</span></p>
     ${it.ext && it.ext.verif.length ? `<div class="vsrc"><b>${ORG[it.org].fonte ? "A mesma notícia em outras fontes" : "Fontes que confirmam"}</b>${it.ext.verif.map(v=>`<a href="${v.url}" target="_blank" rel="noopener"><span>${esc(v.fonte)}<small>${esc(v.papel||"")}${v.o_que_confirma?" · "+esc(v.o_que_confirma):""}</small></span>${ic("ext","sm")}</a>`).join("")}</div>`
@@ -7190,7 +7239,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 16:43";
+const VERSAO = "v1 registrada · 11/11 18:05";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();

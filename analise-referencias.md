@@ -543,3 +543,14 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - **Teste.** Simulação sem apagar: com 15 dias, 0 notícias sairiam hoje (a coleta começou em 8/11; a primeira saída real é em 23/11). Com 1 dia, sairiam 10.187, mostrando que a regra funciona. Hoje há 100 notícias com interação registrada (as visualizações dela de 11/11).
 - **Página (só no HTML).** "Conteúdo antigo" passou de 6 para 3 meses (92 dias), com o texto "Publicado há mais de 3 meses e voltou a circular". Conferido: 80 dias não marca, 100 dias marca.
 - **Painel.** Área "Servidor e segurança" atualizada com a rotina e a estimativa de 140 MB.
+
+## 11 nov 2026 · Mecanismo de decisões do painel (18:20, só no painel)
+- **Pedido.** "melhore o mecanismo no qual interajo no painel e tomo decisões, de modo que elas sejam salvas e desdobradas com mais facilidade e interface adequada" (captura: caixa preta cobrindo o painel, com texto quase ilegível, mostrando 15 decisões que já estavam registradas).
+- **Causa.** Na prévia de arquivo do Claude o painel não alcança o servidor; as decisões ficavam só no navegador, e a caixa não sabia que eu já tinha registrado as 15.
+- **Feito.**
+  1. Retrato da fila: cada entrega do painel leva uma cópia da fila do servidor (`a-rede-dados/decisoes-servidor.json`), com estado e nota do Claude. O painel funde essa cópia com o que está no navegador (pelo código e, sem código, pelo item e pela decisão). As 15 de hoje aparecem como "na fila", "em execução" ou "recusada", com as notas.
+  2. Topo do painel: contagem "N para enviar" (escura) ou "N na fila", que leva às Decisões.
+  3. A caixa preta virou uma barra fina no rodapé ("N decisões ainda não chegaram ao Claude · Enviar · Depois"), que não aparece na própria aba Decisões.
+  4. Aba Decisões: cinco números (para enviar, na fila, em execução, feitas, esperando decisão); estado da ligação ("Ligado à fila" ou "Sem ligação com a fila neste lugar", com a explicação); bloco "Para enviar" com o texto legível, Copiar e "Já colei na conversa"; listas por estado com a decisão, a seção, o seu comentário, a nota do Claude e "Ir ao item", que abre a seção e destaca o item.
+- **Rotina minha a cada entrega do painel.** Atualizar o retrato da fila e escrever a nota de execução em cada decisão.
+- **Limite que continua.** Na prévia do Claude, decisão nova ainda precisa ser colada na conversa. Saída proposta: publicar o painel como página privada dela no Claude, onde ele alcança o servidor; depende do ok dela, porque a regra era o painel não sair do Mac e da prévia.
