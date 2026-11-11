@@ -7343,6 +7343,22 @@ document.addEventListener("keydown", e=>{ if (e.key==="Escape" && $("#layer .scr
 const START = "";
 if (!location.hash){ const ini = store.get("ultima", "") || START; if (ini && ini!=="inicio"){ try{ history.replaceState(null, "", "#" + ini); }catch(err){ location.hash = ini; } } }
 window.addEventListener("hashchange", render);
+/* TOQUE DE NOVO NO ÍCONE DA BARRA (11 nov 2026): já estando numa seção, tocar outra vez no mesmo ícone volta ao começo dela,
+   atualizado e no topo (como no Instagram e no X). Início: aba Tudo com as notícias recarregadas; Busca: sem busca nem tema;
+   Comunidades: a página principal; Perfil: a aba Publicações. O Criar não entra. */
+const secaoDe = r => r==="inicio" || r.startsWith("pin-") ? "inicio" : r==="explorar" ? "explorar"
+  : r==="organizacoes" || r.startsWith("org-") || r==="comunidades-todas" || r==="participar" ? "organizacoes"
+  : r==="perfil" || r==="config" || r==="perfil-ver" ? "perfil" : "";
+document.addEventListener("click", e=>{ const a = e.target.closest && e.target.closest(".navbtn[data-nav]"); if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
+  const sec = a.dataset.nav; if (secaoDe(route()) !== sec) return;   /* outra seção: segue o link normal */
+  e.preventDefault(); closeSheet();
+  if (sec==="inicio"){ S.tab = "tudo"; persist("tab"); }
+  else if (sec==="explorar"){ S.exploreQ = ""; S.exploreTema = null; }
+  else if (sec==="perfil"){ S.profTab = "publicacoes"; S.profFolder = null; S.profQ = ""; }
+  F.key = null;
+  if (route() !== sec) location.hash = sec; else render();
+  requestAnimationFrame(()=>window.scrollTo({top:0, behavior:"smooth"}));
+  if (sec==="inicio") noticiasCarrega(); uso("nav", "de-novo", sec); });
 if (S.localAuto && navigator.permissions && navigator.permissions.query) navigator.permissions.query({name:"geolocation"}).then(q=>{ if (q.state==="granted" && Date.now() - (S.localQuando || 0) > 6 * 3600e3) localAtualiza(true); }).catch(()=>{});
 contaInicia();
 if (/[?&]teste=1/.test(location.search)) window.__arede = {donoDe, findItem, S, ME, navConta, LV, aoVivoPinta, adPrecosAplica, USO, uso, usoEnvia, csatTenta, prox, footCtx, footInfo, PRIO, prioDe, historicoPreenche, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
@@ -7394,7 +7410,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 20:42";
+const VERSAO = "v1 registrada · 11/11 20:49";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
