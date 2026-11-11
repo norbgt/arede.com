@@ -433,3 +433,8 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - **Autorização.** "publique essa ultima versão em todos os ambientes". Servidor instalado: tabela `aovivo_canais`, funções `aovivo_lista`, `aovivo_confere_inicio`, `aovivo_grava`, função de servidor `aovivo` (v3) e agendamento `aovivo-confere` a cada 10 minutos.
 - **Conferência.** A página de transmissão ao vivo vem do YouTube sem os dados do player quando o pedido sai do servidor; o código do vídeo no ar foi lido dos dados da própria página. Primeira rodada: 7 de 7 canais conferidos (6 ao vivo, Justiça Eleitoral agendada). Ponto frágil mantido: se o YouTube mudar a página, o canal volta a mostrar o link "Ver no canal"; alternativa firme é a chave gratuita da API do YouTube.
 - **Visualização.** A tela "Visualização" saiu. Um toque no ícone ao lado do filtro alterna Mosaico e Cartões; o ícone mostra a forma atual. A escolha continua guardada no aparelho e no perfil, e as trocas continuam contadas.
+
+## 11 nov 2026 · Conta conectada visível na navegação (só no HTML)
+- **Pedido.** "sinto falta de uma diferenciação que diga se estou logada ou não nessa visão global".
+- **Feito.** No item Perfil da navegação: com conta, as iniciais num círculo e o primeiro nome (no computador); sem conta, o ícone de pessoa e "Entrar". Atualiza sozinho ao entrar e ao sair. Leitores de tela ouvem "Conta conectada" ou "Entrar ou criar conta".
+- **Estado.** Publicado em todos os ambientes às 15:27, a pedido ("coloque essa versão em todos os ambientes").
