@@ -554,3 +554,9 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
   4. Aba Decisões: cinco números (para enviar, na fila, em execução, feitas, esperando decisão); estado da ligação ("Ligado à fila" ou "Sem ligação com a fila neste lugar", com a explicação); bloco "Para enviar" com o texto legível, Copiar e "Já colei na conversa"; listas por estado com a decisão, a seção, o seu comentário, a nota do Claude e "Ir ao item", que abre a seção e destaca o item.
 - **Rotina minha a cada entrega do painel.** Atualizar o retrato da fila e escrever a nota de execução em cada decisão.
 - **Limite que continua.** Na prévia do Claude, decisão nova ainda precisa ser colada na conversa. Saída proposta: publicar o painel como página privada dela no Claude, onde ele alcança o servidor; depende do ok dela, porque a regra era o painel não sair do Mac e da prévia.
+
+## 11 nov 2026 · Publicado: v1 registrada · 11/11 18:05 (18:15)
+- **Pedido.** "garanta que a versão mais atual está online".
+- **Foi ao ar.** Marcas do selo (Conteúdo antigo em 3 meses, Dado oficial, Checagem de agência em destaque, idioma, reforço internacional, linha editorial) num bloco só com o selo, tudo alinhado. Commit 41d09ba; `ambiente` atualizado; prévia no Claude já estava nessa versão.
+- **Conferido no ar.** O site serve 18:05; uma notícia real abriu com a marca "Dado oficial".
+- **Fila.** As três decisões de selo passaram para "feita"; o retrato da fila no painel foi atualizado.
