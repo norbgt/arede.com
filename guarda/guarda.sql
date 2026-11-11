@@ -1,0 +1,9 @@
+-- Guarda de notícias (11 nov 2026). Aplicado no servidor como a migração "noticias_guarda_15_dias".
+-- Regra: notícia sai 15 dias depois de coletada; com interação de conta cadastrada (visualização registrada,
+-- comentário, "útil", sugestão de ajuste do selo), fica até 30 dias depois da última interação; com comentário,
+-- sugestão de ajuste ou "Para entender", não é apagada por esta rotina.
+-- Rotina: privado.noticias_limpa(p_dias 15, p_dias_engajada 30, p_simula false), todo dia às 03:20 UTC (00:20 em Brasília).
+-- Simular sem apagar:   select privado.noticias_limpa(15, 30, true);
+-- Ver o registro:       select * from privado.limpeza_log order by id desc limit 10;
+-- Mudar o prazo:        select cron.schedule('noticias-guarda-15-dias', '20 3 * * *', 'select privado.noticias_limpa(30, 45)');
+-- Desligar:             select cron.unschedule('noticias-guarda-15-dias');
