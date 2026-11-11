@@ -5515,7 +5515,8 @@ const CORES_CONTA = ["#2A3FD4","#1F7A4D","#B8430F","#7A3E9D","#0E7490","#C2185B"
 /* a navegação mostra se há conta conectada: iniciais e primeiro nome, ou o ícone de pessoa com "Entrar" */
 function navConta(){ const b = $('.navbtn[data-nav="perfil"]'); if (!b) return; const on = !!ME.user, nome = (on && ME.perfil && ME.perfil.nome) || "", m = b.querySelector(".navme"), l = b.querySelector(".lbl");
   b.classList.toggle("logada", on); if (m){ m.hidden = !on; m.textContent = on ? siglaDe(nome || (ME.user.email || "?").split("@")[0]) : ""; }
-  if (l) l.textContent = on ? (nome.split(/\s+/)[0] || "Perfil").slice(0, 12) : "Entrar";
+  if (l){ const n = nome.trim(), p = n.split(/\s+/)[0] || "";   /* o nome inteiro quando cabe; senão o primeiro nome; nome curto demais vira "Perfil" */
+    l.textContent = !on ? "Entrar" : n && n.length <= 13 ? n : p.length >= 2 ? p.slice(0, 12) : "Perfil"; }
   b.setAttribute("aria-label", on ? "Seu perfil" + (nome ? ", " + nome : "") + ". Conta conectada" : "Entrar ou criar conta"); }
 const siglaDe = n => (n||"?").trim().split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join("").toUpperCase() || "?";
 function orgDaPessoa(pf){ const id = "u-" + pf.id;
@@ -6923,7 +6924,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 15:21";
+const VERSAO = "v1 registrada · 11/11 15:28";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();

@@ -438,3 +438,4 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - **Pedido.** "sinto falta de uma diferenciação que diga se estou logada ou não nessa visão global".
 - **Feito.** No item Perfil da navegação: com conta, as iniciais num círculo e o primeiro nome (no computador); sem conta, o ícone de pessoa e "Entrar". Atualiza sozinho ao entrar e ao sair. Leitores de tela ouvem "Conta conectada" ou "Entrar ou criar conta".
 - **Estado.** Publicado em todos os ambientes às 15:27, a pedido ("coloque essa versão em todos os ambientes").
+- **Correção logo depois de publicar.** Na conta "a rede.online" o rótulo saía só "a" (primeira palavra do nome). Regra nova: o nome inteiro quando cabe (até 13 letras); senão o primeiro nome; com menos de 2 letras, "Perfil". Visto no site no ar com a conta dela, o que o teste com conta simulada não pegou.
