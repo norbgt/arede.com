@@ -1135,6 +1135,8 @@ a.setting{color:var(--ink);text-decoration:none}
 .adbar .tt{display:flex;flex-direction:column;line-height:1.2}.adbar .tt small{color:var(--muted);font-size:12px}.adbar .tt b{font-size:20px}
 .adrev{margin-bottom:10px}.adpv.pq{max-width:330px}
 .adregras{margin:12px 0;padding-left:18px;font-size:var(--fs-sm);color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.admot{display:block;color:var(--muted);font-size:12px;font-weight:400}
+.adsum .kv b small.adst{display:block;font-size:11.5px;font-weight:500;text-align:right}.adst.ok{color:#2E8C50}.adst.warn{color:#A8620A}.adst.bad{color:#C62828}.adst.na{color:var(--muted)}
 .adok{display:flex;align-items:center;gap:10px;margin:12px 2px;font-size:var(--fs-sm)}.adok input{width:20px;height:20px;flex:none}
 
 /* animados, como GIF: lentos (no máximo 1 piscada por segundo) e parados para quem pede menos movimento */
@@ -4089,7 +4091,11 @@ const AD_PRECO = {dia:5, minDias:3, maxDias:90, tempos:[3,7,15,30], descontos:[[
   formatos:[["s","Quadradinho","Um terço da largura · 129 × 129 px no celular",1],["t","Vertical","Um terço da largura, altura inteira · 129 × 260 px",1.8],["w","Destaque","Dois terços da largura, altura inteira · 259 × 260 px",3.2]],
   posicoes:[["rot","Rotativo","Do 4º espaço de anúncio em diante",1],["meio","Meio do feed","2º e 3º espaços de anúncio",1.3],["topo","Início do feed","1º espaço, depois de 8 cartões",1.6]]};
 const AD_CORES = [["#6D28D9","#A78BFA"],["#2338D8","#93A5FF"],["#0F766E","#5EEAD4"],["#15803D","#86EFAC"],["#EA580C","#FDBA74"],["#DC2626","#FCA5A5"],["#BE185D","#F9A8D4"],["#141615","#9CA3AF"]];
-const AD_PAGAMENTO = null;   /* serviço de pagamento: a ligar quando a conta existir (ver painel › Anúncios) */
+/* pagamento pelo Mercado Pago (Checkout Pro). O modo vem do servidor: "desligado", "teste" (só a administração consegue cobrar, com credenciais de teste) ou "producao".
+   O site nunca calcula o valor que vale nem vê dados de cartão: pede a cobrança ao servidor e leva a pessoa à página do Mercado Pago. */
+let AD_MODO = "desligado", AD_PEDIDOS = null;
+const adPodePagar = () => AD_MODO==="producao" || (AD_MODO==="teste" && nivel()==="admin");
+const AD_STATUS = {aguardando:["na","Aguardando pagamento"], pago:["warn","Pago · em conferência"], aprovado:["ok","Aprovado"], recusado:["bad","Recusado"], cancelado:["na","Cancelado"], expirado:["na","Expirado"]};
 const AD_VAZIO = {nome:"", frase:"", cta:"", seg:"", link:"", cor:0, fmt:"s", pos:"rot", dias:7, meio:"pix"};
 const adDraft = () => { if (!S.adDraft) S.adDraft = Object.assign({}, AD_VAZIO, store.get("anuncio", {})); return S.adDraft; };
 const adBRL = v => v.toLocaleString("pt-BR", {style:"currency", currency:"BRL"});
@@ -4108,7 +4114,34 @@ function adPrecosAplica(d){ if (!d || typeof d!=="object") return false; const P
   P.formatos.find(x=>x[0]==="t")[3] = ft; P.formatos.find(x=>x[0]==="w")[3] = fw; P.posicoes.find(x=>x[0]==="meio")[3] = pm; P.posicoes.find(x=>x[0]==="topo")[3] = pt;
   if (route()==="anunciar") adRefaz(); return true; }
 async function adPrecosCarrega(){ if (LOCAL) adPrecosAplica(store.get("anuncioPrecos", null)); if (!SB) return;
-  try{ const r = await SB.rpc("anuncio_tabela"); if (!r.error && r.data && r.data.dados) adPrecosAplica(r.data.dados); }catch(e){} }
+  try{ const r = await SB.rpc("anuncio_tabela"); if (!r.error && r.data){ if (r.data.pagamento) AD_MODO = r.data.pagamento; if (r.data.dados) adPrecosAplica(r.data.dados); } }catch(e){} }
+/* pedidos da própria pessoa (o servidor só entrega os dela) */
+async function adPedidosCarrega(){ if (!SB || !ME.user){ AD_PEDIDOS = null; return; }
+  try{ const r = await SB.from("anuncio_pedidos").select("id,criado_em,nome,formato,posicao,dias,valor,status,teste,motivo").order("criado_em", {ascending:false}).limit(20); AD_PEDIDOS = r.data || []; }catch(e){ AD_PEDIDOS = null; }
+  const box = $("#adpedidos"); if (box) box.innerHTML = adPedidosHTML(); }
+function adPedidosHTML(){ if (!AD_PEDIDOS || !AD_PEDIDOS.length) return ""; const P = AD_PRECO;
+  return `<h2 class="adh">Seus pedidos</h2><div class="adsum">${AD_PEDIDOS.map(p=>{ const f = P.formatos.find(x=>x[0]===p.formato) || ["", p.formato], st = AD_STATUS[p.status] || ["na", p.status];
+    return `<div class="kv"><span><b>${esc(p.nome)}</b> · ${f[1]} · ${adDias(p.dias)}${p.teste ? " · teste" : ""}${p.motivo ? `<small class="admot">${esc(p.motivo)}</small>` : ""}</span><b>${adBRL(+p.valor)}<small class="adst ${st[0]}">${st[1]}</small></b></div>`; }).join("")}</div>`; }
+/* volta do Mercado Pago: confere o pagamento no servidor e mostra a situação */
+function adVolta(){ let q; try{ q = new URLSearchParams(location.search); }catch(e){ return; } const id = q.get("pedido"); if (!id || !/^[0-9a-f-]{36}$/i.test(id)) return;
+  const pay = q.get("payment_id") || q.get("collection_id") || "", st = q.get("status") || q.get("collection_status") || "";
+  ["pedido","payment_id","collection_id","status","collection_status","external_reference","payment_type","merchant_order_id","preference_id","site_id","processing_mode","merchant_account_id"].forEach(k=>q.delete(k));
+  try{ history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "") + "#anunciar"); }catch(e){}
+  if (route()!=="anunciar") go("anunciar");
+  adConfere(id, /^\d{4,20}$/.test(pay) ? pay : "", st); }
+async function adConfere(id, pay, st){ sheetAdSituacao("conferindo");
+  if (pay) try{ await fetch(`${SB_URL}/functions/v1/anuncio-aviso?payment_id=${pay}`, {headers:{apikey:SB_KEY}}); }catch(e){}
+  let ped = null; for (let i = 0; i < 6 && SB && ME.user; i++){ try{ const r = await SB.from("anuncio_pedidos").select("id,status,valor,teste").eq("id", id).maybeSingle(); ped = r.data; }catch(e){}
+    if (ped && ped.status !== "aguardando") break; if (st !== "approved" && st !== "pending" && ped) break; await new Promise(r=>setTimeout(r, 2500)); }
+  sheetAdSituacao(!ME.user ? "semconta" : ped ? ped.status : "sempedido", ped, st); adPedidosCarrega(); }
+function sheetAdSituacao(estado, ped, st){ const v = ped ? adBRL(+ped.valor) : "", teste = ped && ped.teste ? `<p class="srcnote" style="margin-top:8px">Pedido em modo de teste: nenhum dinheiro de verdade foi movimentado.</p>` : "";
+  const [tit, txt] = estado==="conferindo" ? ["Conferindo o pagamento…", "Só um instante: estamos confirmando com o Mercado Pago."]
+    : estado==="pago" || estado==="aprovado" ? ["Pagamento recebido", `Recebemos ${v}. Sua peça entra agora na conferência. Quando for aprovada, o anúncio vai ao ar; a situação aparece em “Seus pedidos”.`]
+    : estado==="aguardando" && st==="pending" ? ["Pagamento em análise", "O Mercado Pago ainda está processando. Assim que confirmar, o pedido muda sozinho para pago em “Seus pedidos”."]
+    : estado==="aguardando" ? ["Pagamento não concluído", "Nada foi cobrado. Seu anúncio continua guardado: é só tocar em Continuar para tentar de novo."]
+    : estado==="semconta" ? ["Entre para ver o pedido", "Entre na conta que fez o pedido para ver a situação do pagamento."]
+    : ["Pedido não encontrado", "Não achamos esse pedido nesta conta."];
+  openSheet(shead(tit) + `<p style="margin:4px 2px 0">${txt}</p>${teste}${estado==="conferindo" ? "" : `<div class="sheetacts"><button class="btn ink block" type="button" data-act="close">Entendi</button></div>`}`, tit); }
 function adFace(d){ const nome = d.nome.trim() || "Sua marca", frase = d.frase.trim() || "Sua mensagem aparece aqui.";
   return `<span class="adface"><span class="adtop"><span class="adtag">Anúncio</span>${d.cta.trim() ? `<span class="adcta">${esc(d.cta.trim())}</span>` : ""}</span>
     <span class="admk"><span class="adini">${esc(nome.slice(0,1).toUpperCase())}</span></span>
@@ -4149,6 +4182,7 @@ function screenAnunciar(){ const d = adDraft(), P = AD_PRECO, v = adPreco(d), va
     <h2 class="adh">Valor</h2>
     <div class="adsum" id="adconta">${adConta(v)}</div>
     <p class="srcnote">De ${AD_PRECO.minDias} a ${AD_PRECO.maxDias} dias. A peça é conferida antes de ir ao ar. Não aceitamos propaganda eleitoral, de candidatos ou de partidos.</p>
+    <div id="adpedidos">${adPedidosHTML()}</div>
   </div>
   <div class="adbar"><div class="container adbarin"><span class="tt"><small>Total · ${adDias(v.dias)}</small><b id="adtotal">${adBRL(v.total)}</b></span><button class="btn ink" type="button" data-act="adrevisar">Continuar</button></div></div>`; }
 function adGuarda(){ store.set("anuncio", adDraft()); }
@@ -4157,10 +4191,11 @@ function sheetAdRevisar(){ const d = adDraft(), v = adPreco(d);
   openSheet(shead("Revisar e pagar") + `<div class="adrev">${adPrevia(d, true)}</div>
     <div class="adsum">${adConta(v)}</div>
     <ul class="adregras"><li>Toda peça é conferida antes de ir ao ar. Se não for aprovada, o valor volta inteiro.</li><li>O anúncio leva a marca “Anúncio” e aparece para todo mundo, no mesmo lugar.</li><li>Sem propaganda eleitoral, de candidatos ou de partidos.</li></ul>
-    <div class="adpag" role="radiogroup" aria-label="Forma de pagamento">${[["pix","Pix","Confirma na hora"],["cartao","Cartão de crédito","Na página do serviço de pagamento"]].map(([k,n,sub])=>`<button class="adopt" type="button" role="radio" aria-checked="${d.meio===k}" data-act="admeio" data-v="${k}"><span class="t"><b>${n}</b><small>${sub}</small></span>${d.meio===k ? ic("check") : ""}</button>`).join("")}</div>
+    <div class="adpag" role="radiogroup" aria-label="Forma de pagamento">${[["pix","Pix","Confirma na hora"],["cartao","Cartão de crédito","Você escolhe na página do Mercado Pago"]].map(([k,n,sub])=>`<button class="adopt" type="button" role="radio" aria-checked="${d.meio===k}" data-act="admeio" data-v="${k}"><span class="t"><b>${n}</b><small>${sub}</small></span>${d.meio===k ? ic("check") : ""}</button>`).join("")}</div>
     <label class="adok"><input type="checkbox" id="adaceite"><span>Li e aceito as regras de anúncio.</span></label>
     <div class="sheetacts"><button class="btn ink block" type="button" data-act="adpagar">Pagar ${adBRL(v.total)}</button></div>
-    <p class="srcnote" style="margin-top:8px">O pagamento acontece na página segura do serviço de pagamento. arede.online não vê nem guarda dados de cartão.</p>`, "Revisar e pagar"); }
+    <p class="srcnote" style="margin-top:8px">O pagamento acontece na página segura do Mercado Pago. arede.online não vê nem guarda dados de cartão.</p>
+    ${AD_MODO==="teste" && adPodePagar() ? `<div class="note" style="margin-top:10px">${ic("info")}<span><b>Modo de teste.</b> Só a administração vê este pagamento. Use um comprador de teste do Mercado Pago; nenhum dinheiro de verdade é movimentado.</span></div>` : ""}`, "Revisar e pagar"); }
 function sheetAdSemPagamento(){ const v = adPreco(adDraft());
   openSheet(shead("Pagamento em preparação") + `<div class="note">${ic("info")}<span><b>Nada foi cobrado.</b> O pagamento de anúncios ainda não está ligado, e nenhum dado saiu deste aparelho.</span></div>
     <p style="margin:12px 2px 0">Seu anúncio de ${adBRL(v.total)} ficou guardado como rascunho neste aparelho. Quando o pagamento abrir, é só voltar em “Anuncie aqui”.</p>
@@ -5368,7 +5403,7 @@ function render(){
   else if (r.startsWith("pin-")){ main.innerHTML = screenPin(r.slice(4)); fillPin(r.slice(4)); }
   else if (r==="ate-depois") main.innerHTML = screenBye();
   else if (r==="conta") main.innerHTML = screenConta();
-  else if (r==="anunciar") main.innerHTML = screenAnunciar();
+  else if (r==="anunciar"){ main.innerHTML = screenAnunciar(); adPedidosCarrega(); }
   else if (r==="em-alta"){ main.innerHTML = screenAlta(); if (ME.pronto) altaCarrega(); }
   else if (r==="curadoria"){ main.innerHTML = screenCuradoria(); curadoriaCarrega(); }
   else if (r==="nova-senha") main.innerHTML = screenNovaSenha();
@@ -5438,7 +5473,7 @@ async function contaInicia(){
     if (erroUrl) toast("O link do e-mail expirou ou já foi usado. Entre com e-mail e senha ou peça outro link.");
     else if (ME.user) toast("E-mail confirmado. Sua conta está ativa.");
   }
-  adPrecosCarrega(); usoInicia(); await perfilCarrega(); ME.pronto = true; await publicacoesCarrega(); await noticiasCarrega(); contaAtualiza(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
+  adPrecosCarrega(); usoInicia(); await perfilCarrega(); ME.pronto = true; adVolta(); if (route()==="anunciar") adPedidosCarrega(); await publicacoesCarrega(); await noticiasCarrega(); contaAtualiza(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
   setInterval(()=>{ if (document.visibilityState==="visible") noticiasCarrega(); }, 15 * 60000);
 }
 /* a escolha guardada na conta vale em qualquer aparelho; se a conta ainda não tem, guarda a deste aparelho (quando a pessoa já escolheu) */
@@ -6524,8 +6559,17 @@ const A = {
   adrevisar: () => { const d = adDraft(), falta = !d.nome.trim() ? ["adnome","Diga a marca ou organização."] : !d.frase.trim() ? ["adfrase","Escreva a mensagem do anúncio."] : !/^https:\/\/[^\s.]+\.[^\s]+$/i.test(d.link.trim()) ? ["adlink","Informe o endereço de destino, começando com https://"] : null;
     if (falta){ toast(falta[1]); const el = $("#" + falta[0]); if (el){ el.focus({preventScroll:true}); el.scrollIntoView({block:"center", behavior:"smooth"}); } return; }
     sheetAdRevisar(); },
-  adpagar: () => { const ok = $("#adaceite"); if (!ok || !ok.checked) return toast("Marque que leu e aceita as regras de anúncio.");
-    if (!AD_PAGAMENTO) return sheetAdSemPagamento(); },
+  adpagar: async b => { const ok = $("#adaceite"); if (!ok || !ok.checked) return toast("Marque que leu e aceita as regras de anúncio.");
+    if (!adPodePagar()) return sheetAdSemPagamento();
+    if (!ME.user || !SB){ closeSheet(); toast("Entre ou crie sua conta para pagar. O anúncio fica guardado."); A.acessar(); return; }
+    ocupado(b, true, "Abrindo o pagamento…");
+    try{ const ses = await SB.auth.getSession(), tok = ses.data.session && ses.data.session.access_token, d = adDraft();
+      const r = await fetch(`${SB_URL}/functions/v1/anuncio-cobra`, {method:"POST", headers:{apikey:SB_KEY, Authorization:"Bearer " + tok, "Content-Type":"application/json"},
+        body:JSON.stringify({nome:d.nome.trim(), frase:d.frase.trim(), cta:d.cta.trim(), seg:d.seg.trim(), link:d.link.trim(), cor:d.cor, fmt:d.fmt, pos:d.pos, dias:adPreco(d).dias})});
+      const j = await r.json().catch(()=>({}));
+      if (!r.ok || !j.url){ ocupado(b, false); return toast(j.erro ? j.erro.charAt(0).toUpperCase() + j.erro.slice(1) + "." : "Não foi possível abrir o pagamento. Tente de novo."); }
+      location.href = j.url; }
+    catch(e){ ocupado(b, false); toast("Sem conexão com o servidor. Tente de novo."); } },
   adoculta: b => { S.adOculta.add(b.dataset.a); closeSheet(); toast("Pronto: esse anunciante não aparece mais para você."); resetFeed(); },
   topen: b => { const t = b.closest(".tile"), v = t && t.querySelector("video"), u = b.dataset.uid; if (v) S.vid[u] = {t:v.currentTime, playing:!v.paused, muted:v.muted};
     const g = GRIDS[b.closest("[data-grid]").dataset.grid]; g && g.select(u); },
@@ -6804,7 +6848,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 13:12";
+const VERSAO = "v1 registrada · 11/11 13:25";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();

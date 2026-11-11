@@ -395,3 +395,16 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - Painel: aba “Teste de uso”, com convidados (nome só no computador dela; link pessoal com código), fora da lista, como navegam, onde tocam, portas falsas (classificação do Claude a partir da auditoria de fluxos), o que dá errado e CSAT.
 - Ressalva registrada: com link pessoal, a navegação e a nota ficam ligadas a cada convidado, sem aviso na tela. Recomendação: dizer isso na mensagem do convite.
 - Servidor: tabelas uso_eventos e uso_csat (sem leitura pública), funções uso_registra, csat_envia e painel_uso, limpeza diária uso-limpa.
+
+## 11/11 · Cobrança de anúncio pelo Mercado Pago, em modo de teste
+- A Amanda já tinha conta no Mercado Pago; criou a aplicação (Checkout Pro) e guardou o Access Token de teste nos segredos do Supabase. O Claude não viu a chave.
+- Como funciona: o site envia a peça e as escolhas; a função anuncio-cobra confere a sessão, cria o pedido com o valor calculado no servidor (tabela de preços) e abre a cobrança no Mercado Pago; a pessoa paga na página do Mercado Pago; a função anuncio-aviso recebe o aviso, consulta o próprio Mercado Pago e só então marca o pedido como pago, se o valor aprovado cobre o do pedido.
+- Modo “teste” (configuração anuncio_pagamento): só a conta da administração consegue abrir o pagamento; para o resto, o fluxo continua em “Pagamento em preparação”. Pedido real só aceita pagamento real.
+- Site: “Seus pedidos” no fim de Anuncie aqui, com a situação de cada um; na volta do Mercado Pago, a tela confere e mostra “Pagamento recebido”, “em análise” ou “não concluído”.
+- Painel › Anúncios › Pedidos: lista com a peça, o valor, a conta e a situação; aprovar ou recusar pedido pago.
+- Ainda falta: compra de teste feita por ela; devolução automática ao recusar; peça aprovada aparecer no feed no tamanho, posição e período comprados; contagem de exibições; chave de produção, CPF ou CNPJ e nota fiscal.
+- Testado no ar com a conta dela: a cobrança foi criada no Mercado Pago (pedido de teste de R$ 15,00, que expira sozinho em 2 dias). A compra de teste em si não foi feita pelo Claude.
+
+## 11/11 · Transmissões oficiais e canais abertos (resposta, sem construção)
+- Custo quase zero se for pelo player oficial de cada canal (YouTube): o vídeo não passa pela estrutura da rede. Retransmitir sinal por conta própria custa caro e esbarra em direito da emissora.
+- Canal aberto não é livre para retransmitir: a lei de direitos autorais dá à emissora o direito de autorizar ou proibir. Canais públicos são mais fáceis; o termo de uso da TV Senado proíbe uso comercial e anúncio junto do conteúdo, então a tela “Ao vivo” ficaria sem anúncio.
