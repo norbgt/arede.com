@@ -560,3 +560,13 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - **Foi ao ar.** Marcas do selo (Conteúdo antigo em 3 meses, Dado oficial, Checagem de agência em destaque, idioma, reforço internacional, linha editorial) num bloco só com o selo, tudo alinhado. Commit 41d09ba; `ambiente` atualizado; prévia no Claude já estava nessa versão.
 - **Conferido no ar.** O site serve 18:05; uma notícia real abriu com a marca "Dado oficial".
 - **Fila.** As três decisões de selo passaram para "feita"; o retrato da fila no painel foi atualizado.
+
+## 11 nov 2026 · Fila de decisões: segunda rodada (19:45)
+- **Pedido.** "vamos seguir executando o que está na fila".
+- **Coletor em tempo real → feita.** A parte sem custo já existe: coleta a cada 15 minutos em 244 fontes, cerca de 5 mil notícias por dia. Resumo por IA fora, pela regra de custo.
+- **Conteúdos internacionais → feita (notícias).** Últimas 24 h: 714 em inglês e 1.890 em espanhol. Organizações de fora vão junto com a troca das organizações de exemplo.
+- **Equilibrar as linhas editoriais → pronta, esperando autorização.** O problema se inverteu: a grande imprensa domina. Das 30 notícias em português de um visitante, 29 eram da grande imprensa, de 2 fontes (o g1 publica ~880 por dia). Nova versão da função `conteudo` com teto por fonte em cada leva (visitante 2, conta com e-mail 4, verificada e admin 8, vídeos 3): as 30 viriam de 16 fontes. A aplicação no servidor foi barrada por ser mudança em produção; espera o ok dela. Texto em `equilibrio/LEIA-ME.md`.
+- **Interesse declarado → mapa de donos no painel.** Verificação do selo › Donos: 10 linhas (Grupo Globo; Grupo Folha e UOL com o PagBank; Grupo Estado; GRPCOM; Poder360 com Frederico Trajano; BBC; EBC; DW e RFI; The Intercept; Brasil de Fato), cada uma com a base e Aceitar, Refinar ou Recusar. Três marcadas "a confirmar". Fontes sem levantamento listadas. Não incluí a alegação de financiamento do Brasil de Fato que aparece na Wikipedia em inglês, por estar só como alegação.
+- **Cobertura cruzada → medida.** Só 166 das ~4.900 notícias do dia (15 grupos) aparecem junto da mesma notícia de outra fonte. Próximo: afinar o agrupamento do coletor (sem custo, mas mexe no servidor).
+- **Fontes sem leitura.** Estadão lê o feed mas não traz nenhuma notícia; Gazeta do Povo e UOL Notícias sem feed; Reuters, AP, WSJ, Economist bloqueiam (403/401).
+- **Organizações reais e Autorizado pelo artista.** Seguem na fila: levantamento de organizações para ela escolher; pedido formal ao Design Ativista.
