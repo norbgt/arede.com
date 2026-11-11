@@ -6569,21 +6569,16 @@ function verifForm(){ return `<div class="vform"><fieldset class="vtipo"><legend
    Não precisa de conta; a rede não guarda quem apoiou. Pagamento no Mercado Pago (função apoio-cobra), conferido pela função apoio-aviso. */
 const APOIO_VALORES = [10, 25, 50, 100];
 let APOIO_V = 25;
-function sheetApoie(){ const teste = CFG.apoio !== "real";
-  openSheet(shead("Apoie a arede.online") + `<div class="sform">
-    <p style="margin:0">Sua doação ajuda a manter a arede.online no ar.</p>
+function sheetApoie(){
+  openSheet(shead("Apoie") + `<div class="sform">
+    <p style="margin:0">Sua doação ajuda a manter a arede.online</p>
     <div class="apvals" role="group" aria-label="Valor do apoio">${APOIO_VALORES.map(v=>`<button type="button" data-act="apoieval" data-v="${v}" aria-pressed="${APOIO_V===v}">R$ ${v}</button>`).join("")}</div>
     <label class="apoutro">Outro valor: R$ <input id="apoutro" type="number" inputmode="numeric" min="5" max="5000" step="1" placeholder="5 a 5.000" value="${APOIO_VALORES.includes(APOIO_V) ? "" : APOIO_V}"></label>
     <ul class="aplista">
-      <li>${ic("check","sm")}<span>Apoiar não muda o que você vê no feed nem a nota de nenhum conteúdo.</span></li>
-      <li>${ic("check","sm")}<span>O pagamento é feito no Mercado Pago (Pix, cartão ou boleto).</span></li>
-      <li>${ic("lock","sm")}<span>A arede.online não vê os dados do seu cartão e não guarda quem apoiou.</span></li>
-      <li>${ic("check","sm")}<span>Não precisa de conta.</span></li></ul>
-    ${teste ? `<p class="srcnote" style="margin-top:10px">Modo de teste: nenhuma cobrança de verdade é feita por enquanto.</p>` : ""}
-    <button class="btn primary block" type="button" data-act="apoiepagar" style="margin-top:14px">${ic("raio","sm")} <span id="aptxt">Apoiar com R$ ${APOIO_V}</span></button></div>`, "Apoie a arede.online"); }
-document.addEventListener("input", e=>{ const t = e.target; if (!t || t.id !== "apoutro") return; const n = Math.round(+t.value) || 0;
-  $$(".apvals button").forEach(x=>x.setAttribute("aria-pressed", String(!t.value && +x.dataset.v===APOIO_V)));
-  if (t.value) APOIO_V = n; const tx = $("#aptxt"); if (tx) tx.textContent = n >= 5 ? `Apoiar com R$ ${n}` : "Apoiar"; });
+      <li>${ic("check","sm")}<span>Promovemos conteúdos responsáveis</span></li>
+      <li>${ic("check","sm")}<span>O pagamento é feito no Mercado Pago</span></li>
+      <li>${ic("lock","sm")}<span>Não guardamos dados transacionais</span></li></ul>
+    <button class="btn primary block" type="button" data-act="apoiepagar" style="margin-top:14px">${ic("raio","sm")} <span id="aptxt">Apoiar com R$ ${APOIO_V}</span></button></div>`, "Apoie"); }
 function apoioValor(){ const o = $("#apoutro"), n = o && o.value ? Math.round(+o.value) : APOIO_V; return n; }
 function apoioVolta(){ let q; try{ q = new URLSearchParams(location.search); }catch(e){ return; } const id = q.get("apoio"); if (!id || !/^[0-9a-f-]{36}$/i.test(id)) return;
   const pay = q.get("payment_id") || q.get("collection_id") || "", st = q.get("status") || q.get("collection_status") || "";
@@ -7399,7 +7394,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 20:37";
+const VERSAO = "v1 registrada · 11/11 20:42";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
