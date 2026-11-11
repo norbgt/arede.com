@@ -439,3 +439,60 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - **Feito.** No item Perfil da navegação: com conta, as iniciais num círculo e o primeiro nome (no computador); sem conta, o ícone de pessoa e "Entrar". Atualiza sozinho ao entrar e ao sair. Leitores de tela ouvem "Conta conectada" ou "Entrar ou criar conta".
 - **Estado.** Publicado em todos os ambientes às 15:27, a pedido ("coloque essa versão em todos os ambientes").
 - **Correção logo depois de publicar.** Na conta "a rede.online" o rótulo saía só "a" (primeira palavra do nome). Regra nova: o nome inteiro quando cabe (até 13 letras); senão o primeiro nome; com menos de 2 letras, "Perfil". Visto no site no ar com a conta dela, o que o teste com conta simulada não pegou.
+
+## 11 nov 2026 · Comunidades, primeira etapa (só no HTML)
+**Pedido.** Evoluir Organizações (mais oficial) e Comunidades (mais amplo): grupos criados por contas cadastradas em torno de qualquer tema, com mural e discussões, ambiente também descontraído (memes, debate), dentro das regras gerais e das regras de cada comunidade. Reputação ruim não cria e pode perder a propriedade. Referência: comunidades do Orkut e grupos do Facebook.
+
+**Decisões da Amanda (15:40).**
+1. Tudo vira comunidade: organização é uma comunidade com selo "oficial" (cadastro continua pela curadoria).
+2. Quem cria escolhe a entrada: aberta ou com aprovação.
+3. Dona com má reputação perde a propriedade e as integrantes votam em quem assume; a curadoria cuida enquanto isso.
+4. O que se publica na comunidade aparece nela e no feed de quem participa.
+
+**Proposta do Claude, a confirmar.** "Má reputação" = histórico abaixo de 30 (a faixa "Baixo" que já existe). Texto das 5 regras gerais das comunidades.
+
+**Feito nesta etapa (neste aparelho, sem servidor).** A área passa a se chamar Comunidades (navegação e título). Botão Criar: pede conta, confere a reputação no servidor e abre o cadastro (nome, tema livre, sobre, entrada, regras próprias, aceite das regras gerais). Página da comunidade com Mural (publicar e apagar), Discussões (abrir e responder), Regras e Integrantes. Selo "oficial" pronto para organizações reais; as de exemplo seguem com "exemplo". O cadastro de organização oficial continua no fim da lista.
+
+**Não existe ainda (depende do servidor).** Outras pessoas verem e entrarem; aprovação de entrada; moderadoras; publicações no feed de quem participa; imagens e memes no mural; denúncia e moderação; perda de propriedade e votação. Por isso esta etapa NÃO deve ir para o site no ar: quem criasse uma comunidade a veria só no próprio aparelho.
+
+## 11 nov 2026 · Cartões de comunidade no início da página (só no HTML)
+- **Pedido.** Cartões mais interessantes, consistentes com as outras páginas, e logo no início de Comunidades.
+- **Feito.** As listas "Onde você participa" e "Outras comunidades" subiram para o topo, antes de eventos, chamados e votações. Cada comunidade virou um cartão com capa desenhada (a mesma arte do topo da página dela), marca sobre a capa, nome, lugar ou tema, uma linha sobre ela, número de membros e a situação de quem olha. A etiqueta (exemplo, oficial, comunidade) fica no canto da capa. "Outras comunidades" mostra 4 e um botão "Ver as N comunidades", para os eventos não ficarem longe demais.
+- **Estado.** Ajuste visual sobre a etapa de Comunidades, que segue fora do site no ar.
+
+## 11 nov 2026 · "Para participar": eventos, chamados, votações e consultas num bloco só (só no HTML)
+- **Pergunta dela.** Qual a diferença real entre chamado, votação e consulta; podem ser a mesma coisa ou um bloco só com estilos de cartão filtráveis?
+- **Resposta.** Chamado pede uma ação e mede adesão. Votação decide, tem quem vota e quórum. Consulta colhe opinião e não obriga. Votação e consulta têm a mesma mecânica; chamado é outra. Recomendação: um bloco só, com filtro por tipo, sem misturar os rótulos de votação e consulta.
+- **Pedido.** "pode montar tudo junto, vamos ver. diferencie os cards mas garanta consistência".
+- **Feito.** Na página Comunidades, as três seções (Eventos desta semana, Chamados abertos, Votações e consultas) viraram o bloco "Para participar", com filtros Todos, Eventos, Chamados, Votações e Consultas e a contagem de cada um. Todo cartão tem o mesmo esqueleto: tipo e prazo, título, quem abriu, medida e ação. Muda por tipo a cor (azul, laranja, verde, roxo), a medida (quantos vão; adesão com meta; votos para o quórum; respostas) e a ação (Quero ir; Participar ou Assinar; Votar; Responder). Ordem: o que vence ou acontece primeiro. "Todos" mostra 6 e um botão para ver o resto. O cartão abre a página do item.
+- **Ficou de fora.** O carrossel de eventos com a separação "Depois" saiu desta página. No feed e nas páginas de cada item nada mudou; lá os nomes seguem "Enquete rápida" e "Votação formal".
+
+## 11 nov 2026 · Comunidades: uma linha por grupo e "Ver todos" com filtros (só no HTML)
+- **Pedido.** "uma linha pra cada grupo e acesso facilitado para 'ver todos' de cada bloco/tipo; os destaques são mais relacionados com o usuário e no ver todos pode explorar todos os tipos com mais filtros e visualizações".
+- **Visão geral.** Três linhas: Onde você participa; Comunidades para você; Para participar. Cada uma com "Ver todas/todos (N)" no título. No celular a linha desliza de lado; no computador mostra só o que cabe (3 ou 4 cartões). Em Para participar, um atalho por tipo (Eventos, Chamados, Votações, Consultas) abre o "ver todos" já filtrado.
+- **Destaques ligados à pessoa.** Comunidades para você: primeiro as de mesmo tema e mesma cidade das comunidades em que ela participa, depois as maiores. Para participar: primeiro o que vem das comunidades dela, depois o que vence antes. Regra simples, sem perfil oculto: usa só onde a pessoa escolheu participar.
+- **Ver todas as comunidades** (`#comunidades-todas`): busca por nome, tema ou cidade; filtros Todas, Onde participo, Oficiais, Criadas por pessoas; tema; ordem (mais membros, A a Z); cartões ou lista.
+- **Ver tudo para participar** (`#participar`): filtro por tipo com contagem; "Das minhas comunidades"; tema; cartões ou lista.
+- **Saiu.** O botão "Ver as N comunidades" e o limite de 6 no bloco único da versão anterior.
+
+## 11 nov 2026 · Notícias com imagem na vista Cartões (só no HTML)
+- **Pedido.** "sempre equilibre melhor notícias com imagem porque tem muitos cards só com texto".
+- **Causa.** Não faltava imagem: 85% das notícias publicadas têm foto (11.741 de 14.018). A vista Cartões simplesmente não mostrava a foto das notícias; só o Mosaico mostrava. Por isso, em Cartões, quase toda notícia saía só com texto.
+- **Feito.** O cartão solto de notícia e de publicação agora traz a foto no topo (16:9, com o crédito da fonte) e, com foto, o texto fica em até 3 linhas. Se a imagem falhar, o cartão volta a ser só texto, sem buraco. Vale também em "Mais para explorar", murais e busca, que usam o mesmo cartão.
+- **Equilíbrio.** A regra de alternar foto e texto já existia na ordem padrão; conferida com 85% de itens com foto: nunca dois cartões só de texto seguidos enquanto houver foto. Votações, consultas, chamados e eventos continuam sem foto (são cartões de ação).
+- **Limite do teste.** No ambiente de teste as fotos externas não carregam; a conferência usou imagem local. Falta ver com as notícias reais.
+
+## 11 nov 2026 · Linha de cartões da aba Documentos desalinhada (só no HTML)
+- **Aviso dela.** "parece desalinhado", com a captura da faixa "Documentação cidadã": depois de deslizar, os cartões paravam fora da margem do título e apareciam cortados à esquerda.
+- **Causa.** A linha sangra até a borda para deslizar, mas o encaixe dos cartões ignorava essa folga.
+- **Feito.** O encaixe passou a respeitar a margem: o cartão para alinhado ao título em qualquer posição (medido em 390, 820 e 1280 de largura: 0 px de diferença). No computador a linha não sangra mais para fora da margem.
+
+## 11 nov 2026 · Filtros de "Para participar" trocam a linha ali mesmo (só no HTML)
+- **Correção dela.** "clicar em filtros não abre ver todos, apenas muda a seção". Eu tinha feito os atalhos por tipo abrirem a tela "Ver todos".
+- **Feito.** Na visão geral de Comunidades, os filtros (Todos, Eventos, Chamados, Votações, Consultas) trocam os cartões da linha sem sair da página. Só o link do título abre a exploração, já no tipo escolhido, e o texto acompanha: "Ver todos (13)", "Ver votações (4)".
+- **Regra.** Filtro muda a seção onde está; "Ver todos" é o único caminho para a tela completa.
+
+## 11 nov 2026 · "Já participei" e publicação de tudo (16:43)
+- **Pedido.** "deixe de fácil acesso uma forma que a pessoa pode ver todos que já engajou e depois publique essa última versão em todos os ambientes".
+- **Feito.** Em Para participar, o filtro "Já participei" (logo depois de Todos, com a contagem) mostra o que a pessoa confirmou, assinou, votou, apoiou ou respondeu. O cartão desses itens troca o botão por "Você vai", "Você participa", "Você votou", "Você apoiou" ou "Você respondeu". Na tela Ver todos, o mesmo filtro. Votos, apoios e respostas passaram a ficar guardados no aparelho (antes sumiam ao recarregar; presenças e chamados já ficavam).
+- **Publicado em todos os ambientes** por decisão dela, com o aviso dado duas vezes: Comunidades ainda não tem servidor, então comunidade criada, mural e discussões ficam só no aparelho de quem criou (a página da comunidade diz isso). Foram junto: conta na navegação, cartões e linhas de Comunidades, Para participar, foto nas notícias da vista Cartões, linha de Documentos alinhada.

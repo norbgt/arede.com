@@ -231,6 +231,10 @@ html.snapvid #feed .v-video .face.vid .art{width:100%}
 .face{position:relative;display:flex;flex-direction:column;gap:8px;width:100%;margin:0;padding:0;border:0;border-radius:var(--r);overflow:hidden;
   background:var(--surface);color:var(--ink);text-align:left;cursor:zoom-in}
 .face.txt{padding:12px}
+.face.txt .fph{position:relative;display:block;flex:none;margin:-12px -12px 2px;aspect-ratio:16/9;overflow:hidden;background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.face.txt .fph img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover}
+.face.txt .fcred{position:absolute;right:6px;bottom:6px;max-width:70%;padding:1px 6px;border-radius:6px;background:rgba(0,0,0,.55);color:#fff;font-size:10.5px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.face.txt.comfoto .fread{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .face.k-votacao,.tface.k-votacao{box-shadow:inset 0 0 0 2px var(--ink)}
 .face .art{display:block;width:100%;height:auto}
 .fkind{font-size:var(--fs-xs);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
@@ -1064,6 +1068,90 @@ html.snapvid #aovivo{scroll-snap-align:start;scroll-margin-top:var(--vtop,72px)}
 .lvcred a,.lvcred button{display:inline-flex;align-items:center;min-height:36px;padding:0;border:0;background:none;font:inherit;font-weight:600;color:var(--accent);text-decoration:none;cursor:pointer}
 .lvcred .lvsp{flex:1}
 .lvnota{margin:6px 0 0;font-size:12.5px;line-height:1.4;color:var(--muted)}
+/* COMUNIDADES (11 nov 2026) */
+.partchips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1*var(--gutter,16px)) 12px;padding:0 var(--gutter,16px)}
+.partchips::-webkit-scrollbar{display:none}
+.partchips .pcn{font-weight:400;opacity:.7}
+.partgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+@media (min-width:720px){ .partgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px} }
+@media (min-width:1100px){ .partgrid{grid-template-columns:repeat(3,minmax(0,1fr))} }
+.pcard{--tc:var(--accent);display:flex;flex-direction:column;gap:5px;min-width:0;padding:13px 16px 14px;border-top:3px solid var(--tc);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow);color:var(--ink);text-decoration:none}
+.pcard[data-pt="chamado"]{--tc:color-mix(in srgb,#E8590C 72%,var(--ink))}
+.pcard[data-pt="votacao"]{--tc:var(--ok)}
+.pcard[data-pt="enquete"]{--tc:color-mix(in srgb,#9C36B5 68%,var(--ink))}
+.pctop{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:12px}
+.pctipo{font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--tc)}
+.pcquando{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pctit{font-size:16px;font-weight:600;line-height:1.3;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pcorg{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pcmed{margin-top:4px;font-size:13px;color:var(--muted)}
+.pcmed b{margin-right:1px;font-size:18px;font-weight:600;color:var(--ink)}
+.pcbar{display:block;height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.pcbar i{display:block;height:100%;border-radius:99px;background:var(--tc)}
+.pcacao{align-self:flex-start;display:inline-flex;align-items:center;min-height:36px;margin-top:auto;padding:0 14px;border-radius:99px;background:color-mix(in srgb,var(--tc) 14%,transparent);color:var(--tc);font-size:13.5px;font-weight:600}
+.pcmed + .pcacao,.pcbar + .pcacao,.pcorg + .pcacao{position:relative;top:0}
+.pcard > .pcacao{margin-top:auto}
+.pcacao.feito{gap:4px;background:var(--tc);color:var(--surface)}
+.pcacao .icon{width:15px;height:15px}
+.partchips .chip .icon{width:15px;height:15px}
+.partvazio{padding:22px 16px}
+.pcard > :nth-last-child(2){margin-bottom:8px}
+.hubhead.cmn1{margin-top:8px}
+.vermais{display:inline-flex;align-items:center;min-height:36px;padding:0;border:0;background:none;font:inherit;font-size:13.5px;font-weight:600;color:var(--accent);cursor:pointer;white-space:nowrap}
+.cmnrow{display:grid;grid-auto-flow:column;grid-auto-columns:62%;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;scroll-padding-left:var(--gutter,16px);scrollbar-width:none;margin:0 calc(-1*var(--gutter,16px));padding:2px var(--gutter,16px) 10px}
+.cmnrow::-webkit-scrollbar{display:none}
+.cmnrow.pt{grid-auto-columns:82%}
+.cmnrow > *{scroll-snap-align:start}
+@media (min-width:720px){
+  .cmnrow,.cmnrow.pt{grid-auto-flow:row;grid-auto-columns:auto;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;overflow:visible;margin:0;padding:0}
+  .cmnrow > :nth-child(n+4){display:none}
+}
+@media (min-width:1100px){
+  .cmnrow:not(.pt){grid-template-columns:repeat(4,minmax(0,1fr))}
+  .cmnrow:not(.pt) > :nth-child(4){display:flex}
+}
+.cmnctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px}
+.cmnctl .spacer{flex:0 1 0}
+.cmnctl .cmnsel{flex:1 1 120px;min-width:0}
+.cmnctl .iconbtn{flex:none}
+.cmnsel{min-height:40px;max-width:100%;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:inherit;font-size:var(--fs-sm)}
+.prow{text-decoration:none}
+.prow[data-pt]{--tc:var(--accent)}
+.prow[data-pt="chamado"]{--tc:color-mix(in srgb,#E8590C 72%,var(--ink))}
+.prow[data-pt="votacao"]{--tc:var(--ok)}
+.prow[data-pt="enquete"]{--tc:color-mix(in srgb,#9C36B5 68%,var(--ink))}
+.prow .pdot{flex:none;width:10px;height:36px;border-radius:99px;background:var(--tc)}
+.prow .pctipo{font-size:11px}
+.cmngrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (min-width:720px){ .cmngrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px} }
+@media (min-width:1100px){ .cmngrid{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media (max-width:340px){ .cmngrid{grid-template-columns:minmax(0,1fr)} }
+.cmncard{position:relative;display:flex;flex-direction:column;align-items:flex-start;min-width:0;padding:0 12px 12px;border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow);text-align:left;color:var(--ink);font:inherit;overflow:hidden;cursor:pointer}
+.cmncapa{display:block;align-self:stretch;height:52px;margin:0 -12px;overflow:hidden}
+.cmncapa > svg{display:block;width:100%;height:100%}
+.cmncard > .av{width:44px;height:44px;border-radius:14px;margin-top:-22px;font-size:14px;box-shadow:0 0 0 3px var(--surface);position:relative}
+.cmncard > b{margin-top:8px;font-size:15px;font-weight:600;line-height:1.25;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cmnmeta{max-width:100%;margin-top:3px;font-size:12.5px;line-height:1.35;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmntag{position:absolute;top:8px;right:8px}
+.cmntag .fic{margin-left:0;background:color-mix(in srgb,var(--surface) 88%,transparent);color:var(--ink)}
+.cmnsobre{margin-top:6px;font-size:13px;line-height:1.4;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cmnpe2{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;align-self:stretch;gap:2px 8px;margin-top:auto;padding-top:10px;font-size:12px;color:var(--muted)}
+.cmnsim{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:600;color:var(--accent)}
+.cmnsim .icon{width:14px;height:14px}
+.cmnpe{margin:18px 0 0;font-size:13.5px;line-height:1.45;color:var(--muted)}
+.cmnpost{padding:14px 16px;border-radius:var(--r);background:var(--surface);margin:0 0 10px}
+.cmnpost .cmnq{display:flex;align-items:center;gap:8px;margin:0 0 6px;font-size:13px;color:var(--muted)}
+.cmnpost .cmnq b{color:var(--ink);font-weight:600}
+.cmnpost .cmnq .spacer{flex:1}
+.cmnpost p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.cmnpost h3{margin:0 0 4px;font-size:16px;line-height:1.3}
+button.cmnpost{display:block;width:100%;border:0;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.cmnregras{margin:0 0 18px;padding-left:20px}
+.cmnregras li{margin:0 0 8px;line-height:1.45}
+.cmnopc{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:var(--r);background:var(--surface-2);margin:0 0 8px;cursor:pointer}
+.cmnopc input{margin-top:3px}
+.cmnopc b{display:block;font-size:14.5px}
+.cmnopc small{color:var(--muted)}
 .docbase{margin:4px 0 18px}
 .dbh{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin:2px 0 10px}
 .dbh .dbk{flex-basis:100%;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
@@ -1075,8 +1163,10 @@ html.snapvid #aovivo{scroll-snap-align:start;scroll-margin-top:var(--vtop,72px)}
 .dbcat span{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 5px;border-radius:99px;background:var(--surface-2);font-size:11.5px;font-weight:600;color:var(--muted)}
 .dbcat[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .dbcat[aria-pressed="true"] span{background:color-mix(in srgb,var(--bg) 22%,transparent);color:var(--bg)}
-.dbgrid{display:grid;grid-auto-flow:column;grid-auto-columns:min(78%,272px);gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:0 calc(-1*var(--gutter,16px));padding:0 var(--gutter,16px) 2px}
+.dbgrid{display:grid;grid-auto-flow:column;grid-auto-columns:min(78%,272px);gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;scroll-padding:0 var(--gutter,16px);margin:0 calc(-1*var(--gutter,16px));padding:0 var(--gutter,16px) 2px}
 .dbgrid::-webkit-scrollbar{display:none}
+/* no computador a linha não sangra para fora da margem: começa e termina alinhada ao título */
+@media (min-width:768px){ .dbgrid{margin:0;padding:0 0 2px;scroll-padding:0} }
 .dbcard{scroll-snap-align:start;height:var(--dbh,auto);box-sizing:border-box;display:flex;flex-direction:column;gap:4px;padding:12px 13px;border-radius:14px;background:var(--surface-2);color:var(--ink);text-decoration:none;border:1px solid transparent}
 .dbcard:hover{border-color:var(--line)}
 .dbtype{white-space:nowrap;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
@@ -1542,7 +1632,7 @@ button.setting{width:100%;border:0;text-align:left;font:inherit;color:inherit;cu
 
     <a class="navbtn" href="#explorar" data-nav="explorar" aria-label="Buscar"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><span class="lbl">Buscar</span></a>
     <button class="navbtn" type="button" data-act="create" aria-label="Criar"><span class="bubble"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><path d="M12 8.5v7M8.5 12h7"/></svg></span><span class="lbl">Criar</span></button>
-    <a class="navbtn" href="#organizacoes" data-nav="organizacoes" aria-label="Organizações"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8.5" r="3.2"/><path d="M3 19.5c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9.5" r="2.6"/><path d="M16.5 14.6c2.4.1 4 1.6 4.5 4.4"/></svg><span class="lbl">Organizações</span></a>
+    <a class="navbtn" href="#organizacoes" data-nav="organizacoes" aria-label="Comunidades"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8.5" r="3.2"/><path d="M3 19.5c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9.5" r="2.6"/><path d="M16.5 14.6c2.4.1 4 1.6 4.5 4.4"/></svg><span class="lbl">Comunidades</span></a>
     <a class="navfoot" href="#manifesto">Manifesto</a>
     <a class="navbtn" href="#perfil" data-nav="perfil" aria-label="Perfil"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20.5c.8-4 3.7-6 7.5-6s6.7 2 7.5 6"/></svg><span class="navme" aria-hidden="true" hidden></span><span class="lbl">Entrar</span></a>
   </nav>
@@ -3550,7 +3640,7 @@ const S = {
   autoplay: store.get("autoplay", true),
   localAuto: store.get("localAuto", false), localQuando: store.get("localQuando", 0), aprendeLugares: store.get("aprendeLugares", true), lugares: store.get("lugares", {}), lugaresFora: store.get("lugaresFora", []),
   filt: {temas:[], cidades:[], minhas:false, conf:0}, fdraft:null, ord:"padrao",
-  pollVote:{}, rsvp:store.get("rsvp", {}), support:{}, reports:{}, help:store.get("help", {}), inscr:store.get("inscr", {}), formalDone:{}, created:[], vid:{},
+  pollVote:store.get("pollVote", {}), rsvp:store.get("rsvp", {}), support:store.get("support", {}), reports:{}, help:store.get("help", {}), inscr:store.get("inscr", {}), formalDone:store.get("formalDone", {}), created:[], vid:{},
   rapido:null, adOculta:new Set(), orgTab:"mural", exploreTema:null, exploreQ:"", pinMode:{}, textOpen:{}
 };
 if (!FTABS.some(t=>t[0]===S.tab)) S.tab = "tudo";
@@ -3883,7 +3973,9 @@ function face(item){
       if (!item.src) return {img:true, html:`${art(item, .75, false)}<span class="xplay" aria-hidden="true">${ic("play")}<span>${esc(item.plat||"vídeo")}${item.dur?" · "+item.dur:""}</span></span>`};
       return {img:true, vid:true, html:`<video src="${item.src}" poster="${item.poster}" muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1" style="--ar:${(1/item.ar).toFixed(4)}"></video>`};
     default: { const t = textParts(item);
-      return {cls:"k-"+item.tipo, style:t.bg, html:`${t.head}${t.title}<span class="fread">${esc(readText(item))}</span><span class="ffoot">${t.foot}</span>`}; }
+      /* foto da matéria também no cartão solto (11 nov 2026): antes só o mosaico mostrava, e a vista Cartões ficava quase toda só com texto */
+      const ph = item.foto && !item.fotoFalhou ? `<span class="fph"><img src="${esc(item.foto)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">${item.credito ? `<span class="fcred">${esc(item.credito)}</span>` : ""}</span>` : "";
+      return {cls:"k-"+item.tipo + (ph ? " comfoto" : ""), style:t.bg, html:`${ph}${t.head}${t.title}<span class="fread">${esc(readText(item))}</span><span class="ffoot">${t.foot}</span>`}; }
   }
 }
 function card(item, mode){
@@ -4518,7 +4610,7 @@ function screenHome(){
   + `<div class="container"><section id="altafaixa" class="altafaixa" aria-label="Assuntos do dia" hidden></section><section id="aovivo" class="aovivo" aria-label="Transmissões ao vivo de canais oficiais" hidden></section><section id="docbase" class="docbase" aria-label="Documentação cidadã" hidden></section><div id="feedwrap" class="rwrap"><div id="feed"></div></div><div id="stop"></div><div class="sentinel" id="sentinel"></div></div>`;
 }
 function orgRow(o){ const f = S.follow.has(o.id);
-  return `<button class="rowitem" type="button" data-act="openorg" data-org="${o.id}">${avatar(o)}<span class="t"><b>${o.nome}${ficTag(o)}</b><small>${o.cidade} · ${orgMeta(o)}${f?(o.real?" · você segue":" · você participa"):""}</small></span></button>`; }
+  return `<button class="rowitem" type="button" data-act="openorg" data-org="${o.id}">${avatar(o)}<span class="t"><b>${o.nome}${ficTag(o)}${ofTag(o)}</b><small>${o.cidade} · ${orgMeta(o)}${f?(o.real?" · você segue":" · você participa"):""}</small></span></button>`; }
 /* =====================================================================
    Grade do Início (referência Instagram): blocos de 3 colunas × 2 linhas,
    cada cartão com o tamanho do seu tipo. Ver a regra no CSS ("GRADE DO INÍCIO").
@@ -4713,6 +4805,7 @@ document.addEventListener("error", e=>{ const im = e.target; if (!im || !im.clos
   if (im.closest(".dfoto")){ im.closest(".dfoto").remove(); return; }
   if (im.closest(".ytcapa")){ im.remove(); return; }
   if (im.closest(".arteimg")){ im.closest(".arteimg").innerHTML = `<span class="artefalha">Imagem indisponível agora</span>`; return; }
+  if (im.closest(".fph")){ const fc = im.closest(".face"), u = fc && fc.dataset.uid, o = u && findItem(u); if (o) o.fotoFalhou = true; im.closest(".fph").remove(); fc && fc.classList.remove("comfoto"); return; }
   if (!im.closest(".tph")) return;
   const f = im.closest(".tface"), tile = im.closest(".tile"); const u = tile && tile.dataset.tile;
   if (u){ const o = (F.grid && F.grid.obj && F.grid.obj[u]); if (o) o.fotoFalhou = true; }
@@ -4780,6 +4873,86 @@ function hubItens(){
   return {semana: ev.filter(x=>x.d < fim).map(x=>x.it), depois: ev.filter(x=>x.d >= fim).map(x=>x.it),
     chamados: L.filter(it=>it.tipo==="chamado").sort((a,b)=>(a.ate||99)-(b.ate||99)),
     votacoes: L.filter(it=>it.tipo==="votacao"||it.tipo==="enquete").sort((a,b)=>prazoDias(a)-prazoDias(b))}; }
+/* PARA PARTICIPAR (11 nov 2026): eventos, chamados, votações e consultas num bloco só, na página Comunidades.
+   Mesmo esqueleto em todo cartão (tipo e prazo, título, quem abriu, medida, ação); muda a cor, a medida e a ação de cada tipo.
+   Votação decide e tem quórum; consulta só colhe opinião: os dois rótulos nunca se misturam. Ordem: o que vence ou acontece primeiro. */
+const PART = {evento:["Evento","Eventos","Quero ir"], chamado:["Chamado","Chamados","Participar"], votacao:["Votação","Votações","Votar"], enquete:["Consulta","Consultas","Responder"]}, PART_VER = 6;
+const partN = x => (+x || 0).toLocaleString("pt-BR");
+const partDias = it => { if (it.tipo==="evento"){ const d = diaDe(it), h = new Date(HOJE); h.setHours(0,0,0,0); return d ? Math.round((d - h)/864e5) : 99; } return it.tipo==="chamado" ? (it.ate || 99) : prazoDias(it); };
+function partItens(){ const H = hubItens(); return H.semana.concat(H.depois.slice(0, 6), H.chamados, H.votacoes).map(it=>({it, d:partDias(it)})).sort((x,y)=>x.d - y.d).map(x=>x.it); }
+/* o que a pessoa já fez em cada item: confirmou presença, entrou no chamado, votou ou apoiou, respondeu a consulta */
+const partFeito = it => it.tipo==="evento" ? !!S.rsvp[it.uid] : it.tipo==="chamado" ? !!S.help[it.uid] : it.tipo==="votacao" ? !!(S.formalDone[it.uid] || S.support[it.uid]) : S.pollVote[it.uid]!=null;
+const partFeitoTxt = it => it.tipo==="evento" ? (S.rsvp[it.uid]==="talvez" ? "Talvez você vá" : "Você vai") : it.tipo==="chamado" ? "Você participa" : it.tipo==="votacao" ? (S.formalDone[it.uid] ? "Você votou" : "Você apoiou") : "Você respondeu";
+function partCard(it){ const t = it.tipo, P = PART[t], o = ORG[it.org] || {nome:""}; let quando = "", medida = "", barra = null, ac = P[2];
+  if (t==="evento"){ quando = `${it.dia} ${it.mes}${it.hora ? " · " + it.hora : ""}`; medida = it.vao ? `<b>${partN(it.vao)}</b> vão` : ""; }
+  else if (t==="chamado"){ quando = it.quando || ""; medida = `<b>${partN(it.tem)}</b> ${it.meta ? "de " + partN(it.meta) + " " : ""}${esc(it.un || "")}`; if (it.meta) barra = (it.tem || 0)/it.meta; if (/assinatura/i.test(it.un || "")) ac = "Assinar"; }
+  else if (t==="votacao"){ const p = String(it.prazo || ""); quando = !p || p==="—" ? "" : /^\d+\s*dia/.test(p) ? "encerra em " + p : /hoje|amanh/i.test(p) ? "encerra " + p : "até " + p;
+    medida = it.quorum ? `<b>${partN(it.votaram)}</b> de ${partN(it.quorum)} para o quórum` : esc(it.quemVota || "Decisão do grupo"); if (it.quorum) barra = (it.votaram || 0)/it.quorum; }
+  else { const tot = (it.votos || []).reduce((x,y)=>x + y, 0), f = String(it.fecha || ""); quando = !f ? "" : /^até/i.test(f) ? f : "fecha " + f; medida = it.externo && !tot ? "Consulta pública" : `<b>${partN(tot)}</b> ${tot===1 ? "resposta" : "respostas"}`; }
+  if (it.externo) ac = "Ver como participar";
+  const feito = partFeito(it); if (feito) ac = ic("check","sm") + " " + partFeitoTxt(it);
+  return `<a class="pcard" data-pt="${t}" href="#pin-${esc(it.uid)}"><span class="pctop"><span class="pctipo">${P[0]}</span><span class="pcquando">${esc(quando)}</span></span>
+    <b class="pctit">${esc(it.titulo)}</b><span class="pcorg">${o.nome}${t==="evento" && it.local ? " · " + esc(it.local) : ""}</span>
+    ${medida ? `<span class="pcmed">${medida}</span>` : ""}${barra!=null ? `<span class="pcbar" aria-hidden="true"><i style="width:${Math.max(3, Math.min(100, Math.round(barra*100)))}%"></i></span>` : ""}
+    <span class="pcacao${feito ? " feito" : ""}">${ac}</span></a>`; }
+/* VISÃO GERAL E "VER TODOS" (11 nov 2026): na página Comunidades, uma linha por grupo, com o que tem mais a ver com a pessoa
+   (onde participa primeiro; depois tema e cidade parecidos com os das comunidades dela; depois prazo ou tamanho).
+   "Ver todos" abre a exploração completa, com busca, filtros, ordem e duas formas de ver (cartões ou lista). */
+const verMais = (act, attr, txt) => `<button class="vermais" type="button" data-act="${act}" ${attr}>${txt}</button>`;
+function cmnParaVoce(others){ const meus = ORGS.filter(o=>isOrg(o) && S.follow.has(o.id)), temas = new Set(meus.map(o=>o.tema)), cid = new Set(meus.map(o=>o.cidade));
+  return others.map(o=>({o, p:(temas.has(o.tema) ? 2 : 0) + (cid.has(o.cidade) ? 1 : 0)})).sort((x,y)=>y.p - x.p || (y.o.membros || 0) - (x.o.membros || 0)).map(x=>x.o); }
+const partDestaques = () => { const l = partItens(); return l.filter(it=>S.follow.has(it.org)).concat(l.filter(it=>!S.follow.has(it.org))); };
+/* linha "Para participar" da visão geral: os filtros por tipo trocam os cartões ali mesmo; só "Ver todos" abre a exploração (já no tipo escolhido) */
+function partGeralHTML(){ const todos = partDestaques(); if (!todos.length) return ""; const n = k => todos.filter(it=>it.tipo===k).length;
+  if (S.partLinha && S.partLinha!=="todos" && S.partLinha!=="feitos" && !n(S.partLinha)) S.partLinha = "todos"; const f = S.partLinha || "todos", feitos = todos.filter(partFeito), l = f==="todos" ? todos : f==="feitos" ? feitos : todos.filter(it=>it.tipo===f);
+  const chip = (k, nome, q) => `<button class="chip" type="button" data-act="partlinha" data-pt="${k}" aria-pressed="${f===k}">${nome} <span class="pcn">${q}</span></button>`;
+  return `<section id="partgeral" aria-labelledby="partgt"><div class="hubhead"><h2 class="sectitle" id="partgt">Para participar</h2>${verMais("partver", `data-pt="${f}"`, `Ver ${f==="todos" ? "todos" : f==="feitos" ? "os que participei" : PART[f][1].toLowerCase()} (${l.length})`)}</div>
+    <div class="partchips" role="group" aria-label="Filtrar">${chip("todos", "Todos", todos.length)}${chip("feitos", ic("check","sm") + " Já participei", feitos.length)}${Object.keys(PART).filter(n).map(k=>chip(k, PART[k][1], n(k))).join("")}</div>
+    ${l.length ? `<div class="cmnrow pt">${l.slice(0, 8).map(partCard).join("")}</div>` : `<p class="empty partvazio">Você ainda não participou de nada. O que você confirmar, assinar, votar ou responder aparece aqui.</p>`}</section>`; }
+function cmnGeral(mine, others){ const nMeu = mine.length + CMNS.length;
+  return `<div class="hubhead cmn1"><h2 class="sectitle">Onde você participa</h2>${nMeu ? verMais("cmnver", 'data-f="minhas"', `Ver todas (${nMeu})`) : ""}</div>
+    ${nMeu ? `<div class="cmnrow">${CMNS.map(c=>cmnCard(ORG[c.id], c)).join("") + mine.map(o=>cmnCard(o)).join("")}</div>` : `<p class="empty">Você ainda não participa de nenhuma.</p>`}
+    <div class="hubhead"><h2 class="sectitle">Comunidades para você</h2>${verMais("cmnver", 'data-f="todas"', `Ver todas (${nMeu + others.length})`)}</div>
+    <div class="cmnrow">${cmnParaVoce(others).slice(0, 8).map(o=>cmnCard(o)).join("")}</div>
+    ${partGeralHTML()}
+    <p class="cmnpe">Comunidade é criada por qualquer conta, em torno de qualquer tema. Organização com selo “oficial” passa pela curadoria. <button class="linkbtn" type="button" data-act="orgnova">Cadastrar organização oficial</button></p>`; }
+const vistaBtn = (act, v) => `<button class="iconbtn tool" type="button" data-act="${act}" aria-label="Forma de ver: ${v==="lista" ? "lista" : "cartões"}. Tocar para ver em ${v==="lista" ? "cartões" : "lista"}">${ic(v==="lista" ? "vsoltos" : "vblocos")}</button>`;
+const temaSel = (id, temas, atual) => `<select id="${id}" class="cmnsel" aria-label="Tema"><option value="">Todos os temas</option>${[...new Set(temas.filter(Boolean))].sort((x,y)=>x.localeCompare(y, "pt")).map(t=>`<option${t===atual ? " selected" : ""}>${t}</option>`).join("")}</select>`;
+/* todas as comunidades */
+function cmnTodasLista(){ const q = (S.cmnQ || "").trim().toLowerCase(), f = S.cmnF || "todas";
+  let l = CMNS.map(c=>({o:ORG[c.id], c, meu:true, nome:c.nome, tema:c.tema, membros:1})).concat(ORGS.filter(isOrg).map(o=>({o, meu:S.follow.has(o.id), nome:o.nome, tema:o.tema, membros:o.membros || 0})));
+  const temas = l.map(x=>x.tema);
+  l = l.filter(x=>(f==="todas" || (f==="minhas" && x.meu) || (f==="oficiais" && !x.c && !x.o.ficticia) || (f==="pessoas" && x.c)) && (!S.cmnTema || x.tema===S.cmnTema) && (!q || (x.nome + " " + x.tema + " " + (x.o.cidade || "")).toLowerCase().includes(q)));
+  l.sort(S.cmnOrd==="az" ? (x,y)=>x.nome.localeCompare(y.nome, "pt") : (x,y)=>y.membros - x.membros);
+  return {l, temas}; }
+function cmnTodasCorpo(){ const {l} = cmnTodasLista();
+  return `<p class="hubsub" aria-live="polite" style="margin:0 0 10px">${l.length} ${l.length===1 ? "comunidade" : "comunidades"}</p>` + (!l.length ? `<p class="empty">Nenhuma comunidade com esses filtros.</p>`
+    : S.cmnVista==="lista" ? `<div class="list two">${l.map(x=>x.c ? cmnRow(x.c) : orgRow(x.o)).join("")}</div>` : `<div class="cmngrid">${l.map(x=>cmnCard(x.o, x.c)).join("")}</div>`); }
+function screenCmnTodas(){ const f = S.cmnF || "todas", {temas} = cmnTodasLista(), chip = (k, n) => `<button class="chip" type="button" data-act="cmnfiltro" data-f="${k}" aria-pressed="${f===k}">${n}</button>`;
+  return header(`<div class="toprow"><button class="iconbtn" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button><h1 class="pagehead">Todas as comunidades</h1></div>`)
+    + `<div class="container"><div class="field" style="margin:4px 0 10px"><input id="cmnq" type="search" autocomplete="off" placeholder="Buscar por nome, tema ou cidade" aria-label="Buscar comunidades" value="${esc(S.cmnQ || "")}"></div>
+      <div class="partchips" role="group" aria-label="Filtrar comunidades">${chip("todas","Todas")}${chip("minhas","Onde participo")}${chip("oficiais","Oficiais")}${chip("pessoas","Criadas por pessoas")}</div>
+      <div class="cmnctl">${temaSel("cmntemaf", temas, S.cmnTema)}<select id="cmnordf" class="cmnsel" aria-label="Ordem"><option value="membros"${S.cmnOrd!=="az" ? " selected" : ""}>Mais membros</option><option value="az"${S.cmnOrd==="az" ? " selected" : ""}>A a Z</option></select><span class="spacer"></span>${vistaBtn("cmnvista", S.cmnVista)}</div>
+      <div id="cmntodas">${cmnTodasCorpo()}</div></div>`; }
+/* tudo para participar */
+function partTodosLista(){ const f = S.partTipo || "todos", todos = partDestaques();
+  return {todos, l: todos.filter(it=>(f==="todos" || it.tipo===f) && (!S.partMeu || S.follow.has(it.org)) && (!S.partFeito || partFeito(it)) && (!S.partTema || it.tema===S.partTema))}; }
+const partRow = it => { const P = PART[it.tipo], o = ORG[it.org] || {nome:""}, q = $$$(partCard(it), ".pcquando");
+  return `<a class="rowitem prow" data-pt="${it.tipo}" href="#pin-${esc(it.uid)}"><span class="pdot" aria-hidden="true"></span><span class="t"><b>${esc(it.titulo)}</b><small><span class="pctipo">${P[0]}</span>${q ? " · " + esc(q) : ""} · ${o.nome}</small></span></a>`; };
+const $$$ = (html, sel) => { const d = document.createElement("div"); d.innerHTML = html; const e = d.querySelector(sel); return e ? e.textContent : ""; };
+function partTodosCorpo(){ const {l} = partTodosLista();
+  return `<p class="hubsub" aria-live="polite" style="margin:0 0 10px">${l.length} em aberto</p>` + (!l.length ? `<p class="empty">${S.partFeito ? "Você ainda não participou de nada com esses filtros." : "Nada em aberto com esses filtros."}</p>`
+    : S.partVista==="lista" ? `<div class="list two">${l.map(partRow).join("")}</div>` : `<div class="partgrid">${l.map(partCard).join("")}</div>`); }
+function screenPartTodos(){ const f = S.partTipo || "todos", {todos} = partTodosLista(), n = k => todos.filter(it=>it.tipo===k).length;
+  const chip = (k, nome, q) => `<button class="chip" type="button" data-act="parttipo" data-pt="${k}" aria-pressed="${f===k}">${nome} <span class="pcn">${q}</span></button>`;
+  return header(`<div class="toprow"><button class="iconbtn" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button><h1 class="pagehead">Para participar</h1></div>`)
+    + `<div class="container"><div class="partchips" role="group" aria-label="Filtrar por tipo" style="margin-top:4px">${chip("todos", "Todos", todos.length)}${Object.keys(PART).filter(n).map(k=>chip(k, PART[k][1], n(k))).join("")}</div>
+      <div class="cmnctl"><button class="chip" type="button" data-act="partfeito" aria-pressed="${!!S.partFeito}">${ic("check","sm")} Já participei</button><button class="chip" type="button" data-act="partmeu" aria-pressed="${!!S.partMeu}">Das minhas comunidades</button>${temaSel("parttemaf", todos.map(it=>it.tema), S.partTema)}<span class="spacer"></span>${vistaBtn("partvista", S.partVista)}</div>
+      <div id="parttodos">${partTodosCorpo()}</div></div>`; }
+document.addEventListener("input", e=>{ const t = e.target; if (!t || !t.id) return;
+  if (t.id==="cmnq"){ S.cmnQ = t.value; const b = $("#cmntodas"); if (b) b.innerHTML = cmnTodasCorpo(); }
+  else if (t.id==="cmntemaf" || t.id==="cmnordf"){ if (t.id==="cmntemaf") S.cmnTema = t.value; else S.cmnOrd = t.value; const b = $("#cmntodas"); if (b) b.innerHTML = cmnTodasCorpo(); }
+  else if (t.id==="parttemaf"){ S.partTema = t.value; const b = $("#parttodos"); if (b) b.innerHTML = partTodosCorpo(); } });
 const prazoDias = it => { const t = String(it.prazo || it.fecha || ""); if (/hoje/i.test(t)) return 0; if (/amanh/i.test(t)) return 1; const n = t.match(/(\d+)\s*dia/); return n ? +n[1] : 50; };
 const HUB_VO = 3;
 /* chamados: colunas que fecham sem buraco (3 itens em 2 colunas deixariam um vão) */
@@ -4787,16 +4960,9 @@ const hubChCols = n => { const w = ($("#hubch") || $("#main .container") || docu
 function screenOrgs(){
   const mine = ORGS.filter(o=>isOrg(o) && S.follow.has(o.id)), others = ORGS.filter(o=>isOrg(o) && !S.follow.has(o.id)), H = hubItens();
   const nEv = H.semana.length, sub = nEv ? `${nEv} ${nEv===1?"evento":"eventos"} até ${dLabel(isoDia(new Date(+HOJE + 7*864e5)))}` : "Nenhum evento nos próximos 7 dias";
-  return header(`<div class="toprow"><h1 class="pagehead">Organizações</h1><div class="spacer"></div><button class="btn primary" type="button" data-act="orgnova">${ic("plus","sm")} Cadastrar</button></div>`)
+  return header(`<div class="toprow"><h1 class="pagehead">Comunidades</h1><div class="spacer"></div><button class="btn primary" type="button" data-act="cmnnova">${ic("plus","sm")} Criar</button></div>`)
     + `<div class="container">
-       ${nEv || H.depois.length ? `<section class="hubsec" aria-labelledby="hubev"><div class="hubhead"><h2 class="sectitle" id="hubev">Eventos desta semana</h2><span class="hubsub">${sub}</span>
-           <span class="carnav"><button class="iconbtn" type="button" data-act="carr" data-d="-1" aria-label="Eventos anteriores">${ic("back")}</button><button class="iconbtn" type="button" data-act="carr" data-d="1" aria-label="Próximos eventos">${ic("back","flip")}</button></span></div>
-         <div class="carr" id="hubcarr" role="list" tabindex="0" aria-label="Eventos desta semana"></div></section>` : ""}
-       ${H.chamados.length ? `<section class="hubsec"><h2 class="sectitle">Chamados abertos</h2><div class="lwrap"><div id="hubch"></div></div></section>` : ""}
-       ${H.votacoes.length ? `<section class="hubsec"><div class="hubhead"><h2 class="sectitle">Votações e consultas</h2><span class="hubsub">${H.votacoes.length} abertas</span></div><div class="lwrap"><div id="hubvo"></div></div>
-         ${H.votacoes.length > HUB_VO && !S.hubVoTodas ? `<button class="btn block hubmore" type="button" data-act="hubvotodas">Ver as ${H.votacoes.length} votações e consultas</button>` : ""}</section>` : ""}
-       <h2 class="sectitle">Onde você participa</h2><div class="list two">${mine.length ? mine.map(orgRow).join("") : `<p class="empty">Você ainda não participa de nenhuma.</p>`}</div>
-       <h2 class="sectitle">Outras organizações</h2><div class="list two">${others.map(orgRow).join("")}</div></div>`;
+       ${cmnGeral(mine, others)}</div>`;
 }
 function carrNav(){ const c = $("#hubcarr"); if (!c) return; const [a, b] = $$('[data-act="carr"]'), fim = c.scrollWidth - c.clientWidth;
   if (a) a.disabled = c.scrollLeft <= 2; if (b) b.disabled = c.scrollLeft >= fim - 2;
@@ -4824,11 +4990,11 @@ function orgTabBody(o){
   return "";
 }
 function screenOrg(id){
-  const o = ORG[id]; if (!o) return screenOrgs(); const f = S.follow.has(id);
+  const o = ORG[id]; if (!o) return screenOrgs(); if (o.comunidade) return screenCmn(o); const f = S.follow.has(id);
   const tabs = [["mural","Mural"],["nucleos","Núcleos"],["eventos","Movimentos"],["votacoes","Votações"],["documentos","Documentos"],["membros","Membros"]].filter(([k])=>o.fonte || o.pessoa ? k==="mural" : !(o.real && (k==="nucleos" || k==="membros")));
   if (!tabs.some(t=>t[0]===S.orgTab)) S.orgTab = "mural";
   return `<div class="orghero">${art({id:o.id.length*3, art:"arcs"}, .6, false)}<button class="iconbtn solid" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button></div>
-    <div class="container"><div class="orghead">${avatar(o)}<h1>${o.nome}${ficTag(o)}</h1>
+    <div class="container"><div class="orghead">${avatar(o)}<h1>${o.nome}${ficTag(o)}${ofTag(o)}</h1>
       <p style="color:var(--muted);font-size:14px">${o.cidade} · ${orgMeta(o)} · ${o.tema}</p>
       <p style="max-width:65ch">${o.sobre}</p>${mandatoNote(o, false)}
       ${o.fonte ? `<div class="note" style="margin:10px 0 12px">${ic("check")}<span>Fonte verificada da rede, com selo ${o.nota} de 100. ${esc(o.sobre||"")} As notícias abaixo são resumos da curadoria, sempre com link para a matéria original.${o.site?` <a href="${o.site}" target="_blank" rel="noopener">Site ↗</a>`:""}</span></div>`
@@ -5410,12 +5576,14 @@ function render(){
   if (lastRoute !== null) SCROLL[lastRoute] = window.scrollY;
   const same = lastRoute === r; lastRoute = r;
   if (NAV[NAV.length-1] !== r){ NAV.push(r); if (NAV.length > 40) NAV.shift(); }
-  $$(".navbtn[data-nav]").forEach(a=>{ const on = r===a.dataset.nav || (r.startsWith("org-")&&a.dataset.nav==="organizacoes") || (r.startsWith("pin-")&&a.dataset.nav==="inicio") || ((r==="config"||r==="perfil-ver")&&a.dataset.nav==="perfil");
+  $$(".navbtn[data-nav]").forEach(a=>{ const on = r===a.dataset.nav || ((r.startsWith("org-")||r==="comunidades-todas"||r==="participar")&&a.dataset.nav==="organizacoes") || (r.startsWith("pin-")&&a.dataset.nav==="inicio") || ((r==="config"||r==="perfil-ver")&&a.dataset.nav==="perfil");
     on ? a.setAttribute("aria-current","page") : a.removeAttribute("aria-current"); });
   if (F.obs){ F.obs.disconnect(); F.obs = null; }
   let restore = 0;
   if (r==="explorar"){ main.innerHTML = screenExplore(); fillExplore(); }
   else if (r==="organizacoes"){ main.innerHTML = screenOrgs(); fillOrgs(); }
+  else if (r==="comunidades-todas"){ main.innerHTML = screenCmnTodas(); }
+  else if (r==="participar"){ main.innerHTML = screenPartTodos(); }
   else if (r==="perfil"){ main.innerHTML = screenProfile(); fillProfile(); }
   else if (r==="config") main.innerHTML = screenConfig();
   else if (r==="perfil-ver"){ main.innerHTML = screenPublic(); fillPublic(); }
@@ -5860,6 +6028,71 @@ function aoVivo(){ const box = $("#aovivo"); if (!box) return;
   if (S.tab!=="videos" || S.rapido || route()!=="inicio"){ if (LV_IO){ LV_IO.disconnect(); LV_IO = null; } LV_ON = null; box.hidden = true; box.innerHTML = ""; return; }
   box.hidden = false; aoVivoPinta(); aoVivoCarrega(); }
 function vivoFecha(){ if (!LV_ON) return; LV_ON = null; aoVivoPinta(); }
+/* COMUNIDADES (11 nov 2026). Decisões da Amanda: tudo vira comunidade (organização é comunidade com selo "oficial", via curadoria);
+   quem cria escolhe a entrada (aberta ou com aprovação); conta com reputação baixa (menos de CMN_MIN) não cria e, se já é dona, perde
+   a propriedade e as integrantes votam em quem assume (a curadoria cuida enquanto isso); o que se publica aparece na comunidade e no feed
+   de quem participa. NESTA ETAPA (só HTML): criar, mural, discussões e regras funcionam neste aparelho; integrantes, aprovação de entrada,
+   feed de quem participa, perda de propriedade e votação dependem do servidor e ainda não existem. */
+const CMN_MIN = 30;
+/* regras gerais: PROPOSTA de texto, aguardando aprovação da Amanda */
+const CMN_GERAIS = ["Vale para toda comunidade o que vale na rede: sem ódio, sem assédio, sem desinformação e sem propaganda eleitoral paga.",
+  "Meme, conversa leve e debate são bem-vindos. Ataque a pessoas não é.",
+  "Cada comunidade pode ter regras próprias, desde que não contrariem as regras gerais.",
+  "Quem cria a comunidade é a dona e responde pela moderação. Conta com reputação baixa não cria comunidade.",
+  "Se a dona passar a ter reputação baixa, perde a propriedade e as integrantes votam em quem assume. A curadoria da rede cuida da comunidade enquanto isso."];
+let CMNS = store.get("comunidades", []);
+const cmnSalva = () => store.set("comunidades", CMNS);
+const cmnCor = n => ["#2F6F5E","#8A4B2A","#3B4FA8","#7A3E7C","#5B6B2A","#A0463C"][[...String(n)].reduce((a,c)=>a + c.charCodeAt(0), 0) % 6];
+const cmnDe = id => CMNS.find(c=>c.id===id);
+const cmnEu = () => (ME.perfil && ME.perfil.nome) || "Você";
+const cmnDia = q => new Date(q).toLocaleDateString("pt-BR", {day:"numeric", month:"short"});
+const ofTag = o => o && isOrg(o) && !o.comunidade && !o.ficticia ? `<span class="fic" title="Organização oficial, cadastrada pela curadoria">oficial</span>` : "";
+function cmnRegistra(c){ ORG[c.id] = {id:c.id, nome:esc(c.nome), sigla:esc(siglaDe(c.nome)), cor:cmnCor(c.nome), cidade:esc(c.tema), tema:esc(c.tema), sobre:esc(c.sobre || ""), membros:1, comunidade:true}; }
+CMNS.forEach(cmnRegistra);
+/* cartão de comunidade (11 nov 2026): capa desenhada, marca sobre a capa, nome, lugar ou tema, uma linha sobre ela e a situação de quem olha */
+const CMN_VER = 4;
+const cmnHash = t => [...String(t)].reduce((a,c)=>(a*31 + c.charCodeAt(0)) % 9973, 7);
+function cmnCard(o, c){ const h = cmnHash(o.id), f = c || S.follow.has(o.id), sobre = c ? esc(c.sobre || "") : (o.sobre || "");
+  const tag = c ? `<span class="fic">comunidade</span>` : ficTag(o) + ofTag(o);
+  return `<button class="cmncard" type="button" data-act="openorg" data-org="${esc(o.id)}"><span class="cmncapa" aria-hidden="true">${art({id:h, art:["arcs","circles","stripes","grid","blocks"][h % 5]}, .3, false)}</span>${tag ? `<span class="cmntag">${tag}</span>` : ""}${avatar(o)}
+    <b>${c ? esc(c.nome) : o.nome}</b><span class="cmnmeta">${c ? esc(c.tema) : o.cidade}</span>${sobre ? `<span class="cmnsobre">${sobre}</span>` : ""}
+    <span class="cmnpe2"><span>${c ? "1 integrante" : orgMeta(o)}</span>${f ? `<span class="cmnsim">${ic("check","sm")} ${c ? "Você criou" : o.real ? "Você segue" : "Você participa"}</span>` : ""}</span></button>`; }
+const cmnRow = c => `<button class="rowitem" type="button" data-act="openorg" data-org="${esc(c.id)}">${avatar(ORG[c.id])}<span class="t"><b>${esc(c.nome)}<span class="fic">comunidade</span></b><small>${esc(c.tema)} · você criou · entrada ${c.entrada==="aprovacao" ? "com aprovação" : "aberta"}</small></span></button>`;
+function sheetCmnNova(){
+  openSheet(shead("Criar comunidade") + `<p class="srcnote" style="margin:0 2px 12px">Um grupo em torno de um tema: para se organizar, debater, trocar ideia e postar meme. Todo tema cabe.</p>
+    <div class="field"><label for="cmnnome">Nome</label><input id="cmnnome" maxlength="60" autocomplete="off" placeholder="Ex.: Quem pedala em Curitiba"></div>
+    <div class="field"><label for="cmntema">Tema</label><input id="cmntema" maxlength="40" autocomplete="off" list="cmntemas" placeholder="Escolha ou escreva o seu"><datalist id="cmntemas">${TEMAS.map(t=>`<option value="${esc(t)}">`).join("")}</datalist></div>
+    <div class="field"><label for="cmnsobre">Sobre</label><textarea id="cmnsobre" rows="3" maxlength="280" placeholder="Para quem é e o que se faz aqui."></textarea></div>
+    <fieldset style="border:0;padding:0;margin:0 0 12px"><legend style="font-size:14px;font-weight:600;margin:0 0 8px;padding:0">Quem entra</legend>
+      <label class="cmnopc"><input type="radio" name="cmnentrada" value="aberta" checked><span><b>Aberta</b><small>Qualquer conta entra e publica na hora.</small></span></label>
+      <label class="cmnopc"><input type="radio" name="cmnentrada" value="aprovacao"><span><b>Com aprovação</b><small>Você, ou quem moderar, aprova cada entrada.</small></span></label></fieldset>
+    <div class="field"><label for="cmnregras">Regras da comunidade (opcional)</label><textarea id="cmnregras" rows="3" maxlength="600" placeholder="Uma regra por linha."></textarea></div>
+    <label class="cmnopc"><input type="checkbox" id="cmnaceite"><span><b>Li e aceito as regras gerais das comunidades</b><small>${CMN_GERAIS.length} regras curtas. <button class="linkbtn" type="button" data-act="cmngerais">Ler</button></small></span></label>
+    <button class="btn primary block" type="button" data-act="cmncria">Criar comunidade</button>`, "Criar comunidade"); }
+function screenCmn(o){ const c = cmnDe(o.id); if (!c) return screenOrgs();
+  const tabs = [["mural","Mural"],["discussoes","Discussões"],["regras","Regras"],["integrantes","Integrantes"]]; if (!tabs.some(t=>t[0]===S.cmnTab)) S.cmnTab = "mural";
+  return `<div class="orghero">${art({id:c.nome.length*3, art:"arcs"}, .6, false)}<button class="iconbtn solid" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button></div>
+    <div class="container"><div class="orghead">${avatar(o)}<h1>${esc(c.nome)}<span class="fic">comunidade</span></h1>
+      <p style="color:var(--muted);font-size:14px">${esc(c.tema)} · 1 integrante · entrada ${c.entrada==="aprovacao" ? "com aprovação" : "aberta"}</p>
+      ${c.sobre ? `<p style="max-width:65ch">${esc(c.sobre)}</p>` : ""}
+      <div class="note" style="margin:10px 0 12px">${ic("info")}<span><b>Você criou esta comunidade.</b> Nesta etapa de teste ela existe só neste aparelho: outras pessoas ainda não a veem.</span></div>
+      <div class="tabs" role="tablist" aria-label="Seções da comunidade" style="margin-top:8px">${tabs.map(([k,n])=>`<button class="tab" type="button" role="tab" data-act="cmntab" data-tab="${k}" aria-selected="${S.cmnTab===k}">${n}</button>`).join("")}</div></div>
+      <div id="cmnbody" style="padding-top:var(--gap)">${cmnBody(c)}</div></div>`; }
+function cmnBody(c){ const t = S.cmnTab;
+  if (t==="mural") return `<button class="btn primary" type="button" data-act="cmnposta" style="margin:0 0 14px">${ic("plus","sm")} Publicar na comunidade</button>`
+    + (c.posts.length ? c.posts.map(p=>`<article class="cmnpost"><div class="cmnq"><b>${esc(p.autor)}</b><span>${cmnDia(p.quando)}</span><span class="spacer"></span><button class="linkbtn muted" type="button" data-act="cmnapaga" data-pid="${p.id}">Apagar</button></div><p>${esc(p.txt)}</p></article>`).join("") : `<p class="empty">Ninguém publicou ainda. Comece você.</p>`);
+  if (t==="discussoes") return `<button class="btn primary" type="button" data-act="cmntopico" style="margin:0 0 14px">${ic("plus","sm")} Abrir discussão</button>`
+    + (c.topicos.length ? c.topicos.map(p=>`<button class="cmnpost" type="button" data-act="cmnabre" data-pid="${p.id}"><h3>${esc(p.titulo)}</h3><div class="cmnq" style="margin:0"><span>${esc(p.autor)} · ${cmnDia(p.quando)} · ${p.respostas.length} ${p.respostas.length===1 ? "resposta" : "respostas"}</span></div></button>`).join("") : `<p class="empty">Nenhuma discussão aberta.</p>`);
+  if (t==="regras") return `${c.regras.length ? `<h2 class="sectitle" style="margin-top:0">Regras desta comunidade</h2><ol class="cmnregras">${c.regras.map(r=>`<li>${esc(r)}</li>`).join("")}</ol>` : ""}
+    <h2 class="sectitle" style="margin-top:0">Regras gerais das comunidades</h2><ol class="cmnregras">${CMN_GERAIS.map(r=>`<li>${r}</li>`).join("")}</ol>`;
+  return `<div class="list"><div class="rowitem" style="cursor:default"><span class="av" aria-hidden="true">${esc(siglaDe(cmnEu()))}</span><span class="t"><b>${esc(cmnEu())}</b><small>Dona da comunidade · criou em ${cmnDia(c.criadaEm)}</small></span></div></div>
+    <p class="cmnpe">Moderadoras e integrantes aparecem aqui quando a comunidade estiver no servidor.</p>`; }
+function cmnPinta(c){ const b = $("#cmnbody"); if (b) b.innerHTML = cmnBody(c); }
+function sheetCmnTopico(c, p){
+  openSheet(shead(esc(p.titulo)) + `<article class="cmnpost"><div class="cmnq"><b>${esc(p.autor)}</b><span>${cmnDia(p.quando)}</span></div><p>${esc(p.txt)}</p></article>
+    ${p.respostas.map(r=>`<article class="cmnpost" style="margin-left:14px"><div class="cmnq"><b>${esc(r.autor)}</b><span>${cmnDia(r.quando)}</span></div><p>${esc(r.txt)}</p></article>`).join("")}
+    <div class="field"><label for="cmnresp">Responder</label><textarea id="cmnresp" rows="3" maxlength="1000"></textarea></div>
+    <button class="btn primary block" type="button" data-act="cmnresponde" data-pid="${p.id}">Responder</button>`, p.titulo); }
 function docBase(){ const box = $("#docbase"); if (!box) return; if (S.tab!=="documentos" || S.rapido){ box.hidden = true; box.innerHTML = ""; return; } box.hidden = false; box.innerHTML = docBaseHTML(); dbIguala(); }
 ORG["designativista"] = ORG["designativista"] || {id:"designativista", nome:"Design Ativista", sigla:"DA", cidade:"", natureza:"acervo de arte e design ativista", real:true, fonte:true, cor:"#C2185B", membros:0,
   sobre:"Acervo coletivo de cartazes e artes, com crédito a quem cria. As peças passam pela curadoria da rede antes de aparecer aqui.", site:"https://designativista.pages.dev/"};
@@ -6662,7 +6895,7 @@ const A = {
     const url = location.href.split("#")[0] + (b.dataset.uid ? "#pin-" + b.dataset.uid : location.hash); try{ navigator.clipboard.writeText(url).then(()=>toast("Link copiado."), ()=>toast("Não foi possível copiar o link.")); }catch(e){ toast("Não foi possível copiar o link."); } },
   moretext: b => { const pin = b.closest(".pin"), t = pin.querySelector(".pintext"); const open = !t.classList.contains("open"); t.classList.toggle("open", open); S.textOpen[b.dataset.uid] = open;
     b.textContent = open ? "Mostrar menos" : "Mostrar mais"; b.setAttribute("aria-expanded", open); layoutPin(pin); },
-  poll: b => { S.pollVote[b.dataset.uid] = +b.dataset.i; refresh(b.dataset.uid); toast("Voto registrado na enquete."); },
+  poll: b => { S.pollVote[b.dataset.uid] = +b.dataset.i; persist("pollVote"); refresh(b.dataset.uid); toast("Voto registrado na enquete."); },
   /* Quero ir: salva o evento na Agenda do perfil; se o evento pede cadastro, abre o formulário antes */
   rsvp: b => { const u = b.dataset.uid, v = b.dataset.v, it = findItem(u);
     if (S.rsvp[u]===v && v==="vou" && it && INSCR[it.id]) return sheetInscricao(u, "evento");   /* com inscrição: mostra os dados e a opção de sair */
@@ -6690,7 +6923,7 @@ const A = {
     toast(k==="evento" ? "Você saiu do evento." : "Você saiu do chamado. A organização foi avisada."); },
   formal: b => sheetFormal(b.dataset.uid),
   confirmvote: b => { const sel = $('input[name="fv"]:checked'); if (!sel){ toast("Escolha uma opção para votar."); return; }
-    const u = b.dataset.uid; S.formalDone[u] = true; const code = "AR-" + Math.random().toString(36).slice(2,6).toUpperCase() + "-" + (10+Math.floor(Math.random()*89));
+    const u = b.dataset.uid; S.formalDone[u] = true; persist("formalDone"); const code = "AR-" + Math.random().toString(36).slice(2,6).toUpperCase() + "-" + (10+Math.floor(Math.random()*89));
     openSheet(shead("Voto registrado") + `<p>Seu voto entrou na contagem. Guarde o comprovante para conferir na auditoria.</p><div class="receipt">${code}</div><p style="color:var(--muted);font-size:13px">O comprovante confirma que você votou, sem mostrar em quê.</p><button class="btn ink block" type="button" data-act="close">Concluir</button>`, "Voto registrado"); refresh(u); },
   ytabre: b => { const f = b.closest(".facewrap").querySelector(".face"); if (f) f.click(); },
   ytplay: b => { const box = b.closest(".facewrap, .ytbox"); if (box) ytToca(box, b.dataset.yt, b.getAttribute("aria-label").replace(/^Assistir aqui: /,"")); },
@@ -6715,7 +6948,7 @@ const A = {
   fclear: () => { S.fdraft = {temas:[], cidades:[], minhas:false, conf:0}; $("#layer .sheet").innerHTML = `<div class="grab" aria-hidden="true"></div>` + filterBody(); },
   fapply: () => { S.filt = S.fdraft; closeSheet(); applyFeedChange(); const n = nFiltros(); toast(n ? `${n} ${n===1?"filtro aplicado":"filtros aplicados"}.` : "Filtros removidos."); },
   ordset: b => { S.ord = b.dataset.v; closeSheet(); applyFeedChange(); toast("Ordenado por: " + ORDS.find(x=>x[0]===S.ord)[1].toLowerCase() + "."); },
-  apoiar: b => { const u = b.dataset.uid; S.support[u] = !S.support[u]; refresh(u); if (S.support[u]) toast("Apoio registrado. Com 20% de apoio, a proposta vai a voto."); },
+  apoiar: b => { const u = b.dataset.uid; S.support[u] = !S.support[u]; persist("support"); refresh(u); if (S.support[u]) toast("Apoio registrado. Com 20% de apoio, a proposta vai a voto."); },
   report: b => sheetReport(b.dataset.uid),
   assinar: () => { S.assinou = !S.assinou; persist("assinou"); const y = window.scrollY; render(); window.scrollTo(0,y); if (S.assinou) toast("Obrigada por assinar o manifesto."); },
   toid: (b, e) => { e.preventDefault(); const el = document.getElementById(b.dataset.id); el && scrollToEl(el); },
@@ -6775,6 +7008,39 @@ const A = {
   origens: () => sheetOrigens(),
   redes: () => sheetRedes(),
   verifinfo: b => sheetVerif(b.dataset.v),
+  cmnnova: async b => { if (!ME.user){ toast("Entre na sua conta para criar uma comunidade."); go("perfil"); return; }
+    let nota = null; if (SB){ ocupado(b, true, "…"); try{ const r = await SB.rpc("minha_reputacao"); if (!r.error && r.data) nota = r.data.nota; }catch(e){} ocupado(b, false); }
+    if (nota!=null && nota < CMN_MIN) return openSheet(shead("Criar comunidade") + `<div class="note">${ic("lock")}<span><b>Sua conta ainda não pode criar comunidades.</b> O seu histórico na rede está baixo. Ele sobe com participação que outras pessoas consideram útil e desce com conteúdo removido. Você pode participar das comunidades que já existem.</span></div><a class="btn block" href="#perfil" data-act="close">Ver meu histórico</a>`, "Criar comunidade");
+    sheetCmnNova(); },
+  cmnver: b => { S.cmnF = b.dataset.f; S.cmnQ = ""; S.cmnTema = ""; go("comunidades-todas"); },
+  cmnfiltro: b => { S.cmnF = b.dataset.f; $$('[data-act="cmnfiltro"]').forEach(c=>c.setAttribute("aria-pressed", c.dataset.f===S.cmnF)); $("#cmntodas").innerHTML = cmnTodasCorpo(); },
+  cmnvista: () => { S.cmnVista = S.cmnVista==="lista" ? "cartoes" : "lista"; render(); const n = $('[data-act="cmnvista"]'); n && n.focus({preventScroll:true}); },
+  partlinha: b => { S.partLinha = b.dataset.pt; const g = $("#partgeral"); if (!g) return; g.outerHTML = partGeralHTML(); const c = $(`#partgeral [data-act="partlinha"][data-pt="${S.partLinha}"]`); c && c.focus({preventScroll:true}); },
+  partver: b => { const f = b.dataset.pt; S.partFeito = f==="feitos"; S.partTipo = f==="feitos" ? "todos" : f; S.partMeu = false; S.partTema = ""; go("participar"); },
+  partfeito: b => { S.partFeito = !S.partFeito; b.setAttribute("aria-pressed", S.partFeito); $("#parttodos").innerHTML = partTodosCorpo(); },
+  parttipo: b => { S.partTipo = b.dataset.pt; $$('[data-act="parttipo"]').forEach(c=>c.setAttribute("aria-pressed", c.dataset.pt===S.partTipo)); $("#parttodos").innerHTML = partTodosCorpo(); },
+  partmeu: b => { S.partMeu = !S.partMeu; b.setAttribute("aria-pressed", S.partMeu); $("#parttodos").innerHTML = partTodosCorpo(); },
+  partvista: () => { S.partVista = S.partVista==="lista" ? "cartoes" : "lista"; render(); const n = $('[data-act="partvista"]'); n && n.focus({preventScroll:true}); },
+  cmngerais: () => openSheet(shead("Regras gerais das comunidades") + `<ol class="cmnregras">${CMN_GERAIS.map(r=>`<li>${r}</li>`).join("")}</ol><button class="btn primary block" type="button" data-act="cmnvolta">Voltar</button>`, "Regras gerais"),
+  cmnvolta: () => sheetCmnNova(),
+  cmncria: () => { const nome = $("#cmnnome").value.trim().replace(/\s+/g, " "), tema = $("#cmntema").value.trim() || "Tema livre";
+    if (nome.length < 3){ toast("Dê um nome com pelo menos 3 letras."); $("#cmnnome").focus(); return; }
+    if (CMNS.some(c=>c.nome.toLowerCase()===nome.toLowerCase())){ toast("Você já criou uma comunidade com esse nome."); return; }
+    if (!$("#cmnaceite").checked){ toast("Falta aceitar as regras gerais."); $("#cmnaceite").focus(); return; }
+    const c = {id:"cm-" + Date.now().toString(36), nome, tema, sobre:$("#cmnsobre").value.trim(), entrada:($('input[name="cmnentrada"]:checked') || {}).value==="aprovacao" ? "aprovacao" : "aberta",
+      regras:$("#cmnregras").value.split("\n").map(x=>x.trim()).filter(Boolean).slice(0, 12), criadaEm:new Date().toISOString(), posts:[], topicos:[]};
+    CMNS.unshift(c); cmnSalva(); cmnRegistra(c); closeSheet(); S.cmnTab = "mural"; go("org-" + c.id); toast("Comunidade criada."); },
+  cmntab: b => { S.cmnTab = b.dataset.tab; $$('[data-act="cmntab"]').forEach(t=>t.setAttribute("aria-selected", t.dataset.tab===S.cmnTab)); cmnPinta(cmnDe(route().slice(4))); },
+  cmnposta: () => openSheet(shead("Publicar na comunidade") + `<div class="field"><label for="cmntxt">O que você quer dizer?</label><textarea id="cmntxt" rows="5" maxlength="2000"></textarea></div><button class="btn primary block" type="button" data-act="cmnpostaok">Publicar</button>`, "Publicar na comunidade"),
+  cmnpostaok: () => { const c = cmnDe(route().slice(4)), txt = $("#cmntxt").value.trim(); if (!c) return; if (!txt){ toast("Escreva alguma coisa."); return; }
+    c.posts.unshift({id:Date.now().toString(36), txt, quando:new Date().toISOString(), autor:cmnEu()}); cmnSalva(); closeSheet(); cmnPinta(c); },
+  cmnapaga: b => { const c = cmnDe(route().slice(4)); if (!c) return; if (!b.dataset.ok){ b.dataset.ok = "1"; b.textContent = "Apagar mesmo?"; return; } c.posts = c.posts.filter(p=>p.id!==b.dataset.pid); cmnSalva(); cmnPinta(c); },
+  cmntopico: () => openSheet(shead("Abrir discussão") + `<div class="field"><label for="cmntit">Assunto</label><input id="cmntit" maxlength="100" autocomplete="off"></div><div class="field"><label for="cmntxt">Mensagem</label><textarea id="cmntxt" rows="5" maxlength="2000"></textarea></div><button class="btn primary block" type="button" data-act="cmntopicook">Abrir discussão</button>`, "Abrir discussão"),
+  cmntopicook: () => { const c = cmnDe(route().slice(4)), titulo = $("#cmntit").value.trim(), txt = $("#cmntxt").value.trim(); if (!c) return; if (titulo.length < 3 || !txt){ toast("Preencha o assunto e a mensagem."); return; }
+    c.topicos.unshift({id:Date.now().toString(36), titulo, txt, quando:new Date().toISOString(), autor:cmnEu(), respostas:[]}); cmnSalva(); closeSheet(); cmnPinta(c); },
+  cmnabre: b => { const c = cmnDe(route().slice(4)), p = c && c.topicos.find(x=>x.id===b.dataset.pid); if (p) sheetCmnTopico(c, p); },
+  cmnresponde: b => { const c = cmnDe(route().slice(4)), p = c && c.topicos.find(x=>x.id===b.dataset.pid), txt = $("#cmnresp").value.trim(); if (!p) return; if (!txt){ toast("Escreva a resposta."); return; }
+    p.respostas.push({txt, quando:new Date().toISOString(), autor:cmnEu()}); cmnSalva(); sheetCmnTopico(c, p); cmnPinta(c); },
   orgnova: () => sheetOrgPedido(),
   pedtema: b => { S.pedTema = b.dataset.v; $$('[data-act="pedtema"]').forEach(x=>x.setAttribute("aria-checked", x.dataset.v===S.pedTema)); },
   orgpedir: async b => { const v = id => (($("#" + id) || {}).value || "").trim(), msg = $("#pedmsg"), diz = t => { if (msg) msg.textContent = t; };
@@ -6881,7 +7147,7 @@ if (!location.hash){ const ini = store.get("ultima", "") || START; if (ini && in
 window.addEventListener("hashchange", render);
 if (S.localAuto && navigator.permissions && navigator.permissions.query) navigator.permissions.query({name:"geolocation"}).then(q=>{ if (q.state==="granted" && Date.now() - (S.localQuando || 0) > 6 * 3600e3) localAtualiza(true); }).catch(()=>{});
 contaInicia();
-if (/[?&]teste=1/.test(location.search)) window.__arede = {ME, navConta, LV, aoVivoPinta, adPrecosAplica, USO, uso, usoEnvia, csatTenta, prox, footCtx, footInfo, PRIO, prioDe, historicoPreenche, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
+if (/[?&]teste=1/.test(location.search)) window.__arede = {S, ME, navConta, LV, aoVivoPinta, adPrecosAplica, USO, uso, usoEnvia, csatTenta, prox, footCtx, footInfo, PRIO, prioDe, historicoPreenche, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
 window.addEventListener("scroll", ()=>{ const t = $("#top"); if (t) t.classList.toggle("scrolled", window.scrollY > 4); }, {passive:true});
 window.addEventListener("resize", debounce(()=>{
   placeLogoDots();
@@ -6924,7 +7190,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 15:28";
+const VERSAO = "v1 registrada · 11/11 16:43";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
