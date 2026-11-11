@@ -350,3 +350,16 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - Sugestão da Amanda: o selo de confiabilidade sobe para logo abaixo do título, junto das tags de “por que apareceu” e do Denunciar. Assim, quem lê vê a confiabilidade antes do texto.
 - A autoria (avatar, nome, data, Seguir) desce para logo acima de “Ler a matéria completa”, junto da fonte.
 - Revertido a pedido da Amanda: voltou a ordem anterior (tipo no topo, título, autoria logo abaixo do título, texto, fonte e selo no fim). As tags de “por que apareceu” continuam.
+
+## 11/11 · Link da fonte em uma linha
+- O botão grande “Ler a matéria completa em oglobo.globo.com” e a nota “Trecho do feed de O Globo, 8 nov.” viraram um link de uma linha: “Ler em oglobo.globo.com ↗”. A fonte e a data já aparecem na autoria, logo abaixo do título.
+- Uma nota curta só aparece quando acrescenta algo: texto oficial, resumo da curadoria, ou publicação vinda de uma rede conectada.
+
+## 11/11 · Duas formas de ver o feed: Mosaico e Cartões
+- Pedido da Amanda: um botão ao lado do filtro deixa a pessoa escolher como ver o feed principal. **Mosaico** é a forma de sempre (mais cartões por vez, encaixados). **Cartões** é a forma que já existia em “Mais para explorar” (cartões separados).
+- Regra de alternância: o feed usa a forma escolhida e “Mais para explorar”, no cartão aberto, usa sempre a outra. Assim há sempre uma mudança visual, com só duas formas no produto.
+- Vale para as abas Tudo e Publicações (e Arte, na administração). Vídeos e Documentos têm formato próprio e não mostram o botão.
+- A escolha fica guardada no aparelho. Com conta, fica também no perfil e vale em qualquer aparelho.
+- Para mapear a preferência, o servidor conta cada troca sem identificar quem trocou: forma nova, forma anterior, celular ou computador, com ou sem conta. O painel mostra o resultado em Servidor e dados reais.
+- Cuidado na leitura: quem nunca troca fica no padrão (Mosaico). O sinal útil é quantas pessoas vão para Cartões e não voltam.
+- Servidor: coluna `perfis.vista`, tabela `vista_escolhas` (sem leitura pública), função `vista_registra` (com limite de 12 por hora) e o resumo em `painel_resumo`.

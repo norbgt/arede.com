@@ -943,6 +943,10 @@ a.setting{color:var(--ink);text-decoration:none}
 .srcbtn{gap:6px;max-width:100%;white-space:normal;text-align:left;justify-content:flex-start}
 .srcbtn .icon{width:14px;height:14px;flex:none}
 .srcblock .srcnote{margin:0}
+.srcline{margin:0;font-size:13px;color:var(--muted);line-height:1.5;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:6px}
+.srcline .srcnote{font-size:inherit;display:inline;margin:0}
+.srclink{color:var(--accent);text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:3px}
+.srclink:hover{text-decoration:underline}.srclink .icon{width:12px;height:12px}
 .srcblock .native{align-self:stretch}
 .orgline .t .fic{align-self:flex-start;margin:2px 0 1px}
 .sealbox.sbmini .t{flex-direction:column;align-items:flex-start;gap:1px}
@@ -1072,6 +1076,8 @@ a.setting{color:var(--ink);text-decoration:none}
 .adseg{margin-top:3px;font-size:10.5px;opacity:.78}
 .adshort{display:none}
 .adtile:hover .adface{filter:brightness(1.06)}
+.adcard .adtile{position:relative;aspect-ratio:1 / 1;border-radius:var(--r);overflow:hidden}
+.adcard .tbtn{cursor:pointer}
 /* animados, como GIF: lentos (no máximo 1 piscada por segundo) e parados para quem pede menos movimento */
 .an-pisca .adcta{animation:adpisca 1.1s steps(1,end) infinite}
 @keyframes adpisca{0%{background:#fff;color:var(--adc)}50%{background:var(--adc2);color:#111}}
@@ -3094,6 +3100,8 @@ const ICON = {
   sound:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>',
   mute:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/>',
   filter:'<path d="M4 5.5h16l-6.2 7.3v5.4l-3.6 1.8v-7.2z"/>',
+  vblocos:'<rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M12 4v16M4 11.5h8M12 14h8"/>',
+  vsoltos:'<rect x="4" y="4" width="7" height="9" rx="1.8"/><rect x="13" y="4" width="7" height="6" rx="1.8"/><rect x="4" y="15" width="7" height="5" rx="1.8"/><rect x="13" y="12" width="7" height="8" rx="1.8"/>',
   sort:'<path d="M8 4.5v15M4.5 8 8 4.5 11.5 8M16 19.5v-15M12.5 16l3.5 3.5 3.5-3.5"/>',
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   plus:'<path d="M12 5v14M5 12h14"/>',
@@ -3451,7 +3459,7 @@ const FTABS = [["tudo","Tudo",null,"blocos"],["publicacoes","Publicações",["im
    3. Estado (preferências ficam salvas no navegador)
    ===================================================================== */
 const S = {
-  tema: store.get("tema","auto"), algo: store.get("algo", true), tab: store.get("tab","tudo"), origens: store.get("origens", ["pt"]), perto: store.get("perto", true), regiao: store.get("regiao", ""),
+  tema: store.get("tema","auto"), vista: store.get("vista","blocos"), algo: store.get("algo", true), tab: store.get("tab","tudo"), origens: store.get("origens", ["pt"]), perto: store.get("perto", true), regiao: store.get("regiao", ""),
   temas: store.get("temas", ["Moradia","Mobilidade","Hortas e alimentação","Educação"]), mix: store.get("mix", 60),
   pausas: store.get("pausas", true), orgsVisiveis: store.get("orgsVisiveis", false), publico: store.get("publico", false), assinou: store.get("assinou", false), interesses: store.get("interesses", ["Mobilidade","Hortas e alimentação","Meio ambiente"]), intDraft:null, profTab:"publicacoes", pubTab:"publicacoes", pubFolder:null, profQ:"", profFolder:null, usarOrgs: store.get("usarOrgs", true),
   follow: new Set(store.get("follow", ["bairro-vivo","hortas-leste","pedala-cwb"])), saved: new Set(store.get("saved", [])), savedIn: store.get("savedIn", {}), liked: new Set(store.get("liked", ["13-0","27-0","16-0"])), shared: new Set(store.get("shared", ["4-0","15-0","6-0"])),
@@ -3885,8 +3893,11 @@ function docLocal(it){ const o = ORG[it.org] || {}, c = it.cidade || (!o.fonte &
   const uf = Object.entries(UF_NOME).find(([sg,nm])=>c===sg || semAcento(c)===semAcento(nm));
   if (uf) return {k:"est", nivel:"Estadual", lugar:uf[1]};
   return {k:"nac", nivel:"Nacional", lugar:"Brasil"}; }
-const cardFor = (it, mode, v) => v && v!=="masonry" && v!=="video" ? tabCard(it, mode, v) : card(it, mode);
-const EST = {video:it=>it.ar*170+70, imagem:it=>(it.ph || 1.25)*170+80, texto:()=>270, evento:()=>320, enquete:()=>330, votacao:()=>330, chamado:()=>330, documento:()=>290};
+const adCard = (it, mode) => { const a = it.ad; return `<article class="card adcard" data-card="${it.uid}" data-mode="${mode}"><div class="adtile" style="--adc:${a.cor};--adc2:${a.cor2}">
+  <button class="tbtn" type="button" data-act="adopen" data-uid="${it.uid}" aria-label="Anúncio de ${esc(a.nome)}: ${esc(a.frase)}"><span class="adface${a.anim ? " an-" + a.anim : ""}"><span class="adtop"><span class="adtag">Anúncio</span>${a.cta ? `<span class="adcta">${esc(a.cta)}</span>` : ""}</span>
+    <span class="admk">${adLogo(a, 34)}</span><span class="adbot"><b class="adnome">${esc(a.nome)}</b><span class="adtxt"><span class="adlong">${esc(a.frase)}</span><span class="adshort">${esc(a.curta)}</span></span><span class="adseg"><span class="adlong">${esc(a.seg)} · </span>exemplo</span></span></span></button></div></article>`; };
+const cardFor = (it, mode, v) => it.anuncio ? adCard(it, mode) : v && v!=="masonry" && v!=="video" ? tabCard(it, mode, v) : card(it, mode);
+const EST = {anuncio:()=>200, video:it=>it.ar*170+70, imagem:it=>(it.ph || 1.25)*170+80, texto:()=>270, evento:()=>320, enquete:()=>330, votacao:()=>330, chamado:()=>330, documento:()=>290};
 const EST_V = {cedula:330, arquivo:150};
 const EST_AG = {evento:300, chamado:360};
 /* Grade com expansão no lugar: estado = colunas de cima (A), cartão aberto (sel) e grade de baixo (B) */
@@ -4046,7 +4057,19 @@ function source0(fl, types){
   return ordena(l.length >= 4 ? l : l.concat(POOL.filter(it=>f(it) && !inProfile(it) && !it.conta && !it.daRede)));
 }
 const tabLayout = () => (FTABS.find(t=>t[0]===S.tab)||FTABS[0])[3];
-function wrapClass(){ const fw = $("#feedwrap"); if (fw) fw.className = tabLayout()==="blocos" ? "rwrap" : "lwrap"; }
+/* Duas formas de ver o feed principal (11 nov 2026): "blocos" (mosaico, cartões juntos) e "soltos" (cartões separados).
+   O feed usa a escolhida; "Mais para explorar", no cartão aberto, usa sempre a outra. */
+const VISTAS = [["blocos","Mosaico","Mais cartões por vez, encaixados"],["soltos","Cartões","Cartões separados, com mais respiro"]];
+const feedLayout = () => { const L = tabLayout(); return L==="blocos" && S.vista==="soltos" ? "masonry" : L; };
+function wrapClass(){ const fw = $("#feedwrap"); if (fw) fw.className = feedLayout()==="blocos" ? "rwrap" : "lwrap"; }
+function sheetVista(){
+  openSheet(shead("Visualização") + `<div class="list" role="radiogroup" aria-label="Forma de ver o feed">${VISTAS.map(([k,n,d])=>
+    `<button class="setting" type="button" role="radio" aria-checked="${S.vista===k}" data-act="vistaset" data-v="${k}">${ic("v"+k)}<span class="t"><b>${n}</b><small>${d}</small></span>${S.vista===k?ic("check"):""}</button>`).join("")}</div>
+    <p class="srcnote" style="margin:10px 4px 0">Ao abrir um cartão, “Mais para explorar” aparece na outra forma.</p>`, "Visualização");
+}
+/* guarda a escolha neste aparelho e, com conta, no perfil; o servidor conta as trocas sem identificar quem trocou */
+function vistaDefine(v){ if (v!=="blocos" && v!=="soltos" || v===S.vista) return; const ant = S.vista; S.vista = v; store.set("vista", v);
+  if (SB) SB.rpc("vista_registra", {p_vista:v, p_anterior:ant, p_aparelho: innerWidth < 720 ? "celular" : "computador"}).then(()=>{}, ()=>{}); }
 function layoutFeed(){ if (!F.grid) return; wrapClass(); F.grid.attach($("#feed")); F.grid.render(); fitTiles(); vidCabe(); }
 /* ABA VÍDEOS (10 nov 2026): um vídeo por vez. Cada cartão inteiro (vídeo e legenda) cabe na tela, abaixo da barra do topo
    e acima da navegação; a rolagem para em um vídeo de cada vez e só ele toca. */
@@ -4132,11 +4155,12 @@ function fillViewport(){ const st = $("#sentinel"); if (!st || F.paused || F.end
 function feedCols(L){ const w = ($("#feed") || document.body).clientWidth || innerWidth;
   if (L==="agenda") return w >= 900 ? 3 : 2;
   if (L==="video") return 1;                       /* regra: a aba Vídeos é sempre uma coluna */
+  if (L==="masonry") return w >= 900 ? 3 : 2;      /* cartões soltos: duas colunas no celular, como em "Mais para explorar" */
   return w >= 720 ? 2 : 1; }
 function resetFeed(){
   altaFaixa(); docBase();
   F.items = []; F.cursor = 0; F.vistos = 0; F.gate = null; F.paused = false; F.ended = false; F.key = feedKey();
-  wrapClass(); const L = tabLayout();
+  wrapClass(); const L = feedLayout();
   F.grid = L==="blocos" ? new TileGrid("feed", $("#feed"), feedMode()) : new Grid("feed", $("#feed"), feedMode(), feedCols(L), L);
   F.grid.arte = S.tab==="arte";
   const types = tabTypes(); S.created.slice().reverse().forEach(c=>{ if(!types || types.includes(c.tipo)){ F.items.push(c); F.grid.add(c); } });
@@ -4192,7 +4216,8 @@ const avatar = (o, cls="av") => o.daRedeConta ? `<span class="${cls} rede" aria-
 function statusLine(){
   const n = nFiltros(), o = ORDS.find(x=>x[0]===S.ord)[1];
   /* o estado do algoritmo fica no botão Algoritmo; o detalhe e os ajustes, no ícone ao lado (sheetAdjust) */
-  return `<button class="iconbtn tool" type="button" data-act="filter" aria-label="Filtrar${n?`, ${n} ativos`:""}">${ic("filter")}${n?`<span class="badge">${n}</span>`:""}</button>
+  const vs = VISTAS.find(x=>x[0]===S.vista) || VISTAS[0];
+  return `${tabLayout()==="blocos" ? `<button class="iconbtn tool" type="button" data-act="vista" aria-haspopup="dialog" aria-label="Visualização do feed: ${vs[1]}" title="Visualização: ${vs[1]}">${ic("v"+vs[0])}</button>` : ""}<button class="iconbtn tool" type="button" data-act="filter" aria-label="Filtrar${n?`, ${n} ativos`:""}">${ic("filter")}${n?`<span class="badge">${n}</span>`:""}</button>
     <button class="iconbtn tool" type="button" data-act="sort" aria-label="Ordenar: ${o}">${ic("sort")}${S.ord!=="padrao"?`<span class="badge dot2"></span>`:""}</button>`;
 }
 function screenHome(){
@@ -4897,8 +4922,9 @@ function detailHTML(it, uid, mode, inline){
       ${it.daArte ? `<div class="srcblock">${it.campanha ? `<span class="atag camp">Campanha · ${esc(it.campanha)}</span>` : ""}
           <a class="btn ghost srcbtn" href="${it.ext.url}" target="_blank" rel="noopener">Ver e baixar no acervo ${ic("ext","sm")}</a>
           <span class="srcnote">Acervo do Design Ativista · publicada em ${dLabel(it.ext.data)}${it.copia ? " · imagem reduzida na prévia sem internet" : ""}</span></div>`
-        : it.ext ? `<div class="srcblock"><a class="btn ghost srcbtn" href="${it.ext.url}" target="_blank" rel="noopener">${it.daRede ? "Ver no " + REDES[it.rede].nome : it.yt ? "Assistir no YouTube" : it.base ? "Ler na íntegra em " + esc(it.ext.dom) : it.tipo==="documento" ? "Ler o documento em " + esc(it.ext.dom) + (it.pags ? ` · ${it.pags} pág.` : "") : "Ler a matéria completa em " + esc(it.ext.dom)} ${ic("ext","sm")}</a>
-          <span class="srcnote">${it.daRede ? `${it.notaFilme ? estrelas(it.notaFilme) + " · " : ""}${it.texto ? "Trecho do" : "Do"} ${it.minha ? "seu feed público no " + REDES[it.rede].nome : "feed público de " + esc(o.nome)}, ${dLabel(it.ext.data)}.${it.exemplo ? " Exemplo, sem conexão." : ""}` : it.yt ? `Descrição publicada pelo canal ${esc(o.nome)} no YouTube, ${dLabel(it.ext.data)}.` : it.coletada ? `Trecho do feed de ${esc(o.nome)}, ${dLabel(it.ext.data)}.` : `${it.base ? `Texto oficial, com as mudanças posteriores · ${esc(it.num)}, de ${dLabel(it.ext.data)}.` : `Resumo da curadoria da rede · ${esc(o.nome)}, ${dLabel(it.ext.data)}.`}`}</span></div>`
+        : it.ext ? (() => { const nota = it.daRede ? `${it.notaFilme ? estrelas(it.notaFilme) + " · " : ""}${it.minha ? "do seu feed público" : "do feed público"}${it.exemplo ? " · exemplo" : ""}` : it.base ? `texto oficial · ${esc(it.num)}` : it.yt || it.coletada ? "" : "resumo da curadoria";
+          const rot = it.daRede ? "Ver no " + REDES[it.rede].nome : it.yt ? "Assistir no YouTube" : it.tipo==="documento" ? "Documento em " + esc(it.ext.dom) + (it.pags ? ` · ${it.pags} pág.` : "") : "Ler em " + esc(it.ext.dom);
+          return `<p class="srcline"><a class="srclink" href="${it.ext.url}" target="_blank" rel="noopener">${rot}${ic("ext","sm")}</a>${nota ? `<span class="srcnote">· ${nota}</span>` : ""}</p>`; })()
         : orig ? `<div class="srcblock"><div class="native">${ic("ext","sm")}<span>Original em ${orig}</span><span class="fic" title="Endereço de exemplo, sem destino real">exemplo</span></div></div>` : ""}
       ${interact(it)}
       <section class="pinseal">${sealBox(it, true)}<div class="pinrod">${why(it, mode)}${ME.user && it.autorId===ME.user.id ? "" : `<div class="pinacts">${reportBox(it)}</div>`}</div></section>
@@ -4925,13 +4951,16 @@ function screenPin(uid){
   const it = findItem(uid); if (!it) return `<div class="container"><div class="empty"><p>${PIN_ESPERA ? "Carregando o conteúdo…" : "Este conteúdo não está mais disponível."}</p>${PIN_ESPERA ? "" : `<button class="btn ink" type="button" data-nav-to="inicio">Voltar ao feed</button>`}</div></div>`;
   const ant = NAV[NAV.length - 2] || "inicio", volta = /^(inicio|alta|explorar)$/.test(ant) ? "Voltar ao feed" : "Voltar";
   return `<div class="pinpage"><button class="backlink" type="button" data-act="back">${ic("back")}${volta}</button>${detailHTML(it, uid, S.pinMode[uid] || "none", false)}
-    <section class="related container"><h2>Mais para explorar</h2><div id="relmas"></div></section></div>`;
+    <section class="related container"><h2>Mais para explorar</h2><div id="relwrap"><div id="relmas"></div></div></section></div>`;
 }
 function fillPin(uid){
   const it = findItem(uid); const box = $("#relmas"); if(!it || !box) return;
   const near = POOL.filter(p=>p.id!==it.id && redePronta(p) && (p.tema===it.tema || p.org===it.org));
   const rest = POOL.filter(p=>p.id!==it.id && redePronta(p) && p.tema!==it.tema && p.org!==it.org);
-  makeGrid("rel", box, near.concat(rest).slice(0,16).map(p=>withUid(p)), "none");
+  const rel = near.concat(rest).slice(0,16).map(p=>withUid(p));
+  box.parentElement.className = S.vista==="soltos" ? "rwrap" : "";
+  if (S.vista==="soltos"){ const g = new TileGrid("rel", box, "none"); rel.forEach(x=>g.add(x)); g.flush(true); g.render(); }   /* feed em cartões soltos: relacionadas em mosaico */
+  else makeGrid("rel", box, rel, "none");
   const pv = $("#pinvid"), st = S.vid[uid];
   if (pv && st){ pv.addEventListener("loadedmetadata", ()=>{ pv.currentTime = st.t || 0; }, {once:true});
     if (st.playing){ pv.muted = !!st.muted; pv.play().catch(()=>{ pv.muted = true; pv.play().catch(()=>{}); }); } }
@@ -5182,8 +5211,13 @@ async function contaInicia(){
   await perfilCarrega(); ME.pronto = true; await publicacoesCarrega(); await noticiasCarrega(); contaAtualiza(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
   setInterval(()=>{ if (document.visibilityState==="visible") noticiasCarrega(); }, 15 * 60000);
 }
+/* a escolha guardada na conta vale em qualquer aparelho; se a conta ainda não tem, guarda a deste aparelho (quando a pessoa já escolheu) */
+function vistaDaConta(){ const v = ME.perfil && ME.perfil.vista;
+  if (v && v!==S.vista && (v==="blocos" || v==="soltos")){ S.vista = v; store.set("vista", v); if (route()==="inicio" && F.grid){ const st = $("#status"); if (st) st.innerHTML = statusLine(); resetFeed(); } }
+  else if (ME.perfil && !v && store.get("vista", null) && SB) SB.rpc("vista_registra", {p_vista:S.vista, p_anterior:S.vista}).then(()=>{}, ()=>{}); }
 async function perfilCarrega(){ if (!SB || !ME.user){ ME.perfil = null; return; }
-  const {data} = await SB.from("perfis").select("id,nome,usuario,cidade,bio,criado_em,verificado,verificado_em").eq("id", ME.user.id).maybeSingle(); ME.perfil = data || null;
+  const {data} = await SB.from("perfis").select("id,nome,usuario,cidade,bio,criado_em,verificado,verificado_em,vista").eq("id", ME.user.id).maybeSingle(); ME.perfil = data || null;
+  vistaDaConta();
   /* papel e nível vêm do servidor, por uma função que só responde sobre a própria conta (o papel saiu da leitura pública) */
   try{ const a = await SB.rpc("meu_acesso"); if (!a.error && a.data){ ME.acesso = a.data; if (ME.perfil) ME.perfil.papel = a.data.papel || "membro"; } }catch(e){} }
 /* depois de qualquer mudança na conta: redesenha só o que mostra a conta */
@@ -6305,6 +6339,8 @@ const A = {
   vmute: b => { const v = b.closest(".facewrap").querySelector("video"); const unmute = v.muted;
     if (unmute) $$(".face.vid video, .tile video").forEach(o=>{ if (o!==v) o.muted = true; });
     v.muted = !unmute; if (unmute && v.paused){ v.dataset.user = "playing"; v.play().catch(()=>{}); } },
+  vista: sheetVista,
+  vistaset: b => { closeSheet(); vistaDefine(b.dataset.v); applyFeedChange(); },
   filter: sheetFilter,
   sort: sheetSort,
   fchip: b => { const d = S.fdraft, g = b.dataset.g, v = b.dataset.v;
@@ -6484,7 +6520,7 @@ if (/[?&]teste=1/.test(location.search)) window.__arede = {prox, footCtx, footIn
 window.addEventListener("scroll", ()=>{ const t = $("#top"); if (t) t.classList.toggle("scrolled", window.scrollY > 4); }, {passive:true});
 window.addEventListener("resize", debounce(()=>{
   placeLogoDots();
-  if (route()==="inicio" && F.grid && !(F.grid instanceof TileGrid)){ const n = feedCols(tabLayout()); if (n !== F.grid.n){ F.grid.n = n; F.grid.render(); } }
+  if (route()==="inicio" && F.grid && !(F.grid instanceof TileGrid)){ const n = feedCols(feedLayout()); if (n !== F.grid.n){ F.grid.n = n; F.grid.render(); } }
   if (route()==="organizacoes") ["hubch","hubvo"].forEach(k=>{ const g = GRIDS[k]; if (!g || !g.box || !g.box.isConnected) return; const n = k==="hubch" ? hubChCols(g.items.length) : feedCols(g.v); if (n !== g.n){ g.n = n; g.render(); } });
   layoutAllPins(); fitTiles(); }, 150));
 /* mede as duas posições do ponto do logo (mudam com a fonte e o tamanho da tela) */
@@ -6523,7 +6559,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 10/11 20:39";
+const VERSAO = "v1 registrada · 11/11 09:29";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
