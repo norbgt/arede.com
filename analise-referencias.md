@@ -408,3 +408,28 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 ## 11/11 · Transmissões oficiais e canais abertos (resposta, sem construção)
 - Custo quase zero se for pelo player oficial de cada canal (YouTube): o vídeo não passa pela estrutura da rede. Retransmitir sinal por conta própria custa caro e esbarra em direito da emissora.
 - Canal aberto não é livre para retransmitir: a lei de direitos autorais dá à emissora o direito de autorizar ou proibir. Canais públicos são mais fáceis; o termo de uso da TV Senado proíbe uso comercial e anúncio junto do conteúdo, então a tela “Ao vivo” ficaria sem anúncio.
+
+## 11 nov 2026 · Ao vivo: canais oficiais na aba Vídeos (só no HTML; servidor aguardando autorização)
+
+**Pedido.** Transmissões de governo, ONU e organismos oficiais, sem custo e dentro da lei, na aba Vídeos, sem blocos de anúncio ao redor.
+
+**O que foi feito na página.** Faixa "Ao vivo · Canais oficiais" no topo da aba Vídeos. Tocar num canal abre o player do próprio canal (YouTube, sem cookies de rastreio). Nada é carregado do YouTube antes do toque. Uma transmissão por vez; ela para ao sair da aba, rolar para longe ou tocar outro vídeo. Fica fora da cota de vídeos. A medição de uso registra só o toque, nunca qual canal.
+
+**Regra de anúncios.** Nenhum anúncio na aba Vídeos, com ou sem transmissão aberta. A regra está no código (`comAnuncios` devolve a lista sem anúncios quando a aba é Vídeos) e foi conferida no teste automático.
+
+**Primeira lista (7).** TV Senado, Câmara dos Deputados, STF, Justiça Eleitoral (TSE), CanalGov, TV Brasil, Nações Unidas. Todos permitem incorporar o player (conferido no site real, 11/11).
+
+**Termos conferidos.** Senado: reprodução livre com crédito; TV Senado veda uso comercial, anúncios na exibição e propaganda política, ideológica ou comercial. Câmara: transmissões legislativas em CC BY 4.0, marca d'água mantida. EBC (CanalGov, TV Brasil): reprodução gratuita com a fonte citada. ONU: a UN Web TV oferece link e código de incorporação de cada evento. STF e TSE: não achei página de termos; canais oficiais com incorporação liberada.
+
+**Descoberta técnica.** O endereço genérico "ao vivo do canal" do YouTube só funciona para canal com uma transmissão por vez (ONU). Senado, Câmara, CanalGov, STF, TSE e TV Brasil precisam do código do vídeo que está no ar. Solução sem custo: uma função no servidor confere a página pública "ao vivo" de cada canal a cada 10 minutos e guarda o código (arquivos em `aovivo/`). Ponto frágil: se o YouTube mudar a página, a conferência para e o canal volta a abrir no canal oficial; alternativa mais firme é a chave gratuita da API do YouTube.
+
+**Estado.** Página pronta nos ambientes de HTML (v1 registrada · 11/11 13:42). Servidor NÃO instalado: a instalação foi barrada por ser mudança em produção sem autorização explícita. Enquanto isso, só Nações Unidas toca dentro da página; os outros mostram o link para o canal oficial.
+
+**Lição repetida.** Choque de nome de classe outra vez (`.aovivo` na faixa e no ponto de estado). Conferir nomes antes de criar.
+
+**Pendências.** Autorização para instalar o servidor e publicar. E-mail ao Senado (seacer@senado.leg.br) pedindo confirmação por escrito. Emissoras comerciais e TV Cultura ficam de fora sem autorização.
+
+## 11 nov 2026 · Publicado: Ao vivo com servidor, e troca de visualização com um toque
+- **Autorização.** "publique essa ultima versão em todos os ambientes". Servidor instalado: tabela `aovivo_canais`, funções `aovivo_lista`, `aovivo_confere_inicio`, `aovivo_grava`, função de servidor `aovivo` (v3) e agendamento `aovivo-confere` a cada 10 minutos.
+- **Conferência.** A página de transmissão ao vivo vem do YouTube sem os dados do player quando o pedido sai do servidor; o código do vídeo no ar foi lido dos dados da própria página. Primeira rodada: 7 de 7 canais conferidos (6 ao vivo, Justiça Eleitoral agendada). Ponto frágil mantido: se o YouTube mudar a página, o canal volta a mostrar o link "Ver no canal"; alternativa firme é a chave gratuita da API do YouTube.
+- **Visualização.** A tela "Visualização" saiu. Um toque no ícone ao lado do filtro alterna Mosaico e Cartões; o ícone mostra a forma atual. A escolha continua guardada no aparelho e no perfil, e as trocas continuam contadas.

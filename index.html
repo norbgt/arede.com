@@ -1041,6 +1041,24 @@ a.setting{color:var(--ink);text-decoration:none}
 .vfyhead small{color:var(--muted);font-size:13.5px}
 .cme small + small{display:block;margin-top:2px}
 /* Documentação cidadã (compacta, 10 nov): título curto, assuntos e cartões numa faixa que desliza para o lado */
+/* AO VIVO (11 nov 2026): transmissões oficiais no topo da aba Vídeos. Só o player do próprio canal; nenhum anúncio por perto. */
+.aovivo{margin:4px 0 18px}
+html.snapvid #aovivo{scroll-snap-align:start;scroll-margin-top:var(--vtop,72px)}
+.lvlist{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1*var(--gutter,16px));padding:0 var(--gutter,16px) 2px}
+.lvlist::-webkit-scrollbar{display:none}
+.lvch{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 12px;border-radius:99px;border:1px solid var(--line);background:none;color:var(--ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.lvch .lvdot{width:8px;height:8px;border-radius:50%;background:var(--line);flex:none}
+.lvch .lvdot[data-e="aovivo"]{background:#D92D20}
+.lvch .lvdot[data-e="agendado"]{background:none;box-shadow:inset 0 0 0 2px #D92D20}
+.lvfora{margin-top:12px}
+.lvch[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.lvbox{position:relative;margin-top:12px;border-radius:var(--r);overflow:hidden;background:#000;aspect-ratio:16/9}
+.lvbox iframe{position:absolute;inset:0;display:block;width:100%;height:100%;border:0}
+.lvcred{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;margin:8px 0 0;font-size:13px;line-height:1.4;color:var(--muted)}
+.lvcred b{color:var(--ink);font-weight:600}
+.lvcred a,.lvcred button{display:inline-flex;align-items:center;min-height:36px;padding:0;border:0;background:none;font:inherit;font-weight:600;color:var(--accent);text-decoration:none;cursor:pointer}
+.lvcred .lvsp{flex:1}
+.lvnota{margin:6px 0 0;font-size:12.5px;line-height:1.4;color:var(--muted)}
 .docbase{margin:4px 0 18px}
 .dbh{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin:2px 0 10px}
 .dbh .dbk{flex-basis:100%;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
@@ -3631,7 +3649,7 @@ function prevPara(){ clearTimeout(PREV.t); const e = PREV.el; if (!e) return; PR
   e.classList.remove("on"); setTimeout(()=>e.remove(), 260); setTimeout(prevProxima, 900); }
 function prevProxima(){ if (PREV.el || !prevPode()) return; for (const c of PREV.naTela) if (c.isConnected && !PREV.vistos.has(c.dataset.yt)) return prevToca(c); }
 function prevToca(capa){ const id = capa.dataset.yt;
-  if (!id || PREV.el || PREV.vistos.has(id) || !prevPode() || !capa.isConnected || $(".ytframe") || capa.closest(".ytvivo")) return;
+  if (!id || PREV.el || PREV.vistos.has(id) || !prevPode() || !capa.isConnected || $(".ytframe, .lvframe") || capa.closest(".ytvivo")) return;
   PREV.vistos.add(id);
   const box = document.createElement("span"); box.className = "ytprev"; box.setAttribute("aria-hidden", "true");
   box.style.setProperty("--w", capa.clientWidth + "px"); box.style.setProperty("--h", capa.clientHeight + "px");
@@ -3655,7 +3673,7 @@ function prevObserva(){ if (!PREV.obs) PREV.obs = new IntersectionObserver(es=>e
 let prevRaf = 0;
 new MutationObserver(()=>{ if (prevRaf) return; prevRaf = requestAnimationFrame(()=>{ prevRaf = 0; prevObserva(); }); }).observe(document.getElementById("main"), {childList:true, subtree:true});
 document.addEventListener("visibilitychange", ()=>{ if (document.visibilityState!=="visible") prevPara(); });
-function ytPara(exceto){ $$(".ytframe").forEach(fr=>{ if (exceto && exceto.contains(fr)) return; const box = fr.parentNode; fr.remove(); box.classList.remove("ytvivo"); }); }
+function ytPara(exceto){ if (typeof LV_ON!=="undefined" && LV_ON) vivoFecha(); $$(".ytframe").forEach(fr=>{ if (exceto && exceto.contains(fr)) return; const box = fr.parentNode; fr.remove(); box.classList.remove("ytvivo"); }); }
 /* cota de vídeos: visitante, 8 por visita; conta com e-mail, 15 a cada 12 horas e depois só no canal original */
 function ytNegado(id, g){ ytPara();
   const fora = `<a class="btn block" href="https://www.youtube.com/watch?v=${encodeURIComponent(id)}" target="_blank" rel="noopener">Ver no canal original ${ic("ext","sm")}</a>`;
@@ -4074,7 +4092,8 @@ const ANUNCIANTES = [
 ];
 ANUNCIANTES.forEach(a=>{ ORG[a.id] = {id:a.id, nome:a.nome, sigla:a.nome.slice(0,2).toUpperCase(), cor:a.cor, cidade:"", anunciante:true, ficticia:true, membros:0, natureza:"Anunciante"}; });
 const adLogo = (a, z=30) => `<svg class="adlogo" width="${z}" height="${z}" viewBox="0 0 24 24" fill="none" aria-hidden="true">${a.logo}</svg>`;
-function comAnuncios(l){ const ativos = ANUNCIANTES.filter(a=>!S.adOculta.has(a.id)); if (!ativos.length) return l;
+function comAnuncios(l){ if (S.tab==="videos") return l;   /* regra: nenhum anúncio na aba Vídeos, onde ficam as transmissões oficiais */
+  const ativos = ANUNCIANTES.filter(a=>!S.adOculta.has(a.id)); if (!ativos.length) return l;
   const out = []; let n = 0;
   l.forEach((it,i)=>{ out.push(it); if ((i + 1) % ANUNCIO_CADA === 0){ const a = ativos[n % ativos.length];
     out.push({id:"anuncio-" + n, tipo:"anuncio", anuncio:true, ad:a, org:a.id, slot:n + 1, titulo:a.nome + " · " + a.frase, tema:"", min:it.min}); n++; } });
@@ -4325,11 +4344,7 @@ const tabLayout = () => (FTABS.find(t=>t[0]===S.tab)||FTABS[0])[3];
 const VISTAS = [["blocos","Mosaico","Mais cartões por vez, encaixados"],["soltos","Cartões","Cartões separados, com mais respiro"]];
 const feedLayout = () => { const L = tabLayout(); return L==="blocos" && S.vista==="soltos" ? "masonry" : L; };
 function wrapClass(){ const fw = $("#feedwrap"); if (fw) fw.className = feedLayout()==="blocos" ? "rwrap" : "lwrap"; }
-function sheetVista(){
-  openSheet(shead("Visualização") + `<div class="list" role="radiogroup" aria-label="Forma de ver o feed">${VISTAS.map(([k,n,d])=>
-    `<button class="setting" type="button" role="radio" aria-checked="${S.vista===k}" data-act="vistaset" data-v="${k}">${ic("v"+k)}<span class="t"><b>${n}</b><small>${d}</small></span>${S.vista===k?ic("check"):""}</button>`).join("")}</div>
-    <p class="srcnote" style="margin:10px 4px 0">Ao abrir um cartão, “Mais para explorar” aparece na outra forma.</p>`, "Visualização");
-}
+/* trocar de forma (11 nov 2026): um toque no ícone alterna entre Mosaico e Cartões, sem tela no meio; o ícone mostra a forma atual */
 /* guarda a escolha neste aparelho e, com conta, no perfil; o servidor conta as trocas sem identificar quem trocou */
 function vistaDefine(v){ if (v!=="blocos" && v!=="soltos" || v===S.vista) return; const ant = S.vista; S.vista = v; store.set("vista", v);
   if (SB) SB.rpc("vista_registra", {p_vista:v, p_anterior:ant, p_aparelho: innerWidth < 720 ? "celular" : "computador"}).then(()=>{}, ()=>{}); }
@@ -4421,7 +4436,7 @@ function feedCols(L){ const w = ($("#feed") || document.body).clientWidth || inn
   if (L==="masonry") return w >= 900 ? 3 : 2;      /* cartões soltos: duas colunas no celular, como em "Mais para explorar" */
   return w >= 720 ? 2 : 1; }
 function resetFeed(){
-  altaFaixa(); docBase();
+  altaFaixa(); docBase(); aoVivo();
   F.items = []; F.cursor = 0; F.vistos = 0; F.gate = null; F.paused = false; F.ended = false; F.key = feedKey();
   wrapClass(); const L = feedLayout();
   F.grid = L==="blocos" ? new TileGrid("feed", $("#feed"), feedMode()) : new Grid("feed", $("#feed"), feedMode(), feedCols(L), L);
@@ -4481,7 +4496,7 @@ function statusLine(){
   const n = nFiltros(), o = ORDS.find(x=>x[0]===S.ord)[1];
   /* o estado do algoritmo fica no botão Algoritmo; o detalhe e os ajustes, no ícone ao lado (sheetAdjust) */
   const vs = VISTAS.find(x=>x[0]===S.vista) || VISTAS[0];
-  return `${tabLayout()==="blocos" ? `<button class="iconbtn tool" type="button" data-act="vista" aria-haspopup="dialog" aria-label="Visualização do feed: ${vs[1]}" title="Visualização: ${vs[1]}">${ic("v"+vs[0])}</button>` : ""}<button class="iconbtn tool" type="button" data-act="filter" aria-label="Filtrar${n?`, ${n} ativos`:""}">${ic("filter")}${n?`<span class="badge">${n}</span>`:""}</button>
+  return `${tabLayout()==="blocos" ? `<button class="iconbtn tool" type="button" data-act="vista" aria-label="Visualização: ${vs[1]}. Tocar para ver em ${(VISTAS.find(x=>x[0]!==vs[0]) || vs)[1]}" title="Visualização: ${vs[1]}">${ic("v"+vs[0])}</button>` : ""}<button class="iconbtn tool" type="button" data-act="filter" aria-label="Filtrar${n?`, ${n} ativos`:""}">${ic("filter")}${n?`<span class="badge">${n}</span>`:""}</button>
     <button class="iconbtn tool" type="button" data-act="sort" aria-label="Ordenar: ${o}">${ic("sort")}${S.ord!=="padrao"?`<span class="badge dot2"></span>`:""}</button>`;
 }
 function screenHome(){
@@ -4495,7 +4510,7 @@ function screenHome(){
         <button class="iconbtn adj" type="button" data-act="adjust" aria-label="Meu algoritmo: resumo e ajustes">${ic("sliders")}</button></div>
       ${rapidosHTML()}
       <div class="status tools" id="status">${statusLine()}</div></div></div>`)
-  + `<div class="container"><section id="altafaixa" class="altafaixa" aria-label="Assuntos do dia" hidden></section><section id="docbase" class="docbase" aria-label="Documentação cidadã" hidden></section><div id="feedwrap" class="rwrap"><div id="feed"></div></div><div id="stop"></div><div class="sentinel" id="sentinel"></div></div>`;
+  + `<div class="container"><section id="altafaixa" class="altafaixa" aria-label="Assuntos do dia" hidden></section><section id="aovivo" class="aovivo" aria-label="Transmissões ao vivo de canais oficiais" hidden></section><section id="docbase" class="docbase" aria-label="Documentação cidadã" hidden></section><div id="feedwrap" class="rwrap"><div id="feed"></div></div><div id="stop"></div><div class="sentinel" id="sentinel"></div></div>`;
 }
 function orgRow(o){ const f = S.follow.has(o.id);
   return `<button class="rowitem" type="button" data-act="openorg" data-org="${o.id}">${avatar(o)}<span class="t"><b>${o.nome}${ficTag(o)}</b><small>${o.cidade} · ${orgMeta(o)}${f?(o.real?" · você segue":" · você participa"):""}</small></span></button>`; }
@@ -5381,7 +5396,7 @@ function goBack(){ NAV.pop(); location.hash = NAV.pop() || "inicio"; }
 function envExit(){ let h; do { h = NAV.pop(); } while (h && /^(manifesto|funciona)$/.test(h)); location.hash = h || "inicio"; }
 function render(){
   const r = route(), main = $("#main");
-  if (r!=="inicio") document.documentElement.classList.remove("snapvid");
+  if (r!=="inicio"){ document.documentElement.classList.remove("snapvid"); LV_ON = null; }
   const pr = r.split("/")[0];
   if (pr==="painel" && !LOCAL){ location.replace("#inicio"); return; }
   if (!["ate-depois","conta","nova-senha"].includes(r)) store.set("ultima", r);   /* reabre onde parou */
@@ -5413,7 +5428,7 @@ function render(){
   else {
     main.innerHTML = screenHome();
     const keep = !same && F.items.length && F.key===feedKey();
-    if (keep){ altaFaixa(); docBase(); layoutFeed(); renderStop(); restore = SCROLL[r] || 0; } else resetFeed();
+    if (keep){ altaFaixa(); docBase(); aoVivo(); layoutFeed(); renderStop(); restore = SCROLL[r] || 0; } else resetFeed();
     F.obs = new IntersectionObserver(es=>{ if (es[0].isIntersecting) more(10); }, {rootMargin:"800px"});
     F.obs.observe($("#sentinel"));
   }
@@ -5787,6 +5802,53 @@ function dbIguala(){ const g = $("#docbase .dbgrid"); if (!g) return; const w = 
   const h = Math.max(...[...t.children].map(c=>{ c.style.marginBottom = "0"; return c.getBoundingClientRect().height; })); t.remove();
   g.style.setProperty("--dbh", Math.ceil(h) + "px"); }
 addEventListener("resize", ()=>{ clearTimeout(window.__dbT); window.__dbT = setTimeout(dbIguala, 150); });
+/* AO VIVO (11 nov 2026): transmissões oficiais, no topo da aba Vídeos.
+   Regras: (1) só o player oficial do próprio canal (YouTube, sem cookies de rastreio), com a marca e o sinal do canal intactos:
+   a arede.online não grava, não corta, não retransmite por servidor próprio e não cobra para assistir;
+   (2) nada é carregado do YouTube antes do toque da pessoa; (3) nenhum bloco de anúncio na aba Vídeos, com ou sem transmissão aberta
+   (ver comAnuncios); (4) uma transmissão por vez, e ela para ao sair da aba, rolar para longe ou tocar outro vídeo;
+   (5) fica fora da cota de vídeos; (6) a medição de uso registra só o toque, nunca qual canal.
+   Só entra canal cujos termos permitem a reprodução com crédito. Emissora comercial não entra sem autorização por escrito. */
+/* A lista e o vídeo que cada canal tem no ar vêm do servidor (aovivo_lista, conferida a cada 10 minutos).
+   Sem resposta do servidor, vale a lista abaixo: só o canal marcado "direto" toca aqui; os outros abrem no canal oficial. */
+const AOVIVO_PADRAO = [
+  {k:"senado",   nome:"TV Senado",            canal:"UCLgti7NuK0RuW9wty-fxPjQ", url:"https://www.youtube.com/@tvsenado/streams"},
+  {k:"camara",   nome:"Câmara dos Deputados", canal:"UC-ZkSRh-7UEuwXJQ9UMCFJA", url:"https://www.youtube.com/@camaradosdeputadosoficial/streams"},
+  {k:"stf",      nome:"STF",                  canal:"UCsW4QSB1USsu9ouuFUWe4Iw", url:"https://www.youtube.com/@STF_oficial/streams"},
+  {k:"tse",      nome:"Justiça Eleitoral",    canal:"UC1kilS1DdyYOEGItHPRukBw", url:"https://www.youtube.com/@justicaeleitoral/streams"},
+  {k:"canalgov", nome:"CanalGov",             canal:"UCjaWLFTNqLkq3ZY2BJ4NYRg", url:"https://www.youtube.com/@canalgov/streams"},
+  {k:"tvbrasil", nome:"TV Brasil",            canal:"UCSv9d0kQegylHWpP83jWSQg", url:"https://www.youtube.com/@tvbrasil/streams"},
+  {k:"onu",      nome:"Nações Unidas",        canal:"UC5O114-PQNYkurlTg6hekZw", url:"https://www.youtube.com/@unitednations/streams", direto:true}];
+const LV = {lista:null, em:0}; let LV_ON = null, LV_IO = null;
+const LV_OK = /^https:\/\/www\.youtube\.com\/[@\w./-]+$/;
+/* estado de um canal: "aovivo", "agendado", "fora" ou null (o servidor não conferiu na última meia hora) */
+const lvEstado = c => c.conferido_em && Date.now() - Date.parse(c.conferido_em) < 30*60e3 ? c.estado : null;
+const lvLista = () => { const l = (LV.lista || AOVIVO_PADRAO).slice(), p = c => ({aovivo:0, agendado:1})[lvEstado(c)] ?? 2; return l.sort((x,y)=>p(x) - p(y)); };
+async function aoVivoCarrega(){ if (!SB){ if ((LV.t = (LV.t || 0) + 1) <= 8) setTimeout(aoVivoCarrega, 1500); return; }   /* a ligação com o servidor ainda está subindo: tenta de novo */
+  if (Date.now() - LV.em < 5*60e3) return; LV.em = Date.now();
+  try { const {data, error} = await SB.rpc("aovivo_lista"); if (error || !Array.isArray(data) || !data.length) return;
+    LV.lista = data.filter(c=>c && /^[\w-]{1,24}$/.test(c.k || "") && /^UC[\w-]{22}$/.test(c.canal || "") && LV_OK.test(c.url || "") && (!c.video || /^[\w-]{11}$/.test(c.video)))
+      .map(c=>({k:c.k, nome:String(c.nome || "").slice(0, 40), canal:c.canal, url:c.url, video:c.video || null, estado:c.estado, conferido_em:c.conferido_em, direto:(AOVIVO_PADRAO.find(x=>x.k===c.k) || {}).direto}));
+    if (!LV.lista.length) LV.lista = null; if (!LV_ON) aoVivoPinta(); } catch(e){} }
+function aoVivoHTML(){ const l = lvLista(), c = l.find(x=>x.k===LV_ON), e = c && lvEstado(c);
+  const src = c && (c.video && e && e!=="fora" ? "https://www.youtube-nocookie.com/embed/" + c.video + "?autoplay=1&playsinline=1&rel=0"
+    : !e && c.direto ? "https://www.youtube-nocookie.com/embed/live_stream?channel=" + c.canal + "&autoplay=1&playsinline=1&rel=0" : "");
+  const rot = x => ({aovivo:"ao vivo agora", agendado:"transmissão agendada", fora:"sem transmissão agora"})[lvEstado(x)] || "";
+  return `<div class="dbh"><span class="dbk">Ao vivo</span><h2>Canais oficiais</h2><p>Toque para assistir aqui, no player do próprio canal.</p></div>
+    <div class="lvlist">${l.map(x=>`<button class="lvch" type="button" data-act="vivoabre" data-canal="${esc(x.k)}" aria-pressed="${x.k===LV_ON}" aria-label="${esc(x.nome)}${rot(x) ? ", " + rot(x) : ""}"><span class="lvdot" data-e="${lvEstado(x) || "nd"}" aria-hidden="true"></span>${esc(x.nome)}</button>`).join("")}</div>
+    ${!c ? "" : src ? `<div class="lvbox"><iframe class="lvframe" src="${src}" title="Transmissão ao vivo: ${esc(c.nome)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+      <p class="lvcred"><span>Transmissão oficial: <b>${esc(c.nome)}</b> · YouTube</span><span class="lvsp"></span><a href="${esc(c.url)}" target="_blank" rel="noopener">Ver no canal ↗</a><button type="button" data-act="vivofecha">Fechar</button></p>
+      <p class="lvnota">Sinal do próprio canal, sem cortes. A arede.online não exibe anúncios nesta aba.</p>`
+    : `<div class="note lvfora">${ic("info")}<span><b>${e==="fora" ? esc(c.nome) + " está sem transmissão neste momento." : "A transmissão de " + esc(c.nome) + " abre no canal oficial."}</b> ${e==="fora" ? "As próximas aparecem no canal oficial." : ""}</span></div>
+      <p class="lvcred"><a href="${esc(c.url)}" target="_blank" rel="noopener">Ver no canal ↗</a><span class="lvsp"></span><button type="button" data-act="vivofecha">Fechar</button></p>`}`; }
+function aoVivoPinta(){ const box = $("#aovivo"); if (!box || box.hidden) return; if (LV_IO){ LV_IO.disconnect(); LV_IO = null; }
+  box.innerHTML = aoVivoHTML();
+  const fr = box.querySelector(".lvbox"); if (fr){ let visto = false;   /* rolou para longe: a transmissão para */
+    LV_IO = new IntersectionObserver(es=>es.forEach(e=>{ if (e.isIntersecting && e.intersectionRatio >= .25) visto = true; else if (visto) vivoFecha(); }), {threshold:[0,.25]}); LV_IO.observe(fr); } }
+function aoVivo(){ const box = $("#aovivo"); if (!box) return;
+  if (S.tab!=="videos" || S.rapido || route()!=="inicio"){ if (LV_IO){ LV_IO.disconnect(); LV_IO = null; } LV_ON = null; box.hidden = true; box.innerHTML = ""; return; }
+  box.hidden = false; aoVivoPinta(); aoVivoCarrega(); }
+function vivoFecha(){ if (!LV_ON) return; LV_ON = null; aoVivoPinta(); }
 function docBase(){ const box = $("#docbase"); if (!box) return; if (S.tab!=="documentos" || S.rapido){ box.hidden = true; box.innerHTML = ""; return; } box.hidden = false; box.innerHTML = docBaseHTML(); dbIguala(); }
 ORG["designativista"] = ORG["designativista"] || {id:"designativista", nome:"Design Ativista", sigla:"DA", cidade:"", natureza:"acervo de arte e design ativista", real:true, fonte:true, cor:"#C2185B", membros:0,
   sobre:"Acervo coletivo de cartazes e artes, com crédito a quem cria. As peças passam pela curadoria da rede antes de aparecer aqui.", site:"https://designativista.pages.dev/"};
@@ -6622,13 +6684,16 @@ const A = {
   ytabre: b => { const f = b.closest(".facewrap").querySelector(".face"); if (f) f.click(); },
   ytplay: b => { const box = b.closest(".facewrap, .ytbox"); if (box) ytToca(box, b.dataset.yt, b.getAttribute("aria-label").replace(/^Assistir aqui: /,"")); },
   ytfecha: b => { ytPara(); },
+  vivoabre: b => { const k = b.dataset.canal; if (LV_ON===k){ vivoFecha(); return; } ytPara(); prevPara();
+    $$(".face.vid video, .tile video, video.pinvid").forEach(v=>{ if (!v.paused){ v.dataset.user = "paused"; v.pause(); } });
+    LV_ON = k; aoVivoPinta(); const x = $("#aovivo"); x && x.scrollIntoView({block:"nearest"}); },
+  vivofecha: b => { vivoFecha(); },
   vplay: b => { const v = b.closest(".facewrap").querySelector("video");
     if (v.paused){ $$(".face.vid video, .tile video").forEach(o=>{ if (o!==v && !o.paused) o.pause(); }); v.dataset.user = "playing"; v.play().catch(()=>{}); } else { v.dataset.user = "paused"; v.pause(); } },
   vmute: b => { const v = b.closest(".facewrap").querySelector("video"); const unmute = v.muted;
     if (unmute) $$(".face.vid video, .tile video").forEach(o=>{ if (o!==v) o.muted = true; });
     v.muted = !unmute; if (unmute && v.paused){ v.dataset.user = "playing"; v.play().catch(()=>{}); } },
-  vista: sheetVista,
-  vistaset: b => { closeSheet(); vistaDefine(b.dataset.v); applyFeedChange(); },
+  vista: b => { vistaDefine(S.vista==="soltos" ? "blocos" : "soltos"); applyFeedChange(); const n = $('[data-act="vista"]'); n && n.focus({preventScroll:true}); },
   filter: sheetFilter,
   sort: sheetSort,
   fchip: b => { const d = S.fdraft, g = b.dataset.g, v = b.dataset.v;
@@ -6805,7 +6870,7 @@ if (!location.hash){ const ini = store.get("ultima", "") || START; if (ini && in
 window.addEventListener("hashchange", render);
 if (S.localAuto && navigator.permissions && navigator.permissions.query) navigator.permissions.query({name:"geolocation"}).then(q=>{ if (q.state==="granted" && Date.now() - (S.localQuando || 0) > 6 * 3600e3) localAtualiza(true); }).catch(()=>{});
 contaInicia();
-if (/[?&]teste=1/.test(location.search)) window.__arede = {adPrecosAplica, USO, uso, usoEnvia, csatTenta, prox, footCtx, footInfo, PRIO, prioDe, historicoPreenche, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
+if (/[?&]teste=1/.test(location.search)) window.__arede = {LV, aoVivoPinta, adPrecosAplica, USO, uso, usoEnvia, csatTenta, prox, footCtx, footInfo, PRIO, prioDe, historicoPreenche, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
 window.addEventListener("scroll", ()=>{ const t = $("#top"); if (t) t.classList.toggle("scrolled", window.scrollY > 4); }, {passive:true});
 window.addEventListener("resize", debounce(()=>{
   placeLogoDots();
@@ -6848,7 +6913,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 13:25";
+const VERSAO = "v1 registrada · 11/11 13:50";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
