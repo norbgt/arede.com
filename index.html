@@ -26,6 +26,7 @@
   --bg:#F2F3EF; --surface:#FFFFFF; --surface-2:#E7E9E4; --ink:#141615; --muted:#565C58; --line:#DADDD7;
   --accent:#2A3FD4; --on-accent:#FFFFFF;
   --brand:#8D9BFF; /* roxo da marca: o ponto do logo, igual em todos os temas e no manifesto */
+  --fill:var(--brand); --on-fill:#0F1110; /* botões e marcas preenchidas: roxo da marca com texto escuro em todos os temas (texto branco no roxo não dá leitura) */
   --ok:#1A7346; --warn:#8A5A00; --bad:#B42318; --warn-dot:#D99A0B;
   --scrim:rgba(10,12,11,.45);
   --shadow:0 1px 2px rgba(20,22,21,.06),0 6px 20px rgba(20,22,21,.06);
@@ -95,7 +96,7 @@ img,svg{max-width:100%}
 .navbtn[aria-current="page"] .icon{stroke-width:2.3}
 .navbtn .bubble{display:grid;place-items:center}
 /* conta conectada (11 nov 2026): no lugar do ícone de pessoa, as iniciais de quem está logada; sem conta, o ícone e "Entrar" */
-.navme{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--bg);font-size:11px;font-weight:700;letter-spacing:.02em;line-height:1}
+.navme{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--fill);color:var(--on-fill);font-size:11px;font-weight:700;letter-spacing:.02em;line-height:1}
 .navme[hidden]{display:none}
 .navbtn.logada .icon{display:none}
 .navbtn.logada[aria-current="page"] .navme{box-shadow:0 0 0 2px var(--surface-2),0 0 0 3.5px var(--ink)}
@@ -159,7 +160,7 @@ img,svg{max-width:100%}
 .dot{position:absolute;top:9px;right:9px;width:9px;height:9px;border-radius:50%;background:#E0592A;border:2px solid var(--bg)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 16px;border:0;border-radius:var(--r-sm);
   background:var(--surface-2);font-weight:500;font-size:14px;text-decoration:none;color:var(--ink);text-align:center}
-.btn.primary{background:var(--accent);color:var(--on-accent)}
+.btn.primary{background:var(--fill);color:var(--on-fill)}
 .btn.ink{background:var(--ink);color:var(--bg)}
 .btn.ghost{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)}
 .btn.block{width:100%}
@@ -180,14 +181,14 @@ img,svg{max-width:100%}
 .switch{position:relative;width:48px;height:28px;flex:none;border:0;border-radius:99px;background:var(--line);padding:0}
 .switch::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
 .switch::before{content:"";position:absolute;inset:-8px -4px}
-.switch[aria-checked="true"]{background:var(--accent)}
+.switch[aria-checked="true"]{background:var(--fill)}
 .switch[aria-checked="true"]::after{transform:translateX(20px)}
 .algosw{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px;border:0;border-radius:14px;background:var(--surface-2);font-size:var(--fs-sm);font-weight:500;color:var(--ink)}
 .algogroup{display:flex;align-items:center;border-radius:14px;background:var(--surface-2)}
 .algogroup .algosw{background:transparent}
 .algogroup .adj{width:40px;height:44px;border-radius:0 14px 14px 0;border-left:1px solid var(--line)}
 .status .tool{width:40px;height:40px;flex:none}
-.badge{position:absolute;top:4px;right:3px;min-width:17px;height:17px;padding:0 4px;border-radius:99px;background:var(--accent);color:var(--on-accent);font-size:10.5px;font-weight:600;display:grid;place-items:center;line-height:1}
+.badge{position:absolute;top:4px;right:3px;min-width:17px;height:17px;padding:0 4px;border-radius:99px;background:var(--fill);color:var(--on-fill);font-size:10.5px;font-weight:600;display:grid;place-items:center;line-height:1}
 .badge.dot2{min-width:9px;width:9px;height:9px;padding:0;top:8px;right:8px}
 .algosw .lbl{display:none}
 .algosw .switch{pointer-events:none}
@@ -619,7 +620,7 @@ h1 .fic{font-size:11px;vertical-align:4px}
 .pinrod{display:flex;align-items:center;gap:0 12px;margin-top:2px}.pinrod .pinacts{flex:none;flex-wrap:nowrap}.pinrod:has(.repbox:not([hidden])){flex-wrap:wrap}.pinrod .pinacts{margin-left:auto}.pinrod:empty{display:none}
 .iconbtn.armado{color:#fff;background:var(--danger,#c62828)}
 .pinacts{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:0 18px}.pinacts .rep,.pinacts .linkbtn{min-height:32px;padding:0;font-size:13px}.pinacts .repbox{flex-basis:100%}
-.av.rede{background:var(--accent);color:var(--on-accent)}.av.rede .amark{font-size:1.25em;margin:-3px 0 0 0}
+.av.rede{background:var(--fill);color:var(--on-fill)}.av.rede .amark{font-size:1.25em;margin:-3px 0 0 0}
 /* Para entender: nota de contexto no detalhe do cartão */
 .pent{display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:var(--r);background:color-mix(in srgb,var(--accent) 7%,var(--surface));border-left:3px solid var(--accent)}
 .pent[hidden]{display:none}
@@ -639,7 +640,7 @@ h1 .fic{font-size:11px;vertical-align:4px}
 .com{display:flex;gap:10px}.com.dest{padding:10px;border-radius:var(--r);background:var(--surface)}
 .cav{width:32px;height:32px;border-radius:50%;font-size:12px}
 /* a conta da própria rede comenta com a marca "a." roxa, como no topo do perfil */
-.cav.rede{background:var(--accent);color:var(--on-accent)}.cav.rede .amark{font-size:17px;margin:-2px 0 0 0}.cb{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.cav.rede{background:var(--fill);color:var(--on-fill)}.cav.rede .amark{font-size:17px;margin:-2px 0 0 0}.cb{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
 /* cabeçalho do comentário: nome próprio (.comh), para não colidir com o cartão de chamado (.ch) */
 .comh{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;font-size:13.5px}
 .comh .vfy{margin-left:-5px;vertical-align:0}.comh .vfy .icon{width:15px;height:15px}   /* selo colado ao nome, no tamanho do texto */
@@ -1249,7 +1250,7 @@ button.cmnpost{display:block;width:100%;border:0;text-align:left;font:inherit;co
 .admapa .admt{margin-right:2px}
 .admapa .adcards{display:inline-flex;gap:2px}.admapa .adcards i{width:5px;height:9px;border-radius:2px;background:var(--line)}
 .admapa b{display:grid;place-items:center;min-width:24px;height:20px;padding:0 4px;border-radius:6px;background:var(--surface-2);font-size:10.5px;font-weight:600;color:var(--muted)}
-.admapa b.on{background:var(--accent);color:#fff}
+.admapa b.on{background:var(--fill);color:var(--on-fill)}
 .adh{margin:10px 0 0;font-size:16px}
 .adflow .flabel{font-size:var(--fs-sm);font-weight:500}
 .adrow2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -1318,7 +1319,7 @@ button.cmnpost{display:block;width:100%;border:0;text-align:left;font:inherit;co
 @media (max-width:420px){.visbox{grid-template-columns:1fr}}
 .pacts .pbtn{width:44px;height:44px;border-radius:50%;background:color-mix(in srgb,var(--ink) 7%,transparent);color:var(--ink);margin-left:8px}
 .pacts .pbtn .icon{width:21px;height:21px}
-.pacts .pbtn.prim{background:var(--accent);color:var(--on-accent);box-shadow:0 2px 10px color-mix(in srgb,var(--accent) 40%,transparent)}
+.pacts .pbtn.prim{background:var(--fill);color:var(--on-fill);box-shadow:0 2px 10px color-mix(in srgb,var(--fill) 40%,transparent)}
 .pacts .pbtn.prim .icon{stroke-width:2.2}
 .pacts .pbtn:hover{filter:brightness(.96)}
 .pacts .pbtn{text-decoration:none}
@@ -1487,7 +1488,7 @@ button.cmnpost{display:block;width:100%;border:0;text-align:left;font:inherit;co
 .csteps li{flex:1;display:flex;flex-direction:column;gap:6px;padding-top:8px;border-top:3px solid var(--line);font-weight:500;line-height:1.25}
 .csteps li.on{border-color:var(--accent);color:var(--ink)}.csteps li.feito{border-color:var(--ok)}
 .csteps .nb,.nsteps .nb{flex:none;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--line);color:var(--ink);font-size:11.5px;font-weight:600}
-.csteps li.on .nb,.nsteps li.on .nb{background:var(--accent);color:#fff}.csteps li.feito .nb,.nsteps li.feito .nb{background:var(--ok);color:#fff}
+.csteps li.on .nb,.nsteps li.on .nb{background:var(--fill);color:var(--on-fill)}.csteps li.feito .nb,.nsteps li.feito .nb{background:var(--ok);color:#fff}
 .csteps .nb .icon,.nsteps .nb .icon{width:12px;height:12px;stroke-width:3}
 .pwm{display:flex;gap:4px;margin-top:2px}.pwm i{flex:1;height:4px;border-radius:2px;background:var(--line)}
 .pwm[data-n="1"] i:nth-child(-n+1){background:var(--bad)}.pwm[data-n="2"] i:nth-child(-n+2){background:var(--warn)}
@@ -1554,7 +1555,7 @@ button.setting{width:100%;border:0;text-align:left;font:inherit;color:inherit;cu
 .origbtn .lbl{font-size:12px;font-weight:700;letter-spacing:.04em;white-space:nowrap}
 @media (max-width:379px){ .origbtn .lbl{display:none} .origbtn{padding:0} }
 .apoiebtn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 13px;margin-right:6px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
-.apoiebtn .icon{width:15px;height:15px;color:#E5533D}
+.apoiebtn .icon{width:15px;height:15px;color:var(--brand)}
 .apoiebtn:hover{background:var(--surface)}
 @media (max-width:339px){ .apoiebtn{padding:0 10px;gap:0} .apoiebtn span{display:none} }
 .apvals{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 10px}
@@ -4717,7 +4718,7 @@ function screenHome(){
   if (S.tab==="arte" && !veArte()) S.tab = "tudo";       /* a aba Arte, por enquanto, é só da administradora */
   /* topo: marca e mensagens · abas · linha de controles do feed (algoritmo e ajuste à esquerda, filtrar e ordenar à direita) */
   return header(`<div class="toprow">${LOGO}<div class="spacer"></div>
-      <button class="apoiebtn" type="button" data-act="apoie" aria-haspopup="dialog">${ic("heart","sm")}<span>Apoie</span></button>
+      <button class="apoiebtn" type="button" data-act="apoie" aria-haspopup="dialog">${ic("raio","sm")}<span>Apoie</span></button>
       <button class="iconbtn origbtn" type="button" data-act="origens" aria-label="Origem das notícias: ${origensNomes()}">${ic("globe")}<span class="lbl">${S.origens.map(k=>k.toUpperCase()).join(" · ")}</span></button>
       <button class="iconbtn" type="button" data-act="msgs" aria-label="Mensagens, 2 novas">${ic("message")}<span class="dot"></span></button></div>
     <div class="tabs" role="tablist" aria-label="Tipos de conteúdo">${ftabs().map(([k,n])=>`<button class="tab" type="button" role="tab" data-act="ftab" data-tab="${k}" aria-selected="${S.tab===k}">${n}</button>`).join("")}</div>
@@ -6566,15 +6567,16 @@ const APOIO_VALORES = [10, 25, 50, 100];
 let APOIO_V = 25;
 function sheetApoie(){ const teste = CFG.apoio !== "real";
   openSheet(shead("Apoie a arede.online") + `<div class="sform">
-    <p style="margin:0">Sua doação ajuda a manter a arede.online no ar. É só apoio: você não recebe produto, serviço nem vantagem em troca.</p>
+    <p style="margin:0">Sua doação ajuda a manter a arede.online no ar.</p>
     <div class="apvals" role="group" aria-label="Valor do apoio">${APOIO_VALORES.map(v=>`<button type="button" data-act="apoieval" data-v="${v}" aria-pressed="${APOIO_V===v}">R$ ${v}</button>`).join("")}</div>
     <label class="apoutro">Outro valor: R$ <input id="apoutro" type="number" inputmode="numeric" min="5" max="5000" step="1" placeholder="5 a 5.000" value="${APOIO_VALORES.includes(APOIO_V) ? "" : APOIO_V}"></label>
     <ul class="aplista">
       <li>${ic("check","sm")}<span>Apoiar não muda o que você vê no feed nem a nota de nenhum conteúdo.</span></li>
-      <li>${ic("lock","sm")}<span>O pagamento é feito no Mercado Pago (Pix, cartão ou boleto). A arede.online não vê os dados do seu cartão e não guarda quem apoiou.</span></li>
+      <li>${ic("check","sm")}<span>O pagamento é feito no Mercado Pago (Pix, cartão ou boleto).</span></li>
+      <li>${ic("lock","sm")}<span>A arede.online não vê os dados do seu cartão e não guarda quem apoiou.</span></li>
       <li>${ic("check","sm")}<span>Não precisa de conta.</span></li></ul>
     ${teste ? `<p class="srcnote" style="margin-top:10px">Modo de teste: nenhuma cobrança de verdade é feita por enquanto.</p>` : ""}
-    <button class="btn primary block" type="button" data-act="apoiepagar" style="margin-top:14px">${ic("heart","sm")} <span id="aptxt">Apoiar com R$ ${APOIO_V}</span></button></div>`, "Apoie a arede.online"); }
+    <button class="btn primary block" type="button" data-act="apoiepagar" style="margin-top:14px">${ic("raio","sm")} <span id="aptxt">Apoiar com R$ ${APOIO_V}</span></button></div>`, "Apoie a arede.online"); }
 document.addEventListener("input", e=>{ const t = e.target; if (!t || t.id !== "apoutro") return; const n = Math.round(+t.value) || 0;
   $$(".apvals button").forEach(x=>x.setAttribute("aria-pressed", String(!t.value && +x.dataset.v===APOIO_V)));
   if (t.value) APOIO_V = n; const tx = $("#aptxt"); if (tx) tx.textContent = n >= 5 ? `Apoiar com R$ ${n}` : "Apoiar"; });
@@ -7387,7 +7389,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 20:13";
+const VERSAO = "v1 registrada · 11/11 20:22";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
