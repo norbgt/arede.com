@@ -1553,6 +1553,17 @@ button.setting{width:100%;border:0;text-align:left;font:inherit;color:inherit;cu
 .origbtn{display:inline-flex;flex-direction:row;align-items:center;width:auto;gap:5px;padding:0 9px;border-radius:99px}
 .origbtn .lbl{font-size:12px;font-weight:700;letter-spacing:.04em;white-space:nowrap}
 @media (max-width:379px){ .origbtn .lbl{display:none} .origbtn{padding:0} }
+.apoiebtn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 13px;margin-right:6px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.apoiebtn .icon{width:15px;height:15px;color:#E5533D}
+.apoiebtn:hover{background:var(--surface)}
+@media (max-width:339px){ .apoiebtn{padding:0 10px;gap:0} .apoiebtn span{display:none} }
+.apvals{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 10px}
+.apvals button{height:44px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-weight:700;font-size:15px;cursor:pointer}
+.apvals button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.apoutro{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.apoutro input{width:110px;height:40px;padding:0 10px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:15px;background:var(--bg);color:var(--ink)}
+.aplista{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:6px;font-size:13px;color:var(--muted)}
+.aplista li{display:flex;gap:8px;align-items:flex-start}.aplista .icon{flex:none;width:15px;height:15px;margin-top:1px}
 @media (min-width:420px){ .origbtn{background:var(--surface-2);height:40px;padding:0 12px} }
 .osub{margin:0 0 4px}
 .osec{flex-shrink:0;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
@@ -3777,7 +3788,11 @@ const DONOS_FONTE = [
   {nome:/^rfi brasil/i, grupo:"France Médias Monde · França", soube:"a RFI é da France Médias Monde, empresa pública da França?", vigia:/\b(france medias monde|governo frances|governo da franca)\b/},
   {nome:/intercept brasil/i, grupo:"sem fins lucrativos", soube:"o Intercept Brasil é uma associação sem fins lucrativos, independente do Intercept americano desde 2022?", vigia:null},
   {nome:/^brasil de fato/i, grupo:"movimentos populares", soube:"o Brasil de Fato foi criado por movimentos populares, entre eles o MST?", vigia:/\b(mst|movimento dos trabalhadores rurais sem terra)\b/}];
-function donoDe(it){ const o = ORG[it.org] || {}; if (!o.fonte) return null; const d = DONOS_FONTE.find(x=>x.nome.test(o.nome || "")); if (!d) return null;
+/* ajustes que a administradora liga e desliga no painel (função config_publica); começam desligados */
+let CFG = {selo_donos:false, apoio:"teste"};
+async function cfgCarrega(){ if (!SB) return; try{ const r = await SB.rpc("config_publica"); if (r.error || !r.data) return; const antes = CFG.selo_donos; CFG = Object.assign({}, CFG, r.data);
+  if (antes !== CFG.selo_donos) render(); }catch(e){} }
+function donoDe(it){ if (!CFG.selo_donos) return null; const o = ORG[it.org] || {}; if (!o.fonte) return null; const d = DONOS_FONTE.find(x=>x.nome.test(o.nome || "")); if (!d) return null;
   const tx = semAcento((it.titulo || "") + " " + (it.texto || it.chamada || "")), m = d.vigia ? tx.match(d.vigia) : null;
   return {d, cita:m ? m[0] : null}; }
 function seloMarcas(it){ const o = ORG[it.org] || {}, nat = String(o.natureza || ""), m = [];
@@ -4702,6 +4717,7 @@ function screenHome(){
   if (S.tab==="arte" && !veArte()) S.tab = "tudo";       /* a aba Arte, por enquanto, é só da administradora */
   /* topo: marca e mensagens · abas · linha de controles do feed (algoritmo e ajuste à esquerda, filtrar e ordenar à direita) */
   return header(`<div class="toprow">${LOGO}<div class="spacer"></div>
+      <button class="apoiebtn" type="button" data-act="apoie" aria-haspopup="dialog">${ic("heart","sm")}<span>Apoie</span></button>
       <button class="iconbtn origbtn" type="button" data-act="origens" aria-label="Origem das notícias: ${origensNomes()}">${ic("globe")}<span class="lbl">${S.origens.map(k=>k.toUpperCase()).join(" · ")}</span></button>
       <button class="iconbtn" type="button" data-act="msgs" aria-label="Mensagens, 2 novas">${ic("message")}<span class="dot"></span></button></div>
     <div class="tabs" role="tablist" aria-label="Tipos de conteúdo">${ftabs().map(([k,n])=>`<button class="tab" type="button" role="tab" data-act="ftab" data-tab="${k}" aria-selected="${S.tab===k}">${n}</button>`).join("")}</div>
@@ -5763,7 +5779,7 @@ async function contaInicia(){
     if (erroUrl) toast("O link do e-mail expirou ou já foi usado. Entre com e-mail e senha ou peça outro link.");
     else if (ME.user) toast("E-mail confirmado. Sua conta está ativa.");
   }
-  adPrecosCarrega(); usoInicia(); await perfilCarrega(); ME.pronto = true; adVolta(); if (route()==="anunciar") adPedidosCarrega(); await publicacoesCarrega(); await noticiasCarrega(); contaAtualiza(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
+  cfgCarrega(); adPrecosCarrega(); usoInicia(); await perfilCarrega(); ME.pronto = true; adVolta(); apoioVolta(); if (route()==="anunciar") adPedidosCarrega(); await publicacoesCarrega(); await noticiasCarrega(); contaAtualiza(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
   setInterval(()=>{ if (document.visibilityState==="visible") noticiasCarrega(); }, 15 * 60000);
 }
 /* a escolha guardada na conta vale em qualquer aparelho; se a conta ainda não tem, guarda a deste aparelho (quando a pessoa já escolheu) */
@@ -6544,6 +6560,40 @@ function verifForm(){ return `<div class="vform"><fieldset class="vtipo"><legend
   <label class="vfile"><span>Foto ou PDF do documento (até 5 MB)</span><input id="vdoc" type="file" accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"></label>
   <p class="inota">${ic("lock","sm")}<span>Só a curadoria vê o arquivo. Ele nunca aparece no seu perfil e é apagado assim que o pedido é decidido.</span></p>
   <p class="ferr" role="alert" hidden></p><button class="btn block" type="button" data-act="enviaverif">${ic("vfy","sm")} Enviar para verificação</button></div>`; }
+/* APOIE (11 nov 2026): doação para manter a arede.online, sem produto, serviço ou vantagem em troca.
+   Não precisa de conta; a rede não guarda quem apoiou. Pagamento no Mercado Pago (função apoio-cobra), conferido pela função apoio-aviso. */
+const APOIO_VALORES = [10, 25, 50, 100];
+let APOIO_V = 25;
+function sheetApoie(){ const teste = CFG.apoio !== "real";
+  openSheet(shead("Apoie a arede.online") + `<div class="sform">
+    <p style="margin:0">Sua doação ajuda a manter a arede.online no ar. É só apoio: você não recebe produto, serviço nem vantagem em troca.</p>
+    <div class="apvals" role="group" aria-label="Valor do apoio">${APOIO_VALORES.map(v=>`<button type="button" data-act="apoieval" data-v="${v}" aria-pressed="${APOIO_V===v}">R$ ${v}</button>`).join("")}</div>
+    <label class="apoutro">Outro valor: R$ <input id="apoutro" type="number" inputmode="numeric" min="5" max="5000" step="1" placeholder="5 a 5.000" value="${APOIO_VALORES.includes(APOIO_V) ? "" : APOIO_V}"></label>
+    <ul class="aplista">
+      <li>${ic("check","sm")}<span>Apoiar não muda o que você vê no feed nem a nota de nenhum conteúdo.</span></li>
+      <li>${ic("lock","sm")}<span>O pagamento é feito no Mercado Pago (Pix, cartão ou boleto). A arede.online não vê os dados do seu cartão e não guarda quem apoiou.</span></li>
+      <li>${ic("check","sm")}<span>Não precisa de conta.</span></li></ul>
+    ${teste ? `<p class="srcnote" style="margin-top:10px">Modo de teste: nenhuma cobrança de verdade é feita por enquanto.</p>` : ""}
+    <button class="btn primary block" type="button" data-act="apoiepagar" style="margin-top:14px">${ic("heart","sm")} <span id="aptxt">Apoiar com R$ ${APOIO_V}</span></button></div>`, "Apoie a arede.online"); }
+document.addEventListener("input", e=>{ const t = e.target; if (!t || t.id !== "apoutro") return; const n = Math.round(+t.value) || 0;
+  $$(".apvals button").forEach(x=>x.setAttribute("aria-pressed", String(!t.value && +x.dataset.v===APOIO_V)));
+  if (t.value) APOIO_V = n; const tx = $("#aptxt"); if (tx) tx.textContent = n >= 5 ? `Apoiar com R$ ${n}` : "Apoiar"; });
+function apoioValor(){ const o = $("#apoutro"), n = o && o.value ? Math.round(+o.value) : APOIO_V; return n; }
+function apoioVolta(){ let q; try{ q = new URLSearchParams(location.search); }catch(e){ return; } const id = q.get("apoio"); if (!id || !/^[0-9a-f-]{36}$/i.test(id)) return;
+  const pay = q.get("payment_id") || q.get("collection_id") || "", st = q.get("status") || q.get("collection_status") || "";
+  ["apoio","payment_id","collection_id","status","collection_status","external_reference","payment_type","merchant_order_id","preference_id","site_id","processing_mode","merchant_account_id"].forEach(k=>q.delete(k));
+  try{ history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "") + location.hash); }catch(e){}
+  apoioConfere(/^\d{4,20}$/.test(pay) ? pay : "", st); }
+async function apoioConfere(pay, st){ apoioSituacao("conferindo"); let r = null;
+  if (pay) for (let i = 0; i < 4; i++){ try{ r = await fetch(`${SB_URL}/functions/v1/apoio-aviso?payment_id=${pay}`, {headers:{apikey:SB_KEY}}).then(x=>x.json()); }catch(e){}
+    if (r && r.situacao && r.situacao !== "aguardando") break; if (st !== "approved") break; await new Promise(z=>setTimeout(z, 2500)); }
+  apoioSituacao(r && r.situacao === "pago" ? "pago" : st === "pending" || st === "in_process" ? "analise" : "nao", r); }
+function apoioSituacao(e, r){ const v = r && r.valor ? adBRL(+r.valor) : "", teste = r && r.teste ? `<p class="srcnote" style="margin-top:8px">Apoio em modo de teste: nenhum dinheiro de verdade foi movimentado.</p>` : "";
+  const [t, x] = e==="conferindo" ? ["Conferindo o apoio…", "Só um instante: estamos confirmando com o Mercado Pago."]
+    : e==="pago" ? ["Obrigada pelo apoio!", `Recebemos ${v || "o seu apoio"}. Ele ajuda a manter a arede.online no ar.`]
+    : e==="analise" ? ["Pagamento em análise", "O Mercado Pago ainda está processando. Quando confirmar, o apoio entra sozinho."]
+    : ["Apoio não concluído", "Nada foi cobrado. Se quiser, é só tentar de novo pelo botão Apoie."];
+  openSheet(shead(t) + `<div class="sform"><p style="margin:0">${x}</p>${teste}${e==="conferindo" ? "" : `<button class="btn block" type="button" data-act="close" style="margin-top:14px">Fechar</button>`}</div>`, t); }
 function contaSeguranca(){ const u = ME.user, ult = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString("pt-BR", {day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"}) : "";
   const chev = ic("back","sm flip");
   return `<section class="acard" aria-labelledby="hseg"><h2 id="hseg">Segurança da conta</h2><div class="list">
@@ -6859,6 +6909,15 @@ const A = {
     if (error){ ocupado(b, false); return toast(erroAuth(error)); }
     if (data) await SB.storage.from("verificacao-docs").remove([data]).catch(()=>{});
     toast(aprova ? "Conta verificada. Documento apagado." : "Pedido recusado. Documento apagado."); render(); },
+  apoie: () => { uso("apoie", "abre"); sheetApoie(); },
+  apoieval: b => { APOIO_V = +b.dataset.v; const o = $("#apoutro"); if (o) o.value = ""; $$(".apvals button").forEach(x=>x.setAttribute("aria-pressed", String(x===b))); $("#aptxt").textContent = `Apoiar com R$ ${APOIO_V}`; },
+  apoiepagar: async b => { const v = apoioValor(); if (!(v >= 5 && v <= 5000)) return toast("Escolha um valor entre R$ 5 e R$ 5.000.");
+    ocupado(b, true, "Abrindo o pagamento…");
+    try{ const r = await fetch(`${SB_URL}/functions/v1/apoio-cobra`, {method:"POST", headers:{apikey:SB_KEY, "Content-Type":"application/json"}, body:JSON.stringify({valor:v})});
+      const j = await r.json().catch(()=>({}));
+      if (!r.ok || !j.url){ ocupado(b, false); return toast(j.erro ? j.erro.charAt(0).toUpperCase() + j.erro.slice(1) + "." : "Não foi possível abrir o pagamento. Tente de novo."); }
+      uso("apoie", "pagamento"); location.href = j.url; }
+    catch(e){ ocupado(b, false); toast("Sem conexão com o servidor. Tente de novo."); } },
   pedeverif: async b => { ocupado(b, true, "Enviando…"); const {error} = await SB.from("verificacao_pedidos").insert({user_id:ME.user.id}); ocupado(b, false);
     if (error && !/duplicate|unique/i.test(error.message || "")) return toast(erroAuth(error)); await perfilCarrega(); toast("Pedido de verificação na fila."); render(); },
   desisteverif: async b => { const dp = ((ME.acesso || {}).pedido || {}).doc_path; if (dp) await SB.storage.from("verificacao-docs").remove([dp]).catch(()=>{});
@@ -7328,7 +7387,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 20:01";
+const VERSAO = "v1 registrada · 11/11 20:13";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
