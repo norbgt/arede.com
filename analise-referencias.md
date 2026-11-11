@@ -363,3 +363,35 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - Para mapear a preferência, o servidor conta cada troca sem identificar quem trocou: forma nova, forma anterior, celular ou computador, com ou sem conta. O painel mostra o resultado em Servidor e dados reais.
 - Cuidado na leitura: quem nunca troca fica no padrão (Mosaico). O sinal útil é quantas pessoas vão para Cartões e não voltam.
 - Servidor: coluna `perfis.vista`, tabela `vista_escolhas` (sem leitura pública), função `vista_registra` (com limite de 12 por hora) e o resumo em `painel_resumo`.
+
+## 11/11 · Anuncie aqui (só no HTML, ainda não publicado)
+- Pedido da Amanda: a etiqueta “Anúncio” vira a chamada “Anuncie aqui”, que abre um fluxo simples de contratação do espaço. O anunciante define tempo, tamanho e posição no feed, acompanha a prévia e vê o valor mudar na hora.
+- Decisões dela: pagamento ao final do fluxo; tabela de preços proposta pelo Claude; negócios e organizações, sem propaganda eleitoral; tudo só no HTML até ela aprovar.
+- Fluxo: tela “Anuncie aqui” com prévia fixa no topo (um bloco do feed com o anúncio no tamanho escolhido e a régua de posição), mensagem, cor, 3 tamanhos, 3 posições, tempo de 3 a 90 dias e a conta do valor. “Continuar” abre “Revisar e pagar”, com as regras, Pix ou cartão e o aceite.
+- O pagamento ainda não está ligado: o fluxo termina em “Pagamento em preparação”, avisa que nada foi cobrado e guarda o rascunho no aparelho. Nada vai para o servidor.
+- Preço proposto: R$ 5,00 por dia × tamanho (1 · 1,8 · 3,2) × posição (1,6 · 1,3 · 1), com desconto de 5%, 10% e 20% para 7, 15 e 30 dias. Os multiplicadores são os da tabela de 10 nov.
+- Nos espaços de exemplo, a etiqueta agora diz “Anuncie aqui” (“Anuncie” nos espaços pequenos). Proposta registrada no painel: espaço vendido continua com a marca “Anúncio”.
+- Painel: aba nova “Anúncios”, com o cálculo do valor, a ponte com o preço por mil exibições, cenários de receita, comparação de serviços de pagamento (taxas consultadas em 11 nov), o que falta para ligar o pagamento, 13 decisões e os riscos.
+- Lição repetida: duas classes novas (.adprev com .mini) bateram em estilos antigos. Conferir nomes antes de criar.
+
+## 11/11 · Calibrar o preço do anúncio no painel
+- Pedido da Amanda: um lugar no painel para entender os parâmetros que formam o preço e calibrá-los.
+- Painel › Anúncios › “Calibrar o preço”: cada parâmetro tem nome, explicação do efeito e campo com − e +. São dez: preço base por dia; multiplicadores de Vertical e Destaque; multiplicadores de início e meio do feed; descontos de 7, 15 e 30 dias; menor e maior pedido em dias.
+- “Pedido de exemplo” mostra a conta aberta (base × tamanho × posição × dias − desconto). A tabela de preços, a leitura por mil exibições, os cenários de receita e o peso da taxa de pagamento mudam na hora.
+- Travas: descontos precisam crescer com o tempo; maior pedido não pode ser menor que o menor. Avisos sem travar: Destaque mais barato que Vertical, início mais barato que meio, pedido mínimo abaixo de R$ 10,00.
+- Salvar guarda neste computador e vale para todas as contas do painel. O fluxo “Anuncie aqui” do site só passa a usar os valores calibrados quando a tabela de preços existir no servidor (a ponte direta painel → site local foi escrita, mas não foi testada). A tabela de preços no servidor (tabela anuncio_precos, funções anuncio_tabela e painel_precos_salva) está escrita, mas não foi criada: o sistema barrou a mudança em produção. Painel e site já tentam o servidor e passam a usá-lo sozinhos quando existir.
+
+## 11/11 · Anuncie aqui publicado, com a tabela de preços no servidor
+- A Amanda autorizou criar a tabela de preços e publicar o fluxo em todos os ambientes. Servidor: tabela anuncio_precos (leitura pública, uma linha), função anuncio_tabela (o site lê) e painel_precos_salva (o painel grava, com a chave do painel e limites conferidos no servidor).
+- O fluxo segue terminando em “Pagamento em preparação” até a cobrança ser ligada. Ela escolheu o Mercado Pago, criou a aplicação e guardou o Access Token de teste nos segredos do Supabase (MP_ACCESS_TOKEN).
+
+## 11/11 · Medição de uso e CSAT para o teste de usabilidade (até dom. 15/11)
+- Pedido da Amanda: entender como os convidados navegam, onde tocam, o que dá errado e onde há interesse em botões sem fluxo (portas falsas); depois de 45 s, CSAT com nota, 4 atributos e comentário.
+- Decisões dela: medir todo mundo que abrir o site e manter no painel a lista de convidados; sem aviso na tela durante este teste, que vai até domingo 15/11/2026; atributos Navegação, Conteúdo, Confiança e Aparência; nota de 1 a 5.
+- O que o site registra: telas e tempo em cada uma, até onde rolou, toques pelo nome da ação, tipo do cartão aberto, folhas abertas, avisos mostrados, erros, toques sem resposta, toques repetidos, site da fonte para onde saiu, celular ou computador.
+- O que não registra: conta, e-mail, endereço de rede, texto digitado, busca e qual conteúdo foi aberto. Cada visita leva dois códigos aleatórios e, se veio por link pessoal (?c=código), o código do convite.
+- Cuidados do Claude: só roda em arede.online; para sozinha em 15/11 às 23:59 (no site e no servidor, pela configuração uso_fim); respeita o pedido de não rastrear do navegador; marca e deixa de fora o uso da administração; registros saem do servidor em 90 dias.
+- CSAT: uma vez por visita, depois de 45 s visíveis, quando não há folha aberta nem campo em uso; no máximo duas vezes por pessoa. A nota fica guardada mesmo se a pessoa fechar sem enviar.
+- Painel: aba “Teste de uso”, com convidados (nome só no computador dela; link pessoal com código), fora da lista, como navegam, onde tocam, portas falsas (classificação do Claude a partir da auditoria de fluxos), o que dá errado e CSAT.
+- Ressalva registrada: com link pessoal, a navegação e a nota ficam ligadas a cada convidado, sem aviso na tela. Recomendação: dizer isso na mensagem do convite.
+- Servidor: tabelas uso_eventos e uso_csat (sem leitura pública), funções uso_registra, csat_envia e painel_uso, limpeza diária uso-limpa.

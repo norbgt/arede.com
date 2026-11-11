@@ -1078,6 +1078,65 @@ a.setting{color:var(--ink);text-decoration:none}
 .adtile:hover .adface{filter:brightness(1.06)}
 .adcard .adtile{position:relative;aspect-ratio:1 / 1;border-radius:var(--r);overflow:hidden}
 .adcard .tbtn{cursor:pointer}
+.csnotas{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:4px}
+.csn{min-height:54px;border:0;border-radius:var(--r);background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line);font:inherit;font-size:20px;font-weight:600;color:var(--ink);cursor:pointer}
+.csn[aria-checked="true"]{background:var(--ink);color:var(--bg);box-shadow:none}
+.cslegenda{display:flex;justify-content:space-between;margin-top:6px;font-size:12px;color:var(--muted)}
+.csperg{margin:18px 0 10px;font-weight:600}
+.adtagph{visibility:hidden}
+.adcall{position:absolute;top:17.75px;left:11px;z-index:2;border:0;color:#fff;font-family:inherit;line-height:inherit;cursor:pointer}
+.adcall::after{content:"";position:absolute;inset:-9px -8px}
+.adcall:hover,.adcall:focus-visible{background:#fff;color:var(--adc)}
+@container (max-width:180px){ .adcall{top:13.75px;left:9px} }
+@container (max-width:128px){ .adcall{top:10.75px;left:8px} }
+.adflow{display:flex;flex-direction:column;gap:12px;max-width:640px;padding-top:6px;padding-bottom:16px}
+.adlead{margin:0;color:var(--muted);font-size:var(--fs-sm)}
+.adsticky{position:sticky;top:calc(env(safe-area-inset-top,0px) + 63px);z-index:5;margin:0 calc(-1*var(--gutter));padding:8px var(--gutter) 8px;background:var(--bg);border-bottom:1px solid var(--line)}
+.adpv{max-width:360px;margin:0 auto;border-radius:10px;overflow:hidden;gap:2px}
+.adpv .adtile{cursor:default;color:#fff}
+.adpv .adtxt{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.adpv .adnome{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.adini{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.22);font-weight:800;font-size:16px;line-height:1}
+@container (max-width:180px){ .adini{width:26px;height:26px;font-size:14px;border-radius:8px} }
+@container (max-width:128px){ .adini{width:22px;height:22px;font-size:12px;border-radius:7px} .adpv .adtxt{-webkit-line-clamp:2} }
+.adsk{display:flex;flex-direction:column;justify-content:flex-end;gap:5px;padding:9px;background:var(--surface-2);min-width:0;min-height:0}
+.adsk.img{background:color-mix(in srgb,var(--ink) 14%,var(--surface-2))}
+.adsk i{display:block;height:6px;border-radius:3px;background:color-mix(in srgb,var(--ink) 16%,transparent)}
+.adsk i:nth-child(1){width:82%;height:8px}.adsk i:nth-child(2){width:64%}.adsk i:nth-child(3){width:38%}
+.adsk.img i{display:none}
+@container (min-width:200px){ .adpv .adnome{font-size:22px} .adpv .adtxt{font-size:13.5px} }
+.admapa{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:8px;font-size:11px;color:var(--muted)}
+.admapa .admt{margin-right:2px}
+.admapa .adcards{display:inline-flex;gap:2px}.admapa .adcards i{width:5px;height:9px;border-radius:2px;background:var(--line)}
+.admapa b{display:grid;place-items:center;min-width:24px;height:20px;padding:0 4px;border-radius:6px;background:var(--surface-2);font-size:10.5px;font-weight:600;color:var(--muted)}
+.admapa b.on{background:var(--accent);color:#fff}
+.adh{margin:10px 0 0;font-size:16px}
+.adflow .flabel{font-size:var(--fs-sm);font-weight:500}
+.adrow2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){ .adrow2{grid-template-columns:1fr} }
+.adcores{display:flex;flex-wrap:wrap;gap:8px}
+.adcor{width:40px;height:40px;border-radius:50%;border:0;background:var(--c);cursor:pointer;box-shadow:inset 0 0 0 3px var(--bg)}
+.adcor[aria-checked="true"]{outline:2.5px solid var(--ink);outline-offset:1px}
+.adopts,.adpag{display:flex;flex-direction:column;gap:8px}
+.adopt{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:0;border-radius:var(--r);background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line);text-align:left;font:inherit;color:var(--ink);cursor:pointer}
+.adopt[aria-checked="true"]{box-shadow:inset 0 0 0 2px var(--ink)}
+.adopt .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.adopt .t small{color:var(--muted);font-size:13px}
+.adopt .pr{flex:none;text-align:right;font-weight:600;white-space:nowrap}.adopt .pr small{display:block;font-weight:400;font-size:11.5px;color:var(--muted)}
+.adstep{display:flex;align-items:center;justify-content:center;gap:14px}
+.adstep .iconbtn{background:var(--surface-2);font-size:20px}
+.adstep b{min-width:84px;text-align:center}
+.adsum{display:flex;flex-direction:column;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow);padding:4px 14px}
+.adsum .kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:var(--fs-sm)}
+.adsum .kv:last-child{border-bottom:0}.adsum .kv b{white-space:nowrap}
+.adsum .kv.tot{font-size:16px}.adsum .kv.tot span{font-weight:600}
+.adbar{position:sticky;bottom:calc(var(--nav-space) + var(--safe-b));z-index:6;background:color-mix(in srgb,var(--bg) 94%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid var(--line)}
+.adbar::after{content:"";position:absolute;left:0;right:0;top:100%;height:calc(var(--nav-space) + var(--safe-b));background:var(--bg)}
+.adbarin{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:640px;padding-top:10px;padding-bottom:10px}
+.adbar .tt{display:flex;flex-direction:column;line-height:1.2}.adbar .tt small{color:var(--muted);font-size:12px}.adbar .tt b{font-size:20px}
+.adrev{margin-bottom:10px}.adpv.pq{max-width:330px}
+.adregras{margin:12px 0;padding-left:18px;font-size:var(--fs-sm);color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.adok{display:flex;align-items:center;gap:10px;margin:12px 2px;font-size:var(--fs-sm)}.adok input{width:20px;height:20px;flex:none}
+
 /* animados, como GIF: lentos (no máximo 1 piscada por segundo) e parados para quem pede menos movimento */
 .an-pisca .adcta{animation:adpisca 1.1s steps(1,end) infinite}
 @keyframes adpisca{0%{background:#fff;color:var(--adc)}50%{background:var(--adc2);color:#111}}
@@ -3894,8 +3953,8 @@ function docLocal(it){ const o = ORG[it.org] || {}, c = it.cidade || (!o.fonte &
   if (uf) return {k:"est", nivel:"Estadual", lugar:uf[1]};
   return {k:"nac", nivel:"Nacional", lugar:"Brasil"}; }
 const adCard = (it, mode) => { const a = it.ad; return `<article class="card adcard" data-card="${it.uid}" data-mode="${mode}"><div class="adtile" style="--adc:${a.cor};--adc2:${a.cor2}">
-  <button class="tbtn" type="button" data-act="adopen" data-uid="${it.uid}" aria-label="Anúncio de ${esc(a.nome)}: ${esc(a.frase)}"><span class="adface${a.anim ? " an-" + a.anim : ""}"><span class="adtop"><span class="adtag">Anúncio</span>${a.cta ? `<span class="adcta">${esc(a.cta)}</span>` : ""}</span>
-    <span class="admk">${adLogo(a, 34)}</span><span class="adbot"><b class="adnome">${esc(a.nome)}</b><span class="adtxt"><span class="adlong">${esc(a.frase)}</span><span class="adshort">${esc(a.curta)}</span></span><span class="adseg"><span class="adlong">${esc(a.seg)} · </span>exemplo</span></span></span></button></div></article>`; };
+  <button class="tbtn" type="button" data-act="adopen" data-uid="${it.uid}" aria-label="Anúncio de ${esc(a.nome)}: ${esc(a.frase)}"><span class="adface${a.anim ? " an-" + a.anim : ""}"><span class="adtop"><span class="adtag adtagph" aria-hidden="true"><span class="adlong">Anuncie aqui</span><span class="adshort">Anuncie</span></span>${a.cta ? `<span class="adcta">${esc(a.cta)}</span>` : ""}</span>
+    <span class="admk">${adLogo(a, 34)}</span><span class="adbot"><b class="adnome">${esc(a.nome)}</b><span class="adtxt"><span class="adlong">${esc(a.frase)}</span><span class="adshort">${esc(a.curta)}</span></span><span class="adseg"><span class="adlong">${esc(a.seg)} · </span>exemplo</span></span></span></button>${AD_CALL}</div></article>`; };
 const cardFor = (it, mode, v) => it.anuncio ? adCard(it, mode) : v && v!=="masonry" && v!=="video" ? tabCard(it, mode, v) : card(it, mode);
 const EST = {anuncio:()=>200, video:it=>it.ar*170+70, imagem:it=>(it.ph || 1.25)*170+80, texto:()=>270, evento:()=>320, enquete:()=>330, votacao:()=>330, chamado:()=>330, documento:()=>290};
 const EST_V = {cedula:330, arquivo:150};
@@ -4018,12 +4077,181 @@ function comAnuncios(l){ const ativos = ANUNCIANTES.filter(a=>!S.adOculta.has(a.
   l.forEach((it,i)=>{ out.push(it); if ((i + 1) % ANUNCIO_CADA === 0){ const a = ativos[n % ativos.length];
     out.push({id:"anuncio-" + n, tipo:"anuncio", anuncio:true, ad:a, org:a.id, slot:n + 1, titulo:a.nome + " · " + a.frase, tema:"", min:it.min}); n++; } });
   return out; }
+/* =====================================================================
+   Anuncie aqui (11 nov 2026): venda de espaço de tela por tempo, tamanho e posição.
+   Regras: o anúncio aparece para todo mundo no mesmo lugar (nunca pelo perfil de quem lê),
+   leva a marca "Anúncio", passa por conferência antes de ir ao ar e não aceita propaganda eleitoral.
+   Tabela de preços: proposta inicial, revisada no painel (aba Anúncios). O pagamento ainda não está ligado.
+   ===================================================================== */
+const AD_CALL = `<button class="adtag adcall" type="button" data-act="anunciar" aria-label="Anuncie aqui: contratar este espaço"><span class="adlong">Anuncie aqui</span><span class="adshort">Anuncie</span></button>`;
+/* multiplicadores iguais aos da tabela de anúncios do painel (10 nov 2026): formato 1 · 1,8 · 3,2 e posição 1,6 · 1,3 · 1 */
+const AD_PRECO = {dia:5, minDias:3, maxDias:90, tempos:[3,7,15,30], descontos:[[30,.20],[15,.10],[7,.05]],
+  formatos:[["s","Quadradinho","Um terço da largura · 129 × 129 px no celular",1],["t","Vertical","Um terço da largura, altura inteira · 129 × 260 px",1.8],["w","Destaque","Dois terços da largura, altura inteira · 259 × 260 px",3.2]],
+  posicoes:[["rot","Rotativo","Do 4º espaço de anúncio em diante",1],["meio","Meio do feed","2º e 3º espaços de anúncio",1.3],["topo","Início do feed","1º espaço, depois de 8 cartões",1.6]]};
+const AD_CORES = [["#6D28D9","#A78BFA"],["#2338D8","#93A5FF"],["#0F766E","#5EEAD4"],["#15803D","#86EFAC"],["#EA580C","#FDBA74"],["#DC2626","#FCA5A5"],["#BE185D","#F9A8D4"],["#141615","#9CA3AF"]];
+const AD_PAGAMENTO = null;   /* serviço de pagamento: a ligar quando a conta existir (ver painel › Anúncios) */
+const AD_VAZIO = {nome:"", frase:"", cta:"", seg:"", link:"", cor:0, fmt:"s", pos:"rot", dias:7, meio:"pix"};
+const adDraft = () => { if (!S.adDraft) S.adDraft = Object.assign({}, AD_VAZIO, store.get("anuncio", {})); return S.adDraft; };
+const adBRL = v => v.toLocaleString("pt-BR", {style:"currency", currency:"BRL"});
+const adDias = n => n + (n===1 ? " dia" : " dias");
+function adPreco(d){ const P = AD_PRECO, f = P.formatos.find(x=>x[0]===d.fmt) || P.formatos[0], p = P.posicoes.find(x=>x[0]===d.pos) || P.posicoes[0];
+  const dias = Math.max(P.minDias, Math.min(P.maxDias, d.dias|0 || P.minDias)), diaria = P.dia * f[3] * p[3], bruto = diaria * dias;
+  const desc = (P.descontos.find(x=>dias >= x[0]) || [0,0])[1], total = Math.round(bruto * (1 - desc) * 100) / 100;
+  return {f, p, dias, diaria, bruto, desc, abat:Math.round((bruto - total) * 100) / 100, total}; }
+/* preços calibrados no painel de controle. No computador da administração chegam pelo painel aberto ao lado;
+   no site, virão do servidor (função anuncio_tabela), quando a tabela de preços existir lá. Valores fora do limite são ignorados. */
+function adPrecosAplica(d){ if (!d || typeof d!=="object") return false; const P = AD_PRECO, num = (v, a, b) => { v = +v; return isFinite(v) && v >= a && v <= b ? v : null; };
+  const f = d.formatos || {}, p = d.posicoes || {}, ds = d.descontos || {};
+  const dia = num(d.dia,1,500), mn = num(d.minDias,1,30), mx = num(d.maxDias,1,365), ft = num(f.t,1,10), fw = num(f.w,1,10), pm = num(p.meio,1,10), pt = num(p.topo,1,10), d7 = num(ds["7"],0,.6), d15 = num(ds["15"],0,.6), d30 = num(ds["30"],0,.6);
+  if ([dia,mn,mx,ft,fw,pm,pt,d7,d15,d30].some(x=>x===null) || mx < mn || d7 > d15 || d15 > d30) return false;
+  P.dia = dia; P.minDias = Math.round(mn); P.maxDias = Math.round(mx); P.descontos = [[30,d30],[15,d15],[7,d7]];
+  P.formatos.find(x=>x[0]==="t")[3] = ft; P.formatos.find(x=>x[0]==="w")[3] = fw; P.posicoes.find(x=>x[0]==="meio")[3] = pm; P.posicoes.find(x=>x[0]==="topo")[3] = pt;
+  if (route()==="anunciar") adRefaz(); return true; }
+async function adPrecosCarrega(){ if (LOCAL) adPrecosAplica(store.get("anuncioPrecos", null)); if (!SB) return;
+  try{ const r = await SB.rpc("anuncio_tabela"); if (!r.error && r.data && r.data.dados) adPrecosAplica(r.data.dados); }catch(e){} }
+function adFace(d){ const nome = d.nome.trim() || "Sua marca", frase = d.frase.trim() || "Sua mensagem aparece aqui.";
+  return `<span class="adface"><span class="adtop"><span class="adtag">Anúncio</span>${d.cta.trim() ? `<span class="adcta">${esc(d.cta.trim())}</span>` : ""}</span>
+    <span class="admk"><span class="adini">${esc(nome.slice(0,1).toUpperCase())}</span></span>
+    <span class="adbot"><b class="adnome">${esc(nome)}</b><span class="adtxt">${esc(frase)}</span>${d.seg.trim() ? `<span class="adseg">${esc(d.seg.trim())}</span>` : ""}</span></span>`; }
+/* prévia: um bloco do feed (mosaico) com o anúncio no tamanho escolhido e os vizinhos em silhueta */
+function adPrevia(d, mini){ const [c1, c2] = AD_CORES[d.cor] || AD_CORES[0], area = {s:"1 / 1 / span 1 / span 2", t:"1 / 1 / span 2 / span 2", w:"1 / 1 / span 2 / span 4"}[d.fmt];
+  const sk = (a, img) => `<div class="adsk${img ? " img" : ""}" style="grid-area:${a}"><i></i><i></i><i></i></div>`;
+  const resto = d.fmt==="s" ? sk("2 / 1 / span 1 / span 2", 1) + sk("1 / 3 / span 2 / span 4") : d.fmt==="t" ? sk("1 / 3 / span 2 / span 4") : sk("1 / 5 / span 1 / span 2", 1) + sk("2 / 5 / span 1 / span 2", 1);
+  return `<div class="blk adpv${mini ? " pq" : ""}" role="img" aria-label="Prévia do anúncio no feed"><div class="tile adtile ${d.fmt}" style="grid-area:${area};--adc:${c1};--adc2:${c2}">${adFace(d)}</div>${resto}</div>`; }
+/* onde o anúncio entra na rolagem: cada número é um espaço de anúncio (um a cada 8 cartões) */
+function adMapa(d){ const on = k => d.pos==="topo" ? k===1 : d.pos==="meio" ? (k===2 || k===3) : k>=4;
+  return `<div class="admapa" aria-hidden="true"><span class="admt">Topo do feed</span>${[1,2,3,4,5].map(k=>`<span class="adcards"><i></i><i></i><i></i></span><b class="${on(k) ? "on" : ""}">${k===5 ? "…" : k + "º"}</b>`).join("")}</div>`; }
+function adConta(v){ return `<div class="kv"><span>${v.f[1]} · ${v.p[1].toLowerCase()}</span><b>${adBRL(v.diaria)} por dia</b></div>
+    <div class="kv"><span>${adDias(v.dias)}</span><b>${adBRL(v.bruto)}</b></div>
+    ${v.desc ? `<div class="kv"><span>Desconto de ${Math.round(v.desc * 100)}% pelo tempo</span><b>− ${adBRL(v.abat)}</b></div>` : ""}
+    <div class="kv tot"><span>Total</span><b>${adBRL(v.total)}</b></div>`; }
+function screenAnunciar(){ const d = adDraft(), P = AD_PRECO, v = adPreco(d), val = k => esc(d[k] || "");
+  const opt = (k, x, sel, preco) => `<button class="adopt" type="button" role="radio" aria-checked="${sel}" data-act="adset" data-k="${k}" data-v="${x[0]}"><span class="t"><b>${x[1]}</b><small>${x[2]}</small></span><span class="pr">${adBRL(preco)}<small>por dia</small></span></button>`;
+  const fAtual = v.f[3], pAtual = v.p[3];
+  return header(`<div class="toprow"><button class="iconbtn" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button><h1 class="pagehead">Anuncie aqui</h1></div>`)
+  + `<div class="container adflow">
+    <p class="adlead">Monte o anúncio e veja o valor na hora. Ele aparece para todo mundo, no mesmo lugar: arede.online não usa o perfil de quem lê.</p>
+    <div class="adsticky"><div id="adpvbox">${adPrevia(d)}</div><div id="admapbox">${adMapa(d)}</div></div>
+    <h2 class="adh">1. Sua mensagem</h2>
+    <div class="field"><label for="adnome">Marca ou organização</label><input id="adnome" data-ad="nome" maxlength="24" autocomplete="organization" placeholder="Ex.: Padaria Aurora" value="${val("nome")}"></div>
+    <div class="field"><label for="adfrase">Mensagem</label><input id="adfrase" data-ad="frase" maxlength="60" placeholder="Ex.: Pão quente toda manhã, na sua rua." value="${val("frase")}"></div>
+    <div class="adrow2"><div class="field"><label for="adcta">Chamada (opcional)</label><input id="adcta" data-ad="cta" maxlength="14" placeholder="Ex.: Só hoje" value="${val("cta")}"></div>
+      <div class="field"><label for="adseg">Ramo e cidade (opcional)</label><input id="adseg" data-ad="seg" maxlength="28" placeholder="Ex.: Padaria · Recife" value="${val("seg")}"></div></div>
+    <div class="field"><label for="adlink">Para onde o anúncio leva</label><input id="adlink" data-ad="link" type="url" inputmode="url" maxlength="200" placeholder="https://" value="${val("link")}"></div>
+    <div class="field"><span class="flabel" id="adcorl">Cor</span><div class="adcores" role="radiogroup" aria-labelledby="adcorl">${AD_CORES.map(([c],i)=>`<button type="button" class="adcor" role="radio" aria-checked="${d.cor===i}" aria-label="Cor ${i + 1}" data-act="adset" data-k="cor" data-v="${i}" style="--c:${c}"></button>`).join("")}</div></div>
+    <h2 class="adh">2. Espaço</h2>
+    <div class="adopts" role="radiogroup" aria-label="Tamanho do anúncio">${P.formatos.map(x=>opt("fmt", x, d.fmt===x[0], P.dia * x[3] * pAtual)).join("")}</div>
+    <h2 class="adh">3. Posição no feed</h2>
+    <div class="adopts" role="radiogroup" aria-label="Posição no feed">${P.posicoes.slice().reverse().map(x=>opt("pos", x, d.pos===x[0], P.dia * fAtual * x[3])).join("")}</div>
+    <h2 class="adh">4. Tempo</h2>
+    <div class="chips" role="radiogroup" aria-label="Tempo no ar">${P.tempos.filter(t=>t >= P.minDias && t <= P.maxDias).map(t=>{ const ds = (P.descontos.find(x=>t >= x[0]) || [0,0])[1]; return `<button class="chip" type="button" role="radio" aria-checked="${v.dias===t}" data-act="adset" data-k="dias" data-v="${t}">${adDias(t)}${ds ? ` · −${Math.round(ds * 100)}%` : ""}</button>`; }).join("")}</div>
+    <div class="adstep"><button class="iconbtn" type="button" data-act="addia" data-v="-1" aria-label="Um dia a menos">−</button><b id="addias" aria-live="polite">${adDias(v.dias)}</b><button class="iconbtn" type="button" data-act="addia" data-v="1" aria-label="Um dia a mais">+</button></div>
+    <h2 class="adh">Valor</h2>
+    <div class="adsum" id="adconta">${adConta(v)}</div>
+    <p class="srcnote">De ${AD_PRECO.minDias} a ${AD_PRECO.maxDias} dias. A peça é conferida antes de ir ao ar. Não aceitamos propaganda eleitoral, de candidatos ou de partidos.</p>
+  </div>
+  <div class="adbar"><div class="container adbarin"><span class="tt"><small>Total · ${adDias(v.dias)}</small><b id="adtotal">${adBRL(v.total)}</b></span><button class="btn ink" type="button" data-act="adrevisar">Continuar</button></div></div>`; }
+function adGuarda(){ store.set("anuncio", adDraft()); }
+function adRefaz(){ if (route()!=="anunciar") return; const y = window.scrollY; $("#main").innerHTML = screenAnunciar(); window.scrollTo(0, y); }
+function sheetAdRevisar(){ const d = adDraft(), v = adPreco(d);
+  openSheet(shead("Revisar e pagar") + `<div class="adrev">${adPrevia(d, true)}</div>
+    <div class="adsum">${adConta(v)}</div>
+    <ul class="adregras"><li>Toda peça é conferida antes de ir ao ar. Se não for aprovada, o valor volta inteiro.</li><li>O anúncio leva a marca “Anúncio” e aparece para todo mundo, no mesmo lugar.</li><li>Sem propaganda eleitoral, de candidatos ou de partidos.</li></ul>
+    <div class="adpag" role="radiogroup" aria-label="Forma de pagamento">${[["pix","Pix","Confirma na hora"],["cartao","Cartão de crédito","Na página do serviço de pagamento"]].map(([k,n,sub])=>`<button class="adopt" type="button" role="radio" aria-checked="${d.meio===k}" data-act="admeio" data-v="${k}"><span class="t"><b>${n}</b><small>${sub}</small></span>${d.meio===k ? ic("check") : ""}</button>`).join("")}</div>
+    <label class="adok"><input type="checkbox" id="adaceite"><span>Li e aceito as regras de anúncio.</span></label>
+    <div class="sheetacts"><button class="btn ink block" type="button" data-act="adpagar">Pagar ${adBRL(v.total)}</button></div>
+    <p class="srcnote" style="margin-top:8px">O pagamento acontece na página segura do serviço de pagamento. arede.online não vê nem guarda dados de cartão.</p>`, "Revisar e pagar"); }
+function sheetAdSemPagamento(){ const v = adPreco(adDraft());
+  openSheet(shead("Pagamento em preparação") + `<div class="note">${ic("info")}<span><b>Nada foi cobrado.</b> O pagamento de anúncios ainda não está ligado, e nenhum dado saiu deste aparelho.</span></div>
+    <p style="margin:12px 2px 0">Seu anúncio de ${adBRL(v.total)} ficou guardado como rascunho neste aparelho. Quando o pagamento abrir, é só voltar em “Anuncie aqui”.</p>
+    <div class="sheetacts"><button class="btn ink block" type="button" data-act="close">Entendi</button></div>`, "Pagamento em preparação"); }
+/* =====================================================================
+   MEDIÇÃO DE USO E CSAT (teste de usabilidade de 11 a 15 nov 2026; decisão da Amanda: sem aviso na tela neste período)
+   Registra como o site é usado: telas e tempo em cada uma, toques (pelo nome da ação), toques sem resposta, toques repetidos,
+   erros, avisos que o site mostrou e saídas para as fontes. Depois de 45 s de navegação, pergunta a nota (CSAT).
+   O que NÃO é registrado: conta, e-mail, endereço de rede, texto digitado, busca, e qual conteúdo foi aberto (só o tipo do cartão).
+   A visita leva dois códigos aleatórios (visitante e sessão) e, se veio por link de convite, o código do convite.
+   Só roda em arede.online, para sozinha no fim do teste, respeita o pedido de não rastrear do navegador e marca o uso da administração.
+   ===================================================================== */
+const USO_FIM = Date.parse("2026-11-16T02:59:59Z");   /* domingo, 15 nov 2026, 23:59 em Brasília */
+const USO_ATRIB = [["navegacao","Facilidade de navegar"],["conteudo","Relevância do conteúdo"],["confianca","Confiança nas informações"],["aparencia","Aparência e leitura"]];
+const USO = {on:false, fila:[], n:0, max:600, t0:Date.now(), ativo:0, tela:null, telaT:0, rol:0, cliques:[], mortos:0, csatVisto:false, csat:null, s:"", v:"", c:""};
+const usoId = () => (crypto.randomUUID ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx".replace(/x/g, ()=>(Math.random()*16|0).toString(16)));
+const usoRota = r => { r = String(r || route()).split("/")[0]; return r.startsWith("pin-") ? "pin" : r.startsWith("org-") ? "org" : r.slice(0, 30); };
+function usoInicia(){
+  try{ const q = new URLSearchParams(location.search), c = (q.get("c") || "").replace(/[^a-zA-Z0-9]/g, "").slice(0, 12);
+    if (c){ store.set("convite", c); q.delete("c"); history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "") + location.hash); } }catch(e){}
+  const naoRastrear = navigator.globalPrivacyControl === true || navigator.doNotTrack === "1";
+  USO.on = (location.hostname === "arede.online" || /[?&]uso=1/.test(location.search)) && Date.now() < USO_FIM && !naoRastrear;
+  if (!USO.on) return;
+  USO.v = store.get("visitante", ""); if (!USO.v){ USO.v = usoId(); store.set("visitante", USO.v); }
+  try{ USO.s = sessionStorage.getItem("arede-sessao") || ""; if (!USO.s){ USO.s = usoId(); sessionStorage.setItem("arede-sessao", USO.s); } }catch(e){ USO.s = usoId(); }
+  USO.c = store.get("convite", "");
+  let ref = ""; try{ ref = document.referrer ? new URL(document.referrer).hostname : ""; }catch(e){}
+  uso("inicio", usoRota(), ref === location.hostname ? "" : ref.slice(0, 60), null, {l:innerWidth, h:innerHeight, lg:(navigator.language || "").slice(0, 8), volta:store.get("usoVisitas", 0)});
+  store.set("usoVisitas", store.get("usoVisitas", 0) + 1);
+  usoTela();
+  setInterval(()=>{ if (document.visibilityState !== "visible") return; USO.ativo++; USO.telaT++; if (USO.ativo % 8 === 0) usoEnvia(); if (USO.ativo >= 45) csatTenta(); }, 1000);
+  addEventListener("scroll", ()=>{ if (window.scrollY > USO.rol) USO.rol = window.scrollY; }, {passive:true});
+  addEventListener("hashchange", usoTela);
+  document.addEventListener("visibilitychange", ()=>{ if (document.visibilityState === "hidden") usoEnvia(true); });
+  addEventListener("pagehide", ()=>{ usoTelaFecha(); uso("fim", "", "", USO.ativo); usoEnvia(true); });
+  addEventListener("error", e=>{ uso("erro", String(e.message || "erro").slice(0, 120), ((e.filename || "").split("/").pop().split("?")[0] + ":" + (e.lineno || 0)).slice(0, 60)); });
+  addEventListener("unhandledrejection", e=>{ const m = e.reason && (e.reason.message || e.reason); uso("erro", ("Promessa: " + String(m || "sem mensagem")).slice(0, 120)); });
+  document.addEventListener("click", usoClique, true);
+}
+function uso(t, n, a, v, x){ if (!USO.on || USO.n >= USO.max) return; USO.n++;
+  const e = {t, r:USO.tela || usoRota()}; if (n) e.n = String(n).slice(0, 80); if (a) e.a = String(a).slice(0, 80); if (typeof v === "number" && isFinite(v)) e.v = v; if (x) e.x = x; USO.fila.push(e); }
+const usoCtx = () => ({s:USO.s, v:USO.v, c:USO.c, ap: innerWidth < 720 ? "celular" : "computador", ver:VERSAO, conta:!!ME.user,
+  adm: (()=>{ const a = !!(ME.acesso && ME.acesso.papel === "admin") || (ME.perfil && ME.perfil.papel === "admin"); if (a) store.set("usoAdm", 1); return a || !!store.get("usoAdm", 0); })()});
+function usoEnvia(saindo){ if (!USO.on || !USO.fila.length || !SB) return; const lote = USO.fila.splice(0, 60), corpo = {p_ctx:usoCtx(), p_eventos:lote};
+  try{ if (saindo) fetch(SB_URL + "/rest/v1/rpc/uso_registra", {method:"POST", keepalive:true, headers:{apikey:SB_KEY, Authorization:"Bearer " + SB_KEY, "Content-Type":"application/json"}, body:JSON.stringify(corpo)}).catch(()=>{});
+    else SB.rpc("uso_registra", corpo).then(()=>{}, ()=>{}); }catch(e){} }
+/* tela: ao sair de cada uma, guarda quanto tempo ficou e até onde rolou */
+function usoTelaFecha(){ if (!USO.tela) return; const x = {rol: Math.round(USO.rol / Math.max(1, innerHeight) * 10) / 10}; if (USO.tela === "inicio") x.cartoes = F.vistos || 0; uso("tela", USO.tela, "", USO.telaT, x); }
+function usoTela(){ if (!USO.on) return; const r = usoRota(); if (r === USO.tela) return; usoTelaFecha(); USO.tela = r; USO.telaT = 0; USO.rol = window.scrollY; }
+/* toque: o nome da ação e, quando ajuda, um detalhe curto e fixo (aba, tipo do cartão); nunca o conteúdo */
+function usoAlvo(b){ const d = b.dataset, a = d.act;
+  if ((a === "open" || a === "topen") && d.uid){ const it = findItem(d.uid); return it ? it.tipo + ":" + (it.anuncio ? "anuncio" : it.daArte ? "arte" : it.daRede ? "rede" : it.coletada ? "noticia" : it.conta ? "conta" : "exemplo") : ""; }
+  for (const k of ["k","v","tab","t","r","m","to"]){ const val = d[k]; if (val && /^[\wÀ-ÿ .:-]{1,24}$/.test(val)) return val; } return ""; }
+const usoDesc = el => { let e = el; for (let i = 0; i < 4 && e && e !== document.body; i++, e = e.parentElement){ const c = typeof e.className === "string" && e.className.trim().split(/\s+/)[0]; if (c) return e.tagName.toLowerCase() + "." + c.slice(0, 30); } return (el.tagName || "?").toLowerCase(); };
+function usoClique(e){ const t = e.target; if (!t || !t.closest) return; const agora = Date.now();
+  let nome = "", tipo = "";
+  const nav = t.closest("[data-nav-to]"), b = t.closest("[data-act]"), lk = t.closest("a[href]");
+  if (nav){ tipo = "nav"; nome = usoRota(nav.dataset.navTo); }
+  else if (b && !(b.dataset.act === "closebg" && t !== b)){ tipo = "toque"; nome = b.dataset.act; }
+  else if (lk){ const h = lk.getAttribute("href") || ""; if (h.startsWith("#")){ tipo = "nav"; nome = usoRota(h.slice(1)); } else { tipo = "saida"; try{ nome = new URL(lk.href).hostname.replace(/^www\./, "").slice(0, 60); }catch(err){ nome = "link"; } } }
+  else if (!t.closest("button, input, textarea, select, label, summary, video, iframe, [role=button], [contenteditable]")){ tipo = "morto"; nome = usoDesc(t); }
+  if (tipo === "morto"){ if (USO.mortos++ < 40) uso("morto", "", nome); }
+  else if (tipo && !(tipo === "toque" && nome.startsWith("csat"))) uso(tipo, nome, tipo === "toque" ? usoAlvo(b) : "");
+  /* três toques ou mais no mesmo lugar em menos de um segundo: sinal de que algo não respondeu */
+  USO.cliques = USO.cliques.filter(c=>agora - c.t < 900 && Math.abs(c.x - e.clientX) < 30 && Math.abs(c.y - e.clientY) < 30); USO.cliques.push({t:agora, x:e.clientX, y:e.clientY});
+  if (USO.cliques.length === 3) uso("raiva", nome || usoDesc(t)); }
+/* CSAT: uma vez por visita, depois de 45 s de navegação, quando não há folha aberta nem campo em uso. No máximo duas vezes por pessoa. */
+function csatTenta(){ if (!USO.on || USO.csatVisto) return; const st = store.get("csat", {n:0, ok:false}); if (st.ok || st.n >= 2){ USO.csatVisto = true; return; }
+  const ae = document.activeElement, digitando = ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName);
+  if ($("#layer .scrim") || digitando || ["conta","nova-senha","anunciar","ate-depois"].includes(usoRota()) || document.querySelector("video:not([muted])")) return;
+  USO.csatVisto = true; store.set("csat", {n:st.n + 1, ok:false}); USO.csat = {nota:0, at:new Set()}; uso("csat", "mostrado", "", USO.ativo); sheetCsat(); }
+function sheetCsat(){ const c = USO.csat, n = c.nota, perg = !n ? "" : n >= 4 ? "O que mais agradou?" : n === 3 ? "O que pode melhorar?" : "O que mais atrapalhou?";
+  const antes = $("#csatcom") ? $("#csatcom").value : (c.com || "");
+  openSheet(shead("Como está sendo usar a arede.online?") + `<div class="csat">
+    <div class="csnotas" role="radiogroup" aria-label="Nota de 1 a 5">${[1,2,3,4,5].map(i=>`<button class="csn" type="button" role="radio" aria-checked="${n===i}" data-act="csatnota" data-v="${i}" aria-label="Nota ${i}">${i}</button>`).join("")}</div>
+    <div class="cslegenda" aria-hidden="true"><span>Muito ruim</span><span>Muito boa</span></div>
+    ${n ? `<p class="csperg" id="csperg">${perg}</p>
+    <div class="chips" role="group" aria-labelledby="csperg">${USO_ATRIB.map(([k,t])=>`<button class="chip" type="button" aria-pressed="${c.at.has(k)}" data-act="csatatr" data-v="${k}">${t}</button>`).join("")}</div>
+    <div class="field" style="margin-top:14px"><label for="csatcom">Quer contar mais? (opcional)</label><textarea id="csatcom" maxlength="600" rows="3" placeholder="O que funcionou, o que travou, o que faltou">${esc(antes)}</textarea></div>
+    <div class="sheetacts"><button class="btn ink block" type="button" data-act="csatenvia">Enviar</button></div>` : `<p class="srcnote" style="margin-top:14px;text-align:center">Leva 10 segundos e ajuda a decidir o que melhorar primeiro.</p>`}</div>`, "Avaliação");
+  if (n){ const f = $(`#layer .csn[aria-checked="true"]`); f && f.focus({preventScroll:true}); } }
+function csatManda(fim){ const c = USO.csat; if (!c || !c.nota || !SB) return; const com = $("#csatcom") ? $("#csatcom").value : (c.com || ""); c.com = com;
+  SB.rpc("csat_envia", {p_ctx:Object.assign(usoCtx(), {r:USO.tela || "", seg:USO.ativo}), p_nota:c.nota, p_atributos:[...c.at], p_comentario:com || null}).then(()=>{}, ()=>{});
+  if (fim){ store.set("csat", {n:2, ok:true}); uso("csat", "respondido", "", c.nota); } }
 function sheetAnuncio(uid){ const it = findItem(uid); if (!it) return; const a = it.ad;
   openSheet(shead("Anúncio") + `<div class="adsh" style="--adc:${a.cor};--adc2:${a.cor2}"><span class="adsq">${adLogo(a, 40)}</span><span><b>${esc(a.nome)}</b><small>${esc(a.seg)} · anunciante de exemplo</small></span></div>
     <p class="adfrase">${esc(a.frase)}</p>
     <div class="note">${ic("info")}<span><b>Por que você vê este anúncio:</b> ele aparece para todo mundo nesta aba, na mesma posição. arede.online não usa seu perfil, suas organizações, seus temas nem posição política para escolher anúncios, e anúncio não muda o seu algoritmo.</span></div>
     <div class="sheetacts"><button class="btn ink block" type="button" disabled>Visitar ${esc(a.nome)} ${ic("ext","sm")}</button>
-    <button class="btn ghost block" type="button" data-act="adoculta" data-a="${a.id}">Não mostrar mais ${esc(a.nome)}</button></div>
+    <button class="btn ghost block" type="button" data-act="adoculta" data-a="${a.id}">Não mostrar mais ${esc(a.nome)}</button>
+    <button class="btn ghost block" type="button" data-act="anunciar">Anuncie aqui</button></div>
     <p class="srcnote" style="margin-top:8px">Anunciante fictício, de exemplo: o link fica desativado.</p>`, "Anúncio"); }
 function source(fl=S.filt, types=tabTypes()){
   let l = source0(fl, types).filter(it=>!it.base);
@@ -4206,6 +4434,7 @@ function painelHTML(){ if (!PAINEL_HTML){ const bin = atob(PAINEL_SRC.textConten
 function screenPainel(sec){ const f = document.createElement("iframe"); f.className = "pframe"; f.name = "arede-painel|" + sec; f.title = "Painel de controle"; f.srcdoc = painelHTML(); return f; }
 window.addEventListener("message", e=>{ const d = e.data; if (!d) return;
   if (d.arede==="go" && typeof d.to==="string") location.hash = d.to;
+  if (d.arede==="precos" && LOCAL && adPrecosAplica(d.dados)) store.set("anuncioPrecos", d.dados);   /* calibragem feita no painel, só no computador da administração */
   if (d.arede==="sec" && typeof d.sec==="string" && route().split("/")[0]==="painel"){ const h = "painel/" + d.sec; store.set("ultima", h);
     try{ history.replaceState(null, "", "#" + h); }catch(err){} lastRoute = route(); } });
 const painelRow = () => LOCAL ? `<button class="setting painel" type="button" data-nav-to="painel"><span class="t"><b>Painel de controle <span class="plock" title="Só no seu computador: não está online nem é público" aria-label="Só no seu computador, não está online nem é público">${ic("lock","sm")}</span></b></span>${ic("back","sm flip")}</button>` : "";
@@ -4320,9 +4549,9 @@ function tileHTML(it, cl, mode="none"){
   if (it.anuncio){ const a = it.ad, [r,c,rs,cs] = cl.area;
     return `<div class="tile adtile ${cl.size}" style="grid-area:${r} / ${c} / span ${rs} / span ${cs};--adc:${a.cor};--adc2:${a.cor2}" data-tile="${it.uid}" data-size="${cl.size}" data-area="${cl.area}" data-mode="${mode}">
       <button class="tbtn" type="button" data-act="adopen" data-uid="${it.uid}" aria-label="Anúncio de ${esc(a.nome)}: ${esc(a.frase)}">
-        <span class="adface${a.anim ? " an-" + a.anim : ""}"><span class="adtop"><span class="adtag">Anúncio</span>${a.cta ? `<span class="adcta">${esc(a.cta)}</span>` : ""}</span>
+        <span class="adface${a.anim ? " an-" + a.anim : ""}"><span class="adtop"><span class="adtag adtagph" aria-hidden="true"><span class="adlong">Anuncie aqui</span><span class="adshort">Anuncie</span></span>${a.cta ? `<span class="adcta">${esc(a.cta)}</span>` : ""}</span>
           <span class="admk">${adLogo(a, 34)}</span>
-          <span class="adbot"><b class="adnome">${esc(a.nome)}</b><span class="adtxt"><span class="adlong">${esc(a.frase)}</span><span class="adshort">${esc(a.curta)}</span></span><span class="adseg"><span class="adlong">${esc(a.seg)} · </span>exemplo</span></span></span></button></div>`; }
+          <span class="adbot"><b class="adnome">${esc(a.nome)}</b><span class="adtxt"><span class="adlong">${esc(a.frase)}</span><span class="adshort">${esc(a.curta)}</span></span><span class="adseg"><span class="adlong">${esc(a.seg)} · </span>exemplo</span></span></span></button>${AD_CALL}</div>`; }
   const o = ORG[it.org], s = sealOf(it), on = S.saved.has(it.uid), [r,c,rs,cs] = cl.area;
   const isVid = it.tipo==="video", media = !isTextual(it);
   const seal = s.sc!==null ? `<span class="tseal" aria-hidden="true">${sealIco(s,14)}${s.sc}</span>` : "";
@@ -5139,6 +5368,7 @@ function render(){
   else if (r.startsWith("pin-")){ main.innerHTML = screenPin(r.slice(4)); fillPin(r.slice(4)); }
   else if (r==="ate-depois") main.innerHTML = screenBye();
   else if (r==="conta") main.innerHTML = screenConta();
+  else if (r==="anunciar") main.innerHTML = screenAnunciar();
   else if (r==="em-alta"){ main.innerHTML = screenAlta(); if (ME.pronto) altaCarrega(); }
   else if (r==="curadoria"){ main.innerHTML = screenCuradoria(); curadoriaCarrega(); }
   else if (r==="nova-senha") main.innerHTML = screenNovaSenha();
@@ -5208,7 +5438,7 @@ async function contaInicia(){
     if (erroUrl) toast("O link do e-mail expirou ou já foi usado. Entre com e-mail e senha ou peça outro link.");
     else if (ME.user) toast("E-mail confirmado. Sua conta está ativa.");
   }
-  await perfilCarrega(); ME.pronto = true; await publicacoesCarrega(); await noticiasCarrega(); contaAtualiza(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
+  adPrecosCarrega(); usoInicia(); await perfilCarrega(); ME.pronto = true; await publicacoesCarrega(); await noticiasCarrega(); contaAtualiza(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
   setInterval(()=>{ if (document.visibilityState==="visible") noticiasCarrega(); }, 15 * 60000);
 }
 /* a escolha guardada na conta vale em qualquer aparelho; se a conta ainda não tem, guarda a deste aparelho (quando a pessoa já escolheu) */
@@ -5943,12 +6173,14 @@ function sheetCriarReal(k){ const nome = TIPOS_REAIS[k], pf = ME.perfil || {};
    ===================================================================== */
 let lastFocus = null;
 function openSheet(html, label){
+  if (label !== "Avaliação") uso("folha", label);
   if (!$("#layer .scrim")) lastFocus = document.activeElement;
   $("#layer").innerHTML = `<div class="scrim" data-act="closebg"><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(label)}"><div class="grab" aria-hidden="true"></div>${html}</div></div>`;
   document.body.classList.add("locked");
   const first = $("#layer .sheet").querySelector("button:not([disabled]), input, select, textarea"); if (first) first.focus({preventScroll:true});
 }
-function closeSheet(){ $("#layer").innerHTML = ""; document.body.classList.remove("locked"); if (lastFocus && lastFocus.focus) lastFocus.focus({preventScroll:true}); }
+function closeSheet(){ if (USO.csat && $("#layer .csat")){ if (!USO.csat.nota) uso("csat", "dispensado"); else if (!store.get("csat", {}).ok){ csatManda(true); } USO.csat = null; }
+  $("#layer").innerHTML = ""; document.body.classList.remove("locked"); if (lastFocus && lastFocus.focus) lastFocus.focus({preventScroll:true}); }
 const shead = t => `<div class="shead"><h2>${t}</h2><button class="iconbtn" type="button" data-act="close" aria-label="Fechar">${ic("close")}</button></div>`;
 /* RESUMO DO ALGORITMO (ícone ao lado do botão Algoritmo): versão curta do painel do perfil (algoPanel) + os ajustes.
    "Saber mais" leva ao painel completo, na aba Algoritmo do perfil. */
@@ -6066,7 +6298,7 @@ function sheetMsgs(){
    12. Aviso flutuante
    ===================================================================== */
 let toastT;
-function toast(t){ clearTimeout(toastT); let el = $("#toast");
+function toast(t){ uso("aviso", t); clearTimeout(toastT); let el = $("#toast");
   if (!el){ el = document.createElement("div"); el.id = "toast"; el.className = "toast"; el.setAttribute("role","status"); document.body.appendChild(el); }
   el.textContent = t; el.hidden = false; $("#live").textContent = t; toastT = setTimeout(()=>{ el.hidden = true; }, 2600); }
 
@@ -6282,6 +6514,18 @@ const A = {
     S.pinMode[u] = a ? a.dataset.mode : "none"; go("pin-" + u); },
   xclose: b => { const g = GRIDS[b.closest("[data-grid]").dataset.grid]; g && g.close(); },
   adopen: b => sheetAnuncio(b.dataset.uid),
+  csatnota: b => { const c = USO.csat; if (!c) return; c.nota = +b.dataset.v; csatManda(false); sheetCsat(); },   /* a nota já fica guardada, mesmo que a pessoa feche sem enviar */
+  csatatr: b => { const c = USO.csat; if (!c) return; const k = b.dataset.v; c.at.has(k) ? c.at.delete(k) : c.at.add(k); b.setAttribute("aria-pressed", c.at.has(k)); },
+  csatenvia: () => { csatManda(true); closeSheet(); toast("Obrigada! Sua resposta ajuda a melhorar a rede."); },
+  anunciar: () => { closeSheet(); go("anunciar"); },
+  adset: b => { const d = adDraft(), k = b.dataset.k, v = b.dataset.v; d[k] = (k==="cor" || k==="dias") ? +v : v; adGuarda(); adRefaz(); },
+  addia: b => { const d = adDraft(); d.dias = Math.max(AD_PRECO.minDias, Math.min(AD_PRECO.maxDias, (d.dias|0) + (+b.dataset.v))); adGuarda(); adRefaz(); },
+  admeio: b => { adDraft().meio = b.dataset.v; adGuarda(); sheetAdRevisar(); },
+  adrevisar: () => { const d = adDraft(), falta = !d.nome.trim() ? ["adnome","Diga a marca ou organização."] : !d.frase.trim() ? ["adfrase","Escreva a mensagem do anúncio."] : !/^https:\/\/[^\s.]+\.[^\s]+$/i.test(d.link.trim()) ? ["adlink","Informe o endereço de destino, começando com https://"] : null;
+    if (falta){ toast(falta[1]); const el = $("#" + falta[0]); if (el){ el.focus({preventScroll:true}); el.scrollIntoView({block:"center", behavior:"smooth"}); } return; }
+    sheetAdRevisar(); },
+  adpagar: () => { const ok = $("#adaceite"); if (!ok || !ok.checked) return toast("Marque que leu e aceita as regras de anúncio.");
+    if (!AD_PAGAMENTO) return sheetAdSemPagamento(); },
   adoculta: b => { S.adOculta.add(b.dataset.a); closeSheet(); toast("Pronto: esse anunciante não aparece mais para você."); resetFeed(); },
   topen: b => { const t = b.closest(".tile"), v = t && t.querySelector("video"), u = b.dataset.uid; if (v) S.vid[u] = {t:v.currentTime, playing:!v.paused, muted:v.muted};
     const g = GRIDS[b.closest("[data-grid]").dataset.grid]; g && g.select(u); },
@@ -6507,7 +6751,8 @@ document.addEventListener("click", e=>{
   const fn = A[b.dataset.act]; if (fn) fn(b, e);
 });
 document.addEventListener("input", e=>{
-  if (e.target.id==="q"){ S.exploreQ = e.target.value; fillExplore(); }
+  if (e.target.dataset && e.target.dataset.ad){ const d = adDraft(); d[e.target.dataset.ad] = e.target.value; adGuarda(); const pb = $("#adpvbox"); if (pb) pb.innerHTML = adPrevia(d); }
+  if (e.target.id==="q"){ S.exploreQ = e.target.value; fillExplore(); if (!USO.buscou && e.target.value.length >= 3){ USO.buscou = true; uso("busca", "explorar"); } }
   if (e.target.id==="mix"){ S.mix = +e.target.value; $("#mixv").textContent = `${S.mix}% organizações · ${100-S.mix}% temas`; }
 });
 document.addEventListener("keydown", e=>{ if (e.key==="Escape" && $("#layer .scrim")) closeSheet(); });
@@ -6516,7 +6761,7 @@ if (!location.hash){ const ini = store.get("ultima", "") || START; if (ini && in
 window.addEventListener("hashchange", render);
 if (S.localAuto && navigator.permissions && navigator.permissions.query) navigator.permissions.query({name:"geolocation"}).then(q=>{ if (q.state==="granted" && Date.now() - (S.localQuando || 0) > 6 * 3600e3) localAtualiza(true); }).catch(()=>{});
 contaInicia();
-if (/[?&]teste=1/.test(location.search)) window.__arede = {prox, footCtx, footInfo, PRIO, prioDe, historicoPreenche, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
+if (/[?&]teste=1/.test(location.search)) window.__arede = {adPrecosAplica, USO, uso, usoEnvia, csatTenta, prox, footCtx, footInfo, PRIO, prioDe, historicoPreenche, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
 window.addEventListener("scroll", ()=>{ const t = $("#top"); if (t) t.classList.toggle("scrolled", window.scrollY > 4); }, {passive:true});
 window.addEventListener("resize", debounce(()=>{
   placeLogoDots();
@@ -6559,7 +6804,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 09:29";
+const VERSAO = "v1 registrada · 11/11 13:12";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
