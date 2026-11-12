@@ -4204,10 +4204,13 @@ class Grid {
   constructor(id, box, mode, n, v="masonry"){ this.id = id; this.mode = mode; this.n = n; this.v = v; this.items = []; this.obj = {}; this.A = null; this.sel = null; this.B = []; this.Bcols = null; this.empty = false; this.attach(box); }
   attach(box){ this.box = box; if (box){ box.dataset.grid = this.id; box.className = "gridwrap" + (this.n===1 ? " one" : "") + " v-" + this.v; } GRIDS[this.id] = this; }
   est(u){ const it = this.obj[u]; return this.v==="agenda" ? (EST_AG[it.tipo]||320) : EST_V[this.v] || EST[it.tipo](it); }
-  add(it){ this.items.push(it.uid); this.obj[it.uid] = it; this.B.push(it.uid); if (this.Bcols) this.placeB(it.uid); }
+  add(it){ this.items.push(it.uid); this.obj[it.uid] = it; this.B.push(it.uid); if (this.Bcols){ this.placeB(it.uid); this.agendaMedida(); } }
+  /* acerta a altura das colunas pela medida real, uma vez por lote: medir a cada cartão travava o celular (a página se recalculava a cada um) */
+  medeReal(){ if (!this.Bcols || this.v!=="masonry") return; const h = this.Bcols.map(c=>c.offsetHeight); if (h.some(x=>x > 0)) this.Bh = h; }
+  agendaMedida(){ if (this.rafM) return; this.rafM = requestAnimationFrame(()=>{ this.rafM = 0; this.medeReal(); }); }
   cols(){ const m = document.createElement("div"); m.className = "masonry" + (this.n===1 ? " one" : "") + " v-" + this.v; m.style.setProperty("--ncol", this.n); const cs = [];
     for (let i=0;i<this.n;i++){ const c = document.createElement("div"); c.className = "col"; m.appendChild(c); cs.push(c); } return [m, cs]; }
-  placeB(u){ if (this.v==="agenda" || this.v==="masonry"){ const h = this.Bcols.map(c=>c.offsetHeight); if (h.some(x=>x > 0)) this.Bh = h; }   /* encaixa pela altura real: a estimativa errava com fotos e títulos longos e deixava buracos no celular */
+  placeB(u){ if (this.v==="agenda") this.Bh = this.Bcols.map(c=>c.offsetHeight); /* irregular: encaixa pela altura real */
     const i = this.Bh.indexOf(Math.min(...this.Bh)); this.Bcols[i].insertAdjacentHTML("beforeend", cardFor(this.obj[u], this.mode, this.v)); fitTiles(this.Bcols[i].lastElementChild); this.Bh[i] += this.est(u); }
   render(){
     const box = this.box; if (!box) return; box.innerHTML = "";
@@ -4215,7 +4218,7 @@ class Grid {
     if (this.sel && this.A && this.A.some(c=>c.length)){ const [m, cs] = this.cols(); this.A.forEach((col,j)=>col.forEach(u=>cs[j].insertAdjacentHTML("beforeend", cardFor(this.obj[u], this.mode, this.v)))); box.appendChild(m); }
     if (this.sel){ const t = document.createElement("div"); t.innerHTML = detailHTML(this.obj[this.sel], this.sel, this.mode, true); const x = t.firstElementChild; box.appendChild(x); layoutPin(x);
       const xv = x.querySelector("video"); xv && xv.addEventListener("loadedmetadata", ()=>layoutPin(x), {once:true}); }
-    const [m, cs] = this.cols(); this.Bcols = cs; this.Bh = Array(this.n).fill(0); box.appendChild(m); this.B.forEach(u=>this.placeB(u)); fitTiles(box);
+    const [m, cs] = this.cols(); this.Bcols = cs; this.Bh = Array(this.n).fill(0); box.appendChild(m); this.B.forEach((u, i)=>{ this.placeB(u); if (i % 8 === 7) this.medeReal(); }); fitTiles(box);
   }
   select(uid){
     const box = this.box, selEl = box.querySelector(`article[data-card="${uid}"]`); if (!selEl) return false;
@@ -4978,7 +4981,12 @@ function fillExplore(){
   const box = $("#emas"); if (!box) return;
   if (!items.length){ box.className = ""; box.innerHTML = `<p class="empty">Nada encontrado para “${esc(S.exploreQ)}”.</p>`; return; }
   const lim = nivel()==="visitante" ? ACESSO.visitante.porAba : 0, corte = lim && items.length > lim;
-  makeGrid("explore", box, corte ? items.slice(0, lim) : items, "none");
+  const lista = corte ? items.slice(0, lim) : items, LOTE = 40;
+  const g = makeGrid("explore", box, lista.slice(0, LOTE), "none"); let feitos = Math.min(LOTE, lista.length);
+  const fim = document.getElementById("emaisx"); if (fim) fim.remove();
+  if (g && feitos < lista.length){ const sen = document.createElement("div"); sen.id = "emaisx"; sen.style.height = "1px"; box.after(sen);
+    const ob = new IntersectionObserver(es=>{ if (!es[0].isIntersecting || !document.body.contains(sen)) return; lista.slice(feitos, feitos + LOTE).forEach(it=>g.add(it)); feitos += LOTE; fitTiles(box);
+      if (feitos >= lista.length){ ob.disconnect(); sen.remove(); } }, {rootMargin:"900px"}); ob.observe(sen); }
   const eg = $("#egate"); if (eg) eg.innerHTML = corte ? gateNota({k:"cadastro", lim}).replace("desta aba", "da busca") : "";
 }
 
@@ -7410,7 +7418,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 20:49";
+const VERSAO = "v1 registrada · 11/11 21:00";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
