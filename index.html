@@ -3968,7 +3968,9 @@ const DONOS_FONTE = [
   {nome:/intercept brasil/i, grupo:"sem fins lucrativos", soube:"o Intercept Brasil é uma associação sem fins lucrativos, independente do Intercept americano desde 2022?", vigia:null},
   {nome:/^brasil de fato/i, grupo:"movimentos populares", soube:"o Brasil de Fato foi criado por movimentos populares, entre eles o MST?", vigia:/\b(mst|movimento dos trabalhadores rurais sem terra)\b/}];
 /* ajustes que a administradora liga e desliga no painel (função config_publica); começam desligados */
-let CFG = {selo_donos:false, apoio:"teste"};
+/* conta_rede: a conta oficial da rede (o papel de cada conta não é mais lido em público; 12 nov 2026) */
+let CFG = {selo_donos:false, apoio:"teste", conta_rede:"47746b38-b326-46c5-8dc6-89ed2df03209"};
+const ehContaRede = id => !!id && id === CFG.conta_rede;
 async function cfgCarrega(){ if (!SB) return; try{ const r = await SB.rpc("config_publica"); if (r.error || !r.data) return; const antes = CFG.selo_donos; CFG = Object.assign({}, CFG, r.data);
   if (antes !== CFG.selo_donos) render(); }catch(e){} }
 function donoDe(it){ if (!CFG.selo_donos) return null; const o = ORG[it.org] || {}; if (!o.fonte) return null; const d = DONOS_FONTE.find(x=>x.nome.test(o.nome || "")); if (!d) return null;
@@ -5671,14 +5673,14 @@ const comCor = id => CORES_CONTA[parseInt(String(id || "0").replace(/-/g,"").sli
 async function comsCarrega(key){ const [col, id] = key.split(":"), st = COMS.get(key) || {aberto:false};
   if (!SB || ME.offline){ COMS.set(key, Object.assign(st, {lista:[], meus:new Set(), fora:true})); return; }
   let lista = [], meus = new Set(), erro = false;
-  try{ const r = await SB.from("comentarios").select("id,texto,marca,fonte_url,uteis,criado_em,autor,perfis(nome,verificado,colaborador,papel)").eq(col, id).eq("status","publicado").order("criado_em",{ascending:false}).limit(200);
+  try{ const r = await SB.from("comentarios").select("id,texto,marca,fonte_url,uteis,criado_em,autor,perfis(nome,verificado,colaborador)").eq(col, id).eq("status","publicado").order("criado_em",{ascending:false}).limit(200);
     if (r.error) erro = true; else lista = r.data || [];
     if (ME.user && lista.length){ const u = await SB.from("comentario_uteis").select("comentario_id").in("comentario_id", lista.map(c=>c.id)); if (!u.error) meus = new Set((u.data || []).map(x=>x.comentario_id)); } }catch(e){ erro = true; }
   COMS.set(key, Object.assign(st, {lista, meus, erro, fora:false})); }
 const comDest = c => !!((c.perfis || {}).colaborador) || c.uteis >= COM_DEST;
 function comHTML(c, st){ const pf = c.perfis || {}, meu = ME.user && c.autor===ME.user.id, adm = ME.perfil && ME.perfil.papel==="admin", dest = comDest(c), url = /^https:\/\//.test(c.fonte_url || "") ? c.fonte_url : "", on = st.meus.has(c.id);
   return `<article class="com${dest ? " dest" : ""}" data-com="${c.id}">
-    ${pf.papel==="admin" ? `<span class="av cav rede" aria-hidden="true"><span class="amark">a<i></i></span></span>` : `<span class="av cav" style="background:${comCor(c.autor)}" aria-hidden="true">${esc(siglaDe(pf.nome))}</span>`}
+    ${ehContaRede(c.autor) ? `<span class="av cav rede" aria-hidden="true"><span class="amark">a<i></i></span></span>` : `<span class="av cav" style="background:${comCor(c.autor)}" aria-hidden="true">${esc(siglaDe(pf.nome))}</span>`}
     <div class="cb"><div class="comh"><span class="cn">${esc(pf.nome || "Conta da rede")}</span>${verifBtn(pf.verificado)}${pf.colaborador ? `<span class="colab" title="Usuário colaborador: destaque dado pela rede a quem contribui de forma construtiva">Colaborador</span>` : ""}<small>${quando(c.criado_em)}${c.marca && MARCAS[c.marca] ? " · " + MARCAS[c.marca].toLowerCase() : ""}</small>${dest && !pf.colaborador && pf.papel!=="admin" ? `<span class="ctag d">Em destaque</span>` : ""}</div>
       <p class="ctx">${esc(c.texto)}</p>
       ${url ? `<a class="cfonte" href="${esc(url)}" target="_blank" rel="noopener nofollow ugc">Fonte: ${esc(hostOf(url).replace(/^www\./,""))} ${ic("ext","sm")}</a>` : ""}
@@ -6073,7 +6075,7 @@ function navConta(){ const tc = $("#topconta"); if (tc) tc.innerHTML = topContaH
 const siglaDe = n => (n||"?").trim().split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join("").toUpperCase() || "?";
 function orgDaPessoa(pf){ const id = "u-" + pf.id;
   if (!ORG[id]) ORG[id] = {id, nome:pf.nome, sigla:siglaDe(pf.nome), cidade:pf.cidade || "", tema:"", membros:0, real:true, pessoa:true, natureza:"conta na rede",
-    cor:CORES_CONTA[parseInt(pf.id.replace(/-/g,"").slice(0,6),16) % CORES_CONTA.length], sobre:pf.bio || "", verificado:pf.verificado || null, daRedeConta:pf.papel==="admin"};
+    cor:CORES_CONTA[parseInt(pf.id.replace(/-/g,"").slice(0,6),16) % CORES_CONTA.length], sobre:pf.bio || "", verificado:pf.verificado || null, daRedeConta:ehContaRede(pf.id)};
   else Object.assign(ORG[id], {nome:pf.nome, sigla:siglaDe(pf.nome), cidade:pf.cidade || "", verificado:pf.verificado || null});
   return id; }
 function itemDaPublicacao(p){
@@ -6102,7 +6104,7 @@ const prioDe = it => it.conta && it.autorId ? (PRIO[it.autorId] || 0) : 0;
 async function prioridadesCarrega(ids){ const falta = [...new Set(ids)].filter(Boolean); if (!SB || !falta.length) return;
   try{ const r = await SB.rpc("prioridades", {p_autores:falta}); if (!r.error && r.data){ falta.forEach(id=>{ PRIO[id] = r.data[id] || 0; }); } }catch(e){} }
 async function publicacoesCarrega(){ if (!SB) return;
-  const {data, error} = await SB.from("publicacoes").select("*, perfis(id, nome, cidade, bio, verificado, papel)").order("criada_em", {ascending:false}).limit(200);
+  const {data, error} = await SB.from("publicacoes").select("*, perfis(id, nome, cidade, bio, verificado)").order("criada_em", {ascending:false}).limit(200);
   if (error || !data) return;
   for (let i = POOL.length - 1; i >= 0; i--) if (POOL[i].conta) POOL.splice(i, 1);
   data.slice().reverse().forEach(p=>POOL.unshift(itemDaPublicacao(p)));
@@ -7785,7 +7787,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 12/11 17:13";
+const VERSAO = "v1 registrada · 12/11 17:18";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
