@@ -204,6 +204,10 @@ img,svg{max-width:100%}
   color:var(--muted);font-weight:500;font-size:14px;white-space:nowrap;scroll-snap-align:start}
 .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
 @media (min-width:768px){ .tabs{-webkit-mask-image:none;mask-image:none} }
+.status[hidden]{display:none}
+.pubredes{display:grid;justify-items:center;gap:14px;padding:22px var(--gutter)}
+.vischip{display:inline-flex;align-items:center;gap:6px;margin:10px auto 2px;padding:6px 10px 6px 12px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.vischip .icon{width:14px;height:14px}
 .status{display:flex;align-items:center;gap:8px;min-height:36px;font-size:var(--fs-sm);color:var(--muted)}
 /* Início: linha de controles do feed, abaixo das abas: algoritmo e ajuste à esquerda, filtrar e ordenar à direita */
 .ctlrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0 4px}
@@ -389,7 +393,8 @@ button.setting{width:100%;border:0;text-align:left;color:var(--ink)}
 .blk{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:2px;aspect-ratio:3/2}
 /* com mais largura, as linhas ficam um pouco mais baixas que as colunas: menos vazio nos cartões de texto */
 @container (min-width:560px){ .blk{aspect-ratio:3/1.6} .blk.row1{aspect-ratio:3/.8} }
-.blk.row1{grid-template-rows:minmax(0,1fr);aspect-ratio:3/1}
+.blk.row1{grid-template-rows:minmax(0,1fr);aspect-ratio:3/1.25}
+@container (min-width:560px){ .blk.row1{aspect-ratio:3/1} }
 .blk.r3{grid-template-rows:repeat(3,minmax(0,1fr));aspect-ratio:1/1}
 @container (min-width:560px){ .blk.r3{aspect-ratio:3/2.4} }
 /* tamanhos dos cartões de texto: n = coluna estreita e alta · b = curto · f = faixa de manchete · x = destaque */
@@ -420,12 +425,16 @@ button.setting{width:100%;border:0;text-align:left;color:var(--ink)}
 .tbody{flex:0 1 auto;min-height:0;overflow:hidden}
 .tbody p{font-size:var(--fs-tile);line-height:1.42;color:var(--muted);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:var(--cl,5);overflow:hidden}
 .tfoot{flex:none;display:flex;flex-direction:column;gap:6px;margin-top:auto;padding-top:4px}
+.tface.aperta .fctx .ftag,.tface.aperta .fctx .indtag,.tface.aperta2 .fctx{display:none}
 /* pé em 2 linhas: cada linha cabe numa só; o que não cabe vai para uma segunda linha escondida (sai inteiro, sem corte) */
 .fctx,.finfo{display:flex;flex-wrap:wrap;align-items:center;column-gap:8px;row-gap:6px;height:18px;line-height:18px;overflow:hidden;font-size:12px;color:var(--muted);min-width:0}
 .fctx > *,.finfo > *{flex:none;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .fctx .tloc{overflow:visible}.fctx .tloc b{overflow:visible}
 .finfo > span + span::before{content:"·";margin-right:8px;color:var(--muted)}
 .finfo b{font-weight:500;color:var(--ink)}
+/* cartões soltos: a fonte já aparece na legenda embaixo do cartão; dentro dele fica só a data (12 nov 2026) */
+article.card .finfo > span:first-child:has(> b):not(:only-child){display:none}
+article.card .finfo > span:first-child:has(> b) + span::before{display:none}
 /* pé do cartão sem peso (10 nov 2026): o lugar e a fonte ficam em peso médio; as etiquetas, em peso normal */
 .ftag{display:inline-flex;align-items:center;gap:3px;font-weight:400;color:var(--muted)}
 .fctx .tloc b{font-weight:500}.fctx .tloc em{font-weight:500}
@@ -742,6 +751,16 @@ a.lk{color:var(--ink);text-decoration:none}
 .docsheet small{align-self:flex-start;max-width:44px;padding:1px 4px;border-radius:3px;background:var(--dc,var(--ink));color:#fff;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
 .docsheet i{display:block;height:3px;border-radius:2px;background:color-mix(in srgb,var(--dc,var(--line)) 25%,var(--line))}
 .lcard.ar .lsum{-webkit-line-clamp:2}
+/* documentos em cartões compactos (12 nov 2026): a folha vira um selo pequeno com o tipo; cabem dois ou mais por linha */
+.lcard.ar .lmain{flex-direction:column;align-items:stretch;gap:8px;padding:12px}
+.lcard.ar .docsheet{flex-direction:row;align-items:center;align-self:flex-start;gap:5px;width:auto;height:auto;padding:3px 7px 3px 5px;border-radius:6px}
+.lcard.ar .docsheet::after{display:none}
+.lcard.ar .docsheet i{display:none}
+.lcard.ar .docsheet::before{content:"";flex:none;width:9px;height:12px;border-radius:2px;border:1.5px solid var(--dc,var(--muted));border-top-right-radius:4px}
+.lcard.ar .docsheet small{max-width:none;padding:0;background:none;color:var(--ink);font-size:10px}
+.lcard.ar .ltitle{font-size:15px;line-height:1.25}
+.lcard.ar .dloc time{margin-left:0}
+.docbase .dbh.dbrec{margin-top:26px}
 .thead .fkind{flex:none}
 .tile.n .ttema,.tile.t .ttema,.tile.s .ttema{display:none}
 .ttema{min-width:0;font-size:11.5px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1553,7 +1572,7 @@ button.setting{width:100%;border:0;text-align:left;font:inherit;color:inherit;cu
 /* atalho do Em alta: raio no topo do Início (com o rótulo em telas maiores) e item no menu lateral do computador */
 .altabtn{position:relative;display:inline-flex;flex-direction:row;align-items:center;width:auto;height:40px;gap:6px;padding:0 10px;border-radius:99px;color:var(--ink);text-decoration:none}
 .altabtn .lbl{display:none;font-size:14px;font-weight:600}
-.origbtn{display:inline-flex;flex-direction:row;align-items:center;width:auto;gap:5px;padding:0 9px;border-radius:99px}
+.origbtn{border-radius:99px}
 .origbtn .lbl{font-size:12px;font-weight:700;letter-spacing:.04em;white-space:nowrap}
 @media (max-width:379px){ .origbtn .lbl{display:none} .origbtn{padding:0} }
 .apoiebtn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 13px;margin-right:6px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
@@ -1567,7 +1586,7 @@ button.setting{width:100%;border:0;text-align:left;font:inherit;color:inherit;cu
 .apoutro input{width:110px;height:40px;padding:0 10px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:15px;background:var(--bg);color:var(--ink)}
 .aplista{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:6px;font-size:13px;color:var(--muted)}
 .aplista li{display:flex;gap:8px;align-items:flex-start}.aplista .icon{flex:none;width:15px;height:15px;margin-top:1px}
-@media (min-width:420px){ .origbtn{background:var(--surface-2);height:40px;padding:0 12px} }
+
 .osub{margin:0 0 4px}
 .osec{flex-shrink:0;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
 .ogrp{flex-shrink:0;background:var(--surface);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
@@ -4529,6 +4548,7 @@ function sheetAnuncio(uid){ const it = findItem(uid); if (!it) return; const a =
     <p class="srcnote" style="margin-top:8px">Anunciante fictício, de exemplo: o link fica desativado.</p>`, "Anúncio"); }
 function source(fl=S.filt, types=tabTypes()){
   let l = source0(fl, types).filter(it=>!it.base);
+  if (S.tab==="documentos" && DOCTIPO && types===tabTypes()) l = l.filter(it=>docTipoDe(it)===DOCTIPO);
   /* filtro rápido olha tudo o que a aba e os filtros permitem, não só os temas do algoritmo */
   if (S.rapido && types===tabTypes()){ const t = ofTab(types); return rapidoAplica(POOL.filter(it=>t(it) && passa(it, fl) && redePronta(it))); }
   if ((S.tab==="tudo" || S.tab==="publicacoes") && types===tabTypes()){
@@ -4654,6 +4674,7 @@ function feedCols(L){ const w = ($("#feed") || document.body).clientWidth || inn
   if (L==="agenda") return w >= 900 ? 3 : 2;
   if (L==="video") return 1;                       /* regra: a aba Vídeos é sempre uma coluna */
   if (L==="masonry") return w >= 900 ? 3 : 2;      /* cartões soltos: duas colunas no celular, como em "Mais para explorar" */
+  if (L==="arquivo") return w >= 1100 ? 4 : w >= 720 ? 3 : 2;   /* documentos: cartões compactos, mais de um por linha (12 nov 2026) */
   return w >= 720 ? 2 : 1; }
 function resetFeed(){
   altaFaixa(); docBase(); aoVivo();
@@ -4724,7 +4745,7 @@ function screenHome(){
   /* topo: marca e mensagens · abas · linha de controles do feed (algoritmo e ajuste à esquerda, filtrar e ordenar à direita) */
   return header(`<div class="toprow">${LOGO}<div class="spacer"></div>
       <button class="apoiebtn" type="button" data-act="apoie" aria-haspopup="dialog">${ic("raio","sm")}<span>Apoie</span></button>
-      <button class="iconbtn origbtn" type="button" data-act="origens" aria-label="Origem das notícias: ${origensNomes()}">${ic("globe")}<span class="lbl">${S.origens.map(k=>k.toUpperCase()).join(" · ")}</span></button>
+      <button class="iconbtn origbtn" type="button" data-act="origens" aria-label="Origem das notícias: ${origensNomes()}">${ic("globe")}</button>
       <button class="iconbtn" type="button" data-act="msgs" aria-label="Mensagens, 2 novas">${ic("message")}<span class="dot"></span></button></div>
     <div class="tabs" role="tablist" aria-label="Tipos de conteúdo">${ftabs().map(([k,n])=>`<button class="tab" type="button" role="tab" data-act="ftab" data-tab="${k}" aria-selected="${S.tab===k}">${n}</button>`).join("")}</div>
     <div class="ctlwrap"><div class="ctlrow"><div class="algogroup"><button class="algosw" type="button" role="switch" data-act="algo" aria-checked="${S.algo}" aria-label="Algoritmo"><span class="lbl">Algoritmo</span><span class="switch" aria-hidden="true" aria-checked="${S.algo}"></span></button>
@@ -4866,9 +4887,12 @@ function cabeFrases(el, full, alt, fits, max=99){
 function fitTiles(root, forca){
   /* cada cartão é ajustado uma vez por tamanho (11 nov 2026): antes, toda leva nova reajustava todos os cartões já prontos, e o celular travava.
      Sem "root" (fontes prontas, tela girada) ou com forca, ajusta de novo. */
-  const tudo = !root || forca, faces = [...(root||document).querySelectorAll(".tface")];
-  faces.forEach(f=>{ const t = f.querySelector(".ftitle"), p = f.querySelector(".tbody > p"); if (!p) return;
+  const tudo = !root || forca, faces = [...(root||document).querySelectorAll(".tface")], feitas = [];
+  faces.forEach(f=>{ const t = f.querySelector(".ftitle"), p = f.querySelector(".tbody > p"); if (!p && !t) return;
     const tam = f.clientWidth + "x" + f.clientHeight; if (!tudo && f.dataset.fit === tam) return; if (f.clientWidth) f.dataset.fit = tam; else delete f.dataset.fit;
+    f.classList.remove("aperta", "aperta2"); feitas.push(f);
+    if (!p){ /* cartão sem resumo (com foto, evento, enquete): o título diminui até o pé caber, em vez de cortar a fonte e a data */
+      t.style.fontSize = ""; let fs0 = parseFloat(getComputedStyle(t).fontSize); while (f.scrollHeight > f.clientHeight + 1 && fs0 > 12){ fs0 -= 1; t.style.fontSize = fs0 + "px"; } return; }
     /* 1. o título cabe inteiro: diminui a letra até caber junto com o cabeçalho e o pé */
     p.hidden = true; t.style.fontSize = ""; let fs = parseFloat(getComputedStyle(t).fontSize);
     while (f.scrollHeight > f.clientHeight + 1 && fs > 12){ fs -= 1; t.style.fontSize = fs + "px"; }
@@ -4892,6 +4916,14 @@ function fitTiles(root, forca){
         while (g < teto && gap2() > 16 && cabe()){ g += 1; t.style.fontSize = g + "px"; }
         if (!cabe()){ g -= 1; t.style.fontSize = g + "px"; }
         while (f.scrollHeight > f.clientHeight + 1 && g > 12){ g -= 1; t.style.fontSize = g + "px"; } } } });
+  /* cartão pequeno em que nem com a letra mínima cabe tudo (tela estreita): saem primeiro os temas, depois o lugar; a fonte e a data ficam sempre */
+  feitas.forEach(f=>{ if (f.closest(".blk.row1")) return; if (f.scrollHeight > f.clientHeight + 1) f.classList.add("aperta"); if (f.scrollHeight > f.clientHeight + 1) f.classList.add("aperta2"); });
+  /* faixa de um cartão só (evento, enquete): se o conteúdo ainda não cabe (tela estreita), a faixa cresce em vez de cortar */
+  const faixas = new Set((root||document).querySelectorAll(".blk.row1")); if (root && root.closest){ const fx = root.closest(".blk.row1"); if (fx) faixas.add(fx); }
+  faixas.forEach(b=>{ const w = String(b.clientWidth); if (!tudo && b.dataset.cresc === w) return; b.style.aspectRatio = ""; b.style.height = "";
+    let falta = 0; b.querySelectorAll(".tface").forEach(f=>{ falta = Math.max(falta, f.scrollHeight - f.clientHeight); });
+    if (falta > 1){ const h = b.clientHeight + falta + 2; b.style.aspectRatio = "auto"; b.style.height = h + "px"; }
+    if (b.clientWidth) b.dataset.cresc = w; b.querySelectorAll(".tface").forEach(f=>{ if (f.dataset.fit) f.dataset.fit = f.clientWidth + "x" + f.clientHeight; }); });
   /* resumo dos cartões das abas (Movimentos, Votações, Documentos): frases inteiras no limite de linhas de cada tipo, sem reticências */
   const lroot = root && root.matches && root.matches(".lsum") ? [root] : [...(root||document).querySelectorAll(".lsum")];
   lroot.forEach(el=>{ if (!el.dataset.full) el.dataset.full = el.textContent;
@@ -5170,7 +5202,7 @@ function intBody(){ const d = S.intDraft, full = d.length >= MAX_INT;
     <button class="btn primary block" type="button" data-act="intsave">Salvar</button>`; }
 /* PERFIL — mesma lógica do Início: uma linha de abas, uma linha de status e a mesma grade de blocos.
    Abas: Publicações (o que você publicou) · Compartilhadas · Curtidas · Salvos (pastas). */
-const PTABS = [["publicacoes","Publicações"],["salvos","Salvos"],["agenda","Agenda"],["compartilhadas","Compartilhadas"],["curtidas","Curtidas"],["algoritmo","Algoritmo"]];
+const PTABS = [["publicacoes","Suas publicações"],["salvos","Salvos"],["agenda","Agenda"],["compartilhadas","Compartilhadas"],["curtidas","Curtidas"],["algoritmo","Algoritmo"]];
 /* o que pode aparecer no perfil público (Publicações e as pastas que não são secretas) e o que é sempre só seu */
 const PRIVADAS = new Set(["agenda","compartilhadas","curtidas","algoritmo"]);
 function visOf(t){
@@ -5193,7 +5225,7 @@ function screenProfile(){
         <a class="iconbtn pbtn prim" href="#conta" data-act="acessar" aria-label="${ME.user ? "Sua conta na rede.online" : "Acessar a rede.online: entrar ou criar conta"}" title="${ME.user ? "Sua conta" : "Acessar a rede.online"}"><span class="amark" aria-hidden="true">a<i></i></span></a>
         <a class="iconbtn pbtn" href="#config" aria-label="Configurações" title="Configurações">${ic("gear")}</a></span></div>
     <div class="tabs" role="tablist" aria-label="Seu conteúdo">${tabsPerfil()}</div>
-    <div class="status" id="pstatus">${profStatus()}</div>`)
+    <div class="status" id="pstatus"${profStatus() ? "" : " hidden"}>${profStatus()}</div>`)
   + `<div class="container"><div id="pbody">${profBody()}</div></div>`;
 }
 /* SEU ALGORITMO, COM TRANSPARÊNCIA: o que o alimenta, do que é feito o seu feed, o tamanho da bolha
@@ -5256,7 +5288,7 @@ function profList(){
 /* linha de status: o que está na tela e quem pode ver */
 function profStatus(){ const n = profList().length, pl = (k, a, b) => `${k} ${k===1?a:b}`, v = visTag(S.profTab);
   if (S.profTab==="publicacoes"){ const k = S.redes.filter(c=>c.tipo==="minha").length;
-    return `<span class="txt"><b>${pl(n,"publicação","publicações")}</b></span>${v}<button class="linkbtn rlink" type="button" data-act="redes">${k ? "Outras redes · " + k : ic("plus","sm") + " Outras redes"}</button>`; }
+    return ""; }   /* 12 nov 2026: sem contagem nem "quem vê" aqui; Outras redes fica em Configurações */
   if (S.profTab==="agenda"){ const it = profList(), ev = it.filter(i=>i.tipo==="evento").length, ch = it.length - ev;
     return `<span class="txt"><b>${pl(ev,"evento","eventos")} · ${pl(ch,"chamado","chamados")}</b></span>${v}`; }
   if (S.profTab==="compartilhadas" || S.profTab==="curtidas") return `<span class="txt"><b>${pl(n,"conteúdo","conteúdos")}</b></span>${v}`;
@@ -5275,7 +5307,7 @@ function fillProfile(){ const box = $("#pfeed"); if (!box) return; const items =
   if (!items.length){ box.className = ""; box.innerHTML = `<p class="empty">${{publicacoes:"Você ainda não publicou nada.", agenda:"Sua agenda está vazia. Toque em <b>Quero ir</b> num evento ou em <b>Quero ajudar</b> num chamado.", compartilhadas:"Você ainda não compartilhou nada.", curtidas:"Você ainda não curtiu nada.", salvos:`Pasta vazia. Toque em ${ic("bookmark","sm")} num conteúdo para guardar aqui.`}[S.profTab]}</p>`; return; }
   if (S.profTab==="agenda"){ const g = new Grid("pfeed", box, "none", box.clientWidth >= 900 ? 3 : 2, "agenda"); items.forEach(it=>g.add(it)); g.render(); return; }
   const g = new TileGrid("pfeed", box, "none"); items.forEach(it=>g.add(it)); g.flush(true); g.render(); }
-function profShow(){ $$('[data-act="ptab"]').forEach(t=>t.setAttribute("aria-selected", t.dataset.tab===S.profTab)); $("#pstatus").innerHTML = profStatus(); $("#pbody").innerHTML = profBody(); fillProfile(); }
+function profShow(){ $$('[data-act="ptab"]').forEach(t=>t.setAttribute("aria-selected", t.dataset.tab===S.profTab)); { const ps = profStatus(), pe = $("#pstatus"); pe.innerHTML = ps; pe.hidden = !ps; } $("#pbody").innerHTML = profBody(); fillProfile(); }
 /* CONFIGURAÇÕES — separadas do conteúdo do perfil */
 function screenConfig(){
   return header(`<div class="toprow"><button class="iconbtn" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button><h1 class="pagehead">Configurações</h1></div>`)
@@ -5318,39 +5350,44 @@ function screenConfig(){
    Só Publicações e Pastas (curtidas e compartilhadas são privadas; pastas secretas e vazias não aparecem). */
 const pubFolders = () => FOLDERS.filter(f=>!f[3] && folderCount(f[0]));
 function pubStatus(){ const pl = (k,a,b) => `${k} ${k===1?a:b}`;
+  if (S.pubTab==="redes") return "";
   if (S.pubTab==="pastas"){
     if (!S.publico) return `<span class="txt">Com o perfil privado, as pastas ficam só com você</span>`;
     if (S.pubFolder){ const f = FOLDERS.find(x=>x[0]===S.pubFolder);
       return `<button class="iconbtn tool" type="button" data-act="pubfolder" data-f="" aria-label="Voltar para as pastas">${ic("back")}</button><span class="txt"><b>${f[1]}</b> · ${pl(folderCount(f[0]),"item","itens")}</span>`; }
     return `<span class="txt"><b>${pl(pubFolders().length,"pasta","pastas")}</b> · as secretas não aparecem</span>`; }
   const n = myPosts().length;
-  return `<span class="txt"><b>${pl(n,"publicação","publicações")}</b> · ${S.publico ? "qualquer pessoa vê" : "só quem participa das mesmas organizações vê"}</span>`; }
+  return ""; }
 function pubBody(){
+  /* aba Outras redes (12 nov 2026): os links das contas que a pessoa trouxe para o perfil; conectar e desconectar abre a janela de sempre */
+  if (S.pubTab==="redes"){ const tem = S.redes.some(c=>c.tipo==="minha" && REDES[c.rede]);
+    return `<div class="pubredes">${tem ? redeLinks(true) : `<p class="empty">Nenhuma rede no seu perfil ainda.</p>`}<button class="btn" type="button" data-act="redes">${ic("plus","sm")} ${tem ? "Gerenciar outras redes" : "Trazer de outras redes"}</button></div>`; }
   if (S.pubTab==="pastas" && !S.pubFolder) return S.publico ? `<div class="boards pboards">${pubFolders().map(f=>boardHTML(f).replace('data-act="openfolder"','data-act="pubfolder"')).join("")}</div>` : "";
   return `<div class="rwrap"><div id="pfeed"></div></div>`; }
 function fillPublic(){ const box = $("#pfeed"); if (!box) return;
   const items = S.pubTab==="pastas" ? folderItems(S.pubFolder) : myPosts();
   const g = new TileGrid("pfeed", box, "none"); items.forEach(it=>g.add(it)); g.flush(true); g.render(); }
-function pubShow(){ $$('[data-act="pubtab"]').forEach(t=>t.setAttribute("aria-selected", t.dataset.tab===S.pubTab)); $("#pubstatus").innerHTML = pubStatus(); $("#pubbody").innerHTML = pubBody(); fillPublic(); }
+function pubShow(){ $$('[data-act="pubtab"]').forEach(t=>t.setAttribute("aria-selected", t.dataset.tab===S.pubTab)); { const ps = pubStatus(), pe = $("#pubstatus"); pe.innerHTML = ps; pe.hidden = !ps; } $("#pubbody").innerHTML = pubBody(); fillPublic(); }
 function visBox(){ const m = S.redes.filter(c=>c.tipo==="minha"), li = t => `<li>${t}</li>`;
   const sim = ["Nome, iniciais e cidade", "Até " + MAX_INT + " interesses que você escolhe", "Suas publicações", ...m.map(c=>(c.destino==="link" ? "O link do seu " : "O link e a prévia do seu ") + REDES[c.rede].nome), S.publico ? "Pastas que não são secretas" : "", S.orgsVisiveis ? "Organizações de que você participa" : ""].filter(Boolean);
   const nao = ["Algoritmo, temas e tudo o que alimenta o seu feed", "Curtidas e compartilhadas", "Agenda: eventos e chamados", "Pastas secretas" + (S.publico ? "" : " (e, com o perfil privado, todas as pastas)"), "Perfis que você acompanha em outras redes", "Seu e-mail", S.orgsVisiveis ? "" : "Organizações de que você participa (você escolheu ocultar)"].filter(Boolean);
-  /* resumo numa linha; o detalhe abre no chevron */
-  return `<details class="visdet"><summary>${ic(S.publico?"globe":"people")}<span class="t"><b>Perfil ${S.publico ? "público" : "privado"}</b><small>${S.publico ? "Qualquer pessoa vê esta página" : "Só quem participa das mesmas organizações vê esta página"} · seu algoritmo nunca aparece</small></span>${ic("chev","sm")}</summary>
-    <div class="visbox"><div class="vcol pub"><h3>${ic("globe","sm")} Aparece</h3><ul>${sim.map(li).join("")}</ul></div>
+  /* 12 nov 2026: o detalhe saiu da página e abre numa janela própria, pelo selo "Perfil privado/público" */
+  return `<div class="visbox"><div class="vcol pub"><h3>${ic("globe","sm")} Aparece</h3><ul>${sim.map(li).join("")}</ul></div>
     <div class="vcol priv"><h3>${ic("lock","sm")} Nunca aparece</h3><ul>${nao.map(li).join("")}</ul></div></div>
-    <a class="vismuda" href="#config">Mudar nas configurações</a></details>`; }
+    <a class="vismuda" href="#config" data-act="close">Mudar nas configurações</a>`; }
+function sheetVis(){ const t = "Perfil " + (S.publico ? "público" : "privado");
+  openSheet(shead(t) + `<p class="lnote osub">${S.publico ? "Qualquer pessoa vê esta página." : "Só quem participa das mesmas organizações vê esta página."} Seu algoritmo nunca aparece.</p>` + visBox(), t); }
 function screenPublic(){
   const orgs = ORGS.filter(o=>S.follow.has(o.id));
   return header(`<div class="toprow"><button class="iconbtn" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button><h1 class="pagehead" style="font-size:19px">Como outras pessoas veem</h1><div class="spacer"></div>
     <button class="iconbtn" type="button" data-act="share" aria-label="Compartilhar perfil">${ic("share")}</button></div>`)
   + `<div class="container">
-    ${visBox()}
     <div class="pubhead">${(()=>{ const pf = ME.user && ME.perfil; return pf ? `<span class="av" aria-hidden="true">${siglaDe(pf.nome)}</span><h2>${esc(pf.nome)}${verifBtn(pf.verificado)}</h2>${pf.cidade ? `<p>${esc(pf.cidade)}</p>` : ""}${pf.bio ? `<p class="pubbio">${esc(pf.bio)}</p>` : ""}` : `<span class="av" aria-hidden="true">VC</span><h2>Você</h2>`; })()}${S.interesses.length ? intChips(false, true) : ""}
-      <p>${S.orgsVisiveis ? `Participa de ${orgs.length} organizações` : "Organizações ocultas"}</p>
+      <button class="vischip" type="button" data-act="visdet" aria-haspopup="dialog">${ic(S.publico ? "globe" : "lock","sm")}<span>Perfil ${S.publico ? "público" : "privado"}</span>${ic("back","sm flip")}</button>
+      ${S.orgsVisiveis ? `<p>Participa de ${orgs.length} organizações</p>` : ""}
       ${S.orgsVisiveis ? `<div class="chips tags" style="justify-content:center">${orgs.map(o=>`<span class="chip static">${o.nome}</span>`).join("")}</div>` : ""}</div>
-    <div class="tabs pubtabs" role="tablist" aria-label="Perfil público">${[["publicacoes","Publicações"],["pastas","Pastas"]].map(([k,n])=>`<button class="tab" type="button" role="tab" data-act="pubtab" data-tab="${k}" aria-selected="${S.pubTab===k}">${n}</button>`).join("")}</div>
-    <div class="status" id="pubstatus">${pubStatus()}</div>
+    <div class="tabs pubtabs" role="tablist" aria-label="Perfil público">${[["publicacoes","Publicações"],["pastas","Pastas"],["redes","Outras redes"]].map(([k,n])=>`<button class="tab" type="button" role="tab" data-act="pubtab" data-tab="${k}" aria-selected="${S.pubTab===k}">${n}</button>`).join("")}</div>
+    <div class="status" id="pubstatus"${pubStatus() ? "" : " hidden"}>${pubStatus()}</div>
     <div id="pubbody">${pubBody()}</div></div>`;
 }
 /* MOBILIZAR: a notícia acende a conversa; daqui sai um evento, um chamado, um abaixo-assinado ou uma votação, já ligados à matéria */
@@ -6100,11 +6137,19 @@ DOCBASE.docs.forEach(d=>{ const id = d.id, org = /unicef/.test(d.url) ? "onu-dud
   RESUMO[id] = d.resumo; BODY[id] = [d.resumo]; SEAL[id] = 98;
   if (!POOL.some(x=>x.id===id)) POOL.push(it); });
 let DOCCAT = 0;
+/* DOCUMENTOS RECENTES (12 nov 2026): o bloco dos documentos que fontes e organizações publicam ganhou nome e filtro por tipo (Dados, Lei, Carta…) */
+let DOCTIPO = "";
+const docTipoDe = it => String(it.doc || kindOf(it) || "Documento").split(" ")[0];
+function docRecHTML(){ const l = source0(S.filt, tabTypes()).filter(it=>!it.base), n = {}; l.forEach(it=>{ const k = docTipoDe(it); n[k] = (n[k] || 0) + 1; });
+  const ks = Object.keys(n).sort((a,b)=>n[b] - n[a] || a.localeCompare(b)); if (DOCTIPO && !n[DOCTIPO]) DOCTIPO = "";
+  if (!l.length) return "";
+  return `<div class="dbh dbrec"><span class="dbk">Documentos recentes</span><h2>Publicados por fontes e organizações</h2></div>
+    ${ks.length > 1 ? `<div class="dbcats" role="group" aria-label="Tipo de documento"><button class="dbcat" type="button" data-act="doctipo" data-k="" aria-pressed="${!DOCTIPO}">Todos<span>${l.length}</span></button>${ks.map(k=>`<button class="dbcat" type="button" data-act="doctipo" data-k="${esc(k)}" aria-pressed="${DOCTIPO===k}">${esc(k)}<span>${n[k]}</span></button>`).join("")}</div>` : ""}`; }
 const DOC_ICO = ["people","cart","work","heart","lock","book","pin","doc"];
 function docBaseHTML(){ const C = DOCBASE.cats, l = DOCBASE.docs.filter(d=>d.cat===DOCCAT), n = i => DOCBASE.docs.filter(d=>d.cat===i).length;
   return `<div class="dbh"><span class="dbk">Documentação cidadã</span><h2>As leis que todo mundo deveria conhecer</h2><p>${DOCBASE.docs.length} textos oficiais, direto da fonte</p></div>
     <div class="dbcats" role="group" aria-label="Assuntos">${C.map((c,i)=>`<button class="dbcat" type="button" data-act="doccat" data-i="${i}" aria-pressed="${i===DOCCAT}">${c}<span>${n(i)}</span></button>`).join("")}</div>
-    <div class="dbgrid">${l.map(d=>`${dbCard(d)}`).join("")}</div>`; }
+    <div class="dbgrid">${l.map(d=>`${dbCard(d)}`).join("")}</div>${docRecHTML()}`; }
 /* rótulo sem repetição: "Lei nº 14.611/2023" em vez de "Lei · Lei nº…" */
 const dbRotulo = d => /^(Lei|Decreto)/.test(d.num) ? d.num : /^de /.test(d.num) ? d.doc + " " + d.num : d.doc + " · " + d.num;
 const dbCard = d => `<a class="dbcard" href="#pin-${d.id}-0"><span class="dbtype">${esc(dbRotulo(d))}</span><b>${esc(d.titulo)}</b><p>${esc(d.resumo)}</p><span class="dbsrc">${esc(hostOf(d.url))} ${ic("ext","sm")}</span></a>`;
@@ -6832,6 +6877,7 @@ const A = {
   envexit: envExit,
   toast: b => toast(b.dataset.msg),
   create: sheetCreate,
+  doctipo: b => { DOCTIPO = b.dataset.k || ""; const y = scrollY; docBase(); resetFeed(); scrollTo(0, y); },
   doccat: b => { DOCCAT = +b.dataset.i; const box = $("#docbase"); if (box){ box.innerHTML = docBaseHTML(); dbIguala(); const c = box.querySelector('[aria-pressed="true"]'); c && c.scrollIntoView({inline:"nearest", block:"nearest"}); } },
   altaassunto: b => { S.altaAberto = b.dataset.n; go("em-alta"); },
   altaabre: b => { S.altaAberto = S.altaAberto===b.dataset.n ? null : b.dataset.n; altaDesenha(); },
@@ -6930,6 +6976,7 @@ const A = {
       if (!r.ok || !j.url){ ocupado(b, false); return toast(j.erro ? j.erro.charAt(0).toUpperCase() + j.erro.slice(1) + "." : "Não foi possível abrir o pagamento. Tente de novo."); }
       uso("apoie", "pagamento"); location.href = j.url; }
     catch(e){ ocupado(b, false); toast("Sem conexão com o servidor. Tente de novo."); } },
+  visdet: () => sheetVis(),
   pedeverif: async b => { ocupado(b, true, "Enviando…"); const {error} = await SB.from("verificacao_pedidos").insert({user_id:ME.user.id}); ocupado(b, false);
     if (error && !/duplicate|unique/i.test(error.message || "")) return toast(erroAuth(error)); await perfilCarrega(); toast("Pedido de verificação na fila."); render(); },
   desisteverif: async b => { const dp = ((ME.acesso || {}).pedido || {}).doc_path; if (dp) await SB.storage.from("verificacao-docs").remove([dp]).catch(()=>{});
@@ -7421,7 +7468,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 21:17";
+const VERSAO = "v1 registrada · 12/11 07:06";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
