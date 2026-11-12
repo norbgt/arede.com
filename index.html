@@ -3393,6 +3393,11 @@ const folderArt = k => { const ids = folderItems(k).slice(0,3).map(i=>i.id);
 const likesOf = it => ((it.conta || typeof it.id!=="number") ? 0 : 14 + (it.id*37)%180) + (S.liked.has(it.uid)?1:0);   /* conta real: só as curtidas de verdade (ainda locais) */
 const ic = (n, cls="") => `<svg class="icon ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+/* TEXTO DE TERCEIROS (12 nov 2026): o que vem do servidor e foi escrito por pessoas (nomes, cidades, títulos, locais, anúncios)
+   entra limpo: sem < e >, e com aspas tipográficas. Assim, mesmo onde a tela não usa esc(), ninguém injeta código. */
+const limpo = s => s == null ? s : String(s).replace(/[<>]/g, "").replace(/"/g, "”");
+const limpoObj = o => { const r = {}; for (const [k, v] of Object.entries(o || {})) r[k] = typeof v === "string" && !/_url$/.test(k) ? limpo(v) : v; return r; };
+const linkSeguro = u => /^https?:\/\//i.test(String(u || "")) ? String(u) : "";
 /* curtir e salvar: só ícones; o preenchido indica que está ativo */
 const icFill = (n, on) => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" ${on?'style="fill:currentColor"':""}>${ICON[n]}</svg>`;
 const likeBtn = it => { const on = S.liked.has(it.uid);
@@ -4499,7 +4504,7 @@ const adLogo = (a, z=30) => `<svg class="adlogo" width="${z}" height="${z}" view
 let AD_REAIS = [];
 const AD_ROD = Math.floor(Math.random() * 1000);
 const adLetra = n => `<text x="12" y="16.6" text-anchor="middle" font-size="14" font-weight="800" fill="currentColor" font-family="inherit">${esc((String(n).trim()[0] || "A").toUpperCase())}</text>`;
-function adReal(p){ const c = AD_CORES[p.cor] || AD_CORES[0], id = "adr-" + p.id;
+function adReal(p){ p = Object.assign(limpoObj(p), {link:linkSeguro(p.link)}); const c = AD_CORES[p.cor] || AD_CORES[0], id = "adr-" + p.id;
   if (!ORG[id]) ORG[id] = {id, nome:p.nome, sigla:p.nome.slice(0,2).toUpperCase(), cor:c[0], cidade:"", anunciante:true, membros:0, natureza:"Anunciante"};
   return {id, real:true, pid:p.id, nome:p.nome, frase:p.frase, curta:p.frase, seg:p.seg || "", cta:p.cta || "", link:p.link, cor:c[0], cor2:c[1], fmt:p.formato, pos:p.posicao, fim:p.fim, logo:adLetra(p.nome)}; }
 async function adNoArCarrega(){ if (!SB) return; try{ const r = await SB.rpc("anuncios_no_ar"); if (r.error || !Array.isArray(r.data)) return;
@@ -6073,15 +6078,16 @@ function navConta(){ const tc = $("#topconta"); if (tc) tc.innerHTML = topContaH
     l.textContent = !on ? "Entrar" : n && n.length <= 13 ? n : p.length >= 2 ? p.slice(0, 12) : "Perfil"; }
   b.setAttribute("aria-label", on ? "Seu perfil" + (nome ? ", " + nome : "") + ". Conta conectada" : "Entrar ou criar conta"); }
 const siglaDe = n => (n||"?").trim().split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join("").toUpperCase() || "?";
-function orgDaPessoa(pf){ const id = "u-" + pf.id;
+function orgDaPessoa(pf){ const id = "u-" + pf.id; pf = Object.assign({}, pf, {nome:limpo(pf.nome) || "Conta da rede", cidade:limpo(pf.cidade), bio:limpo(pf.bio)});
   if (!ORG[id]) ORG[id] = {id, nome:pf.nome, sigla:siglaDe(pf.nome), cidade:pf.cidade || "", tema:"", membros:0, real:true, pessoa:true, natureza:"conta na rede",
     cor:CORES_CONTA[parseInt(pf.id.replace(/-/g,"").slice(0,6),16) % CORES_CONTA.length], sobre:pf.bio || "", verificado:pf.verificado || null, daRedeConta:ehContaRede(pf.id)};
   else Object.assign(ORG[id], {nome:pf.nome, sigla:siglaDe(pf.nome), cidade:pf.cidade || "", verificado:pf.verificado || null});
   return id; }
 function itemDaPublicacao(p){
-  const id = "u" + p.id.replace(/-/g,""), ex = p.extra || {}, criada = new Date(p.criada_em);
+  const id = "u" + p.id.replace(/-/g,""), ex = limpoObj(p.extra), criada = new Date(p.criada_em);
+  const orig = p; p = Object.assign({}, p, {titulo:limpo(p.titulo), texto:limpo(p.texto), cidade:limpo(p.cidade)});
   const it = {id, tipo:p.tipo==="abaixo" ? "chamado" : p.tipo, org:orgDaPessoa(p.perfis || {id:p.autor, nome:"Conta da rede"}), tema:temaNovo(p.tema || ""), titulo:p.titulo, texto:p.texto || "",
-    cidade:p.cidade || "", min:Math.max(1, Math.round((Date.now() - criada) / 60000)), conta:true, autorId:p.autor, uuid:p.id, publicada:p.publicada, criadaEm:p.criada_em, raw:p,
+    cidade:p.cidade || "", min:Math.max(1, Math.round((Date.now() - criada) / 60000)), conta:true, autorId:p.autor, uuid:p.id, publicada:p.publicada, criadaEm:p.criada_em, raw:orig,
     editada:!!(p.editada_em && new Date(p.editada_em) - criada > 60000)};
   if (p.imagem_url){ it.foto = p.imagem_url; it.credito = ""; }
   if (ex.arte && p.imagem_url){ it.arte = true; it.catArte = "outros"; it.artista = (p.perfis && p.perfis.nome) || ""; }
@@ -6114,7 +6120,7 @@ async function publicacoesCarrega(){ if (!SB) return;
 /* NOTÍCIAS DO COLETOR (servidor, atualizado a cada 15 minutos): entram no feed como as notícias da curadoria.
    Uma entrada por notícia; as outras fontes que deram a mesma notícia aparecem em "A mesma notícia em outras fontes". */
 const COR_TIPO = {"Imprensa · grande":"#1F2937","Imprensa · alternativa e independente":"#9A3412","Imprensa pública":"#0E7490","Checagem de fatos":"#1F7A4D","Governo e diário oficial":"#2A3FD4","Justiça e eleições":"#4B5563","Dados públicos":"#5B6B00","Pesquisa e ciência":"#7A3E9D","Organização verificada":"#C2185B"};
-function orgDaFonte(f){ const dom = String(f.dominio||"").split("/")[0].replace(/^www\./,""), canal = f.feed_tipo==="youtube" || dom==="youtube.com";
+function orgDaFonte(f){ f = Object.assign({}, f, {nome:limpo(f.nome) || ""}); const dom = String(f.dominio||"").split("/")[0].replace(/^www\./,""), canal = f.feed_tipo==="youtube" || dom==="youtube.com";
   const ex = !canal && Object.values(ORG).find(o=>o.fonte && o.site && hostOf(o.site)===dom); if (ex) return ex.id;
   const id = "fx-" + f.id;
   if (canal && !ORG[id]){ ORG[id] = {id, nome:f.nome.replace(/\s*\(YouTube\)$/,""), sigla:siglaDe(f.nome.replace(/\s*\(YouTube\)$/,"")), cidade:f.ambito==="int" ? "Internacional" : "Nacional", natureza:"canal no YouTube · " + (f.tipo||"").toLowerCase(), site:"https://www." + f.dominio,
@@ -6331,7 +6337,7 @@ function sheetOrgPedido(){ S.pedTema = S.pedTema || "";
 async function orgsAprovadasCarrega(){ if (!SB) return;
   try{ const r = await SB.from("org_pedidos").select("id,nome,cidade,tema,site,coordenacao,revisada_em").eq("status","aprovada").order("revisada_em", {ascending:false}).limit(200); if (r.error || !r.data.length) return;
     r.data.forEach(p=>{ const id = "op-" + p.id.slice(0, 8);
-      const o = {id, nome:p.nome, sigla:siglaDe(p.nome), cidade:p.cidade, tema:p.tema, natureza:"organização verificada", real:true, cor:CORES_CONTA[parseInt(p.id.replace(/-/g,"").slice(0,6),16) % CORES_CONTA.length], membros:0,
+      p = limpoObj(p); const o = {id, nome:p.nome, sigla:siglaDe(p.nome), cidade:p.cidade, tema:p.tema, natureza:"organização verificada", real:true, cor:CORES_CONTA[parseInt(p.id.replace(/-/g,"").slice(0,6),16) % CORES_CONTA.length], membros:0,
         sobre:"Organização verificada pela curadoria da rede." + (p.coordenacao ? " Coordenação: " + p.coordenacao + "." : ""), site:p.site || ""};
       if (ORG[id]) Object.assign(ORG[id], o); else { ORG[id] = o; ORGS.push(o); } });
     if (route()==="organizacoes") render(); }catch(e){} }
@@ -7029,7 +7035,7 @@ function sheetCriarReal(k, ed){ const nome = TIPOS_REAIS[k], pf = ME.perfil || {
     ${ed && ed.imagem_url ? `<div class="redimg"><img src="${esc(ed.imagem_url)}" alt="Imagem atual" referrerpolicy="no-referrer"><label class="chkrow"><input id="rsemfoto" type="checkbox"> <span>Tirar esta imagem</span></label></div>` : ""}
     <div class="field"><label for="rfoto">${ed && ed.imagem_url ? "Trocar a imagem (opcional)" : "Imagem (opcional)"}</label><input id="rfoto" type="file" accept="image/jpeg,image/png,image/webp"><small class="hint">JPG, PNG ou WebP, até 5 MB. Use só imagens suas ou que você pode publicar.</small>
 </div>
-    <div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="rtema">Tema</label><select id="rtema">${TEMAS.map(t=>`<option${ed && ed.tema===t ? " selected" : ""}>${t}</option>`).join("")}</select></div>
+    <div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="rtema">Tema</label><select id="rtema">${TEMAS.map(t=>`<option${ed && temaNovo(ed.tema)===t ? " selected" : ""}>${t}</option>`).join("")}</select></div>
       <div class="field" style="flex:1"><label for="rcid">Cidade</label><input id="rcid" type="text" maxlength="80" value="${esc(ed ? (ed.cidade || "") : (pf.cidade || ""))}"></div></div>
     <p class="ferr" role="alert" hidden></p>
     ${ed ? `<button class="btn primary block" type="button" data-act="publicarreal" data-k="${k}" data-ed="${ed.id}">Salvar alterações</button>
@@ -7787,7 +7793,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 12/11 17:18";
+const VERSAO = "v1 registrada · 12/11 17:24";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
