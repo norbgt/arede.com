@@ -4217,9 +4217,10 @@ function docLocal(it){ const o = ORG[it.org] || {}, c = it.cidade || (!o.fonte &
   const uf = Object.entries(UF_NOME).find(([sg,nm])=>c===sg || semAcento(c)===semAcento(nm));
   if (uf) return {k:"est", nivel:"Estadual", lugar:uf[1]};
   return {k:"nac", nivel:"Nacional", lugar:"Brasil"}; }
+const adFaceFeed = a => `<span class="adface${a.anim ? " an-" + a.anim : ""}"><span class="adtop">${a.real ? `<span class="adtag">Anúncio</span>` : `<span class="adtag adtagph" aria-hidden="true"><span class="adlong">Anuncie aqui</span><span class="adshort">Anuncie</span></span>`}${a.cta ? `<span class="adcta">${esc(a.cta)}</span>` : ""}</span>
+    <span class="admk">${adLogo(a, 34)}</span><span class="adbot"><b class="adnome">${esc(a.nome)}</b><span class="adtxt"><span class="adlong">${esc(a.frase)}</span><span class="adshort">${esc(a.curta)}</span></span>${a.real ? (a.seg ? `<span class="adseg">${esc(a.seg)}</span>` : "") : `<span class="adseg"><span class="adlong">${esc(a.seg)} · </span>exemplo</span>`}</span></span>`;
 const adCard = (it, mode) => { const a = it.ad; return `<article class="card adcard" data-card="${it.uid}" data-mode="${mode}"><div class="adtile" style="--adc:${a.cor};--adc2:${a.cor2}">
-  <button class="tbtn" type="button" data-act="adopen" data-uid="${it.uid}" aria-label="Anúncio de ${esc(a.nome)}: ${esc(a.frase)}"><span class="adface${a.anim ? " an-" + a.anim : ""}"><span class="adtop"><span class="adtag adtagph" aria-hidden="true"><span class="adlong">Anuncie aqui</span><span class="adshort">Anuncie</span></span>${a.cta ? `<span class="adcta">${esc(a.cta)}</span>` : ""}</span>
-    <span class="admk">${adLogo(a, 34)}</span><span class="adbot"><b class="adnome">${esc(a.nome)}</b><span class="adtxt"><span class="adlong">${esc(a.frase)}</span><span class="adshort">${esc(a.curta)}</span></span><span class="adseg"><span class="adlong">${esc(a.seg)} · </span>exemplo</span></span></span></button>${AD_CALL}</div></article>`; };
+  <button class="tbtn" type="button" data-act="adopen" data-uid="${it.uid}" aria-label="Anúncio de ${esc(a.nome)}: ${esc(a.frase)}">${adFaceFeed(a)}</button>${a.real ? "" : AD_CALL}</div></article>`; };
 const cardFor = (it, mode, v) => it.anuncio ? adCard(it, mode) : v && v!=="masonry" && v!=="video" ? tabCard(it, mode, v) : card(it, mode);
 const EST = {anuncio:()=>200, video:it=>it.ar*170+70, imagem:it=>(it.ph || 1.25)*170+80, texto:()=>270, evento:()=>320, enquete:()=>330, votacao:()=>330, chamado:()=>330, documento:()=>290};
 const EST_V = {cedula:330, arquivo:150};
@@ -4340,11 +4341,28 @@ const ANUNCIANTES = [
 ];
 ANUNCIANTES.forEach(a=>{ ORG[a.id] = {id:a.id, nome:a.nome, sigla:a.nome.slice(0,2).toUpperCase(), cor:a.cor, cidade:"", anunciante:true, ficticia:true, membros:0, natureza:"Anunciante"}; });
 const adLogo = (a, z=30) => `<svg class="adlogo" width="${z}" height="${z}" viewBox="0 0 24 24" fill="none" aria-hidden="true">${a.logo}</svg>`;
+/* ANÚNCIOS PAGOS (12 nov 2026): o que foi comprado, pago e aprovado pela curadoria entra no feed no formato e na posição comprados,
+   pelos dias comprados (contados a partir da aprovação). Vêm do servidor (anuncios_no_ar). Os espaços sem anúncio pago seguem
+   com os anunciantes de exemplo. Posição: Início = 1º espaço; Meio = 2º e 3º; Rotativo = do 4º em diante. Mais de um anúncio
+   na mesma posição se revezam, começando por um sorteado a cada visita. */
+let AD_REAIS = [];
+const AD_ROD = Math.floor(Math.random() * 1000);
+const adLetra = n => `<text x="12" y="16.6" text-anchor="middle" font-size="14" font-weight="800" fill="currentColor" font-family="inherit">${esc((String(n).trim()[0] || "A").toUpperCase())}</text>`;
+function adReal(p){ const c = AD_CORES[p.cor] || AD_CORES[0], id = "adr-" + p.id;
+  if (!ORG[id]) ORG[id] = {id, nome:p.nome, sigla:p.nome.slice(0,2).toUpperCase(), cor:c[0], cidade:"", anunciante:true, membros:0, natureza:"Anunciante"};
+  return {id, real:true, pid:p.id, nome:p.nome, frase:p.frase, curta:p.frase, seg:p.seg || "", cta:p.cta || "", link:p.link, cor:c[0], cor2:c[1], fmt:p.formato, pos:p.posicao, fim:p.fim, logo:adLetra(p.nome)}; }
+async function adNoArCarrega(){ if (!SB) return; try{ const r = await SB.rpc("anuncios_no_ar"); if (r.error || !Array.isArray(r.data)) return;
+  const novo = r.data.map(adReal), mudou = JSON.stringify(novo.map(a=>a.id)) !== JSON.stringify(AD_REAIS.map(a=>a.id)); AD_REAIS = novo;
+  if (mudou && route()==="inicio"){ F.key = null; render(); } }catch(e){} }
+function adDoEspaco(n, antes){ const ok = a=>!S.adOculta.has(a.id), R = AD_REAIS.filter(ok);
+  const pega = (pos, k) => { const l = R.filter(a=>a.pos===pos); return l.length ? l[(k + AD_ROD) % l.length] : null; };
+  const pago = n===1 ? pega("topo", 0) : n<=3 ? pega("meio", n - 2) : pega("rot", n - 4);
+  if (pago && pago.id !== antes) return pago;   /* o mesmo anúncio pago nunca em dois espaços seguidos */
+  const ex = ANUNCIANTES.filter(ok); return ex.length ? ex[(n - 1) % ex.length] : null; }
 function comAnuncios(l){ if (S.tab==="videos") return l;   /* regra: nenhum anúncio na aba Vídeos, onde ficam as transmissões oficiais */
-  const ativos = ANUNCIANTES.filter(a=>!S.adOculta.has(a.id)); if (!ativos.length) return l;
-  const out = []; let n = 0;
-  l.forEach((it,i)=>{ out.push(it); if ((i + 1) % ANUNCIO_CADA === 0){ const a = ativos[n % ativos.length];
-    out.push({id:"anuncio-" + n, tipo:"anuncio", anuncio:true, ad:a, org:a.id, slot:n + 1, titulo:a.nome + " · " + a.frase, tema:"", min:it.min}); n++; } });
+  const out = []; let n = 0, antes = "";
+  l.forEach((it,i)=>{ out.push(it); if ((i + 1) % ANUNCIO_CADA === 0){ n++; const a = adDoEspaco(n, antes); if (!a) return; antes = a.id;
+    out.push({id:"anuncio-" + n + (a.real ? "-" + a.pid.slice(0, 8) : ""), tipo:"anuncio", anuncio:true, ad:a, org:a.id, slot:n, titulo:a.nome + " · " + a.frase, tema:"", min:it.min}); } });
   return out; }
 /* =====================================================================
    Anuncie aqui (11 nov 2026): venda de espaço de tela por tempo, tamanho e posição.
@@ -4362,7 +4380,7 @@ const AD_CORES = [["#6D28D9","#A78BFA"],["#2338D8","#93A5FF"],["#0F766E","#5EEAD
    O site nunca calcula o valor que vale nem vê dados de cartão: pede a cobrança ao servidor e leva a pessoa à página do Mercado Pago. */
 let AD_MODO = "desligado", AD_PEDIDOS = null;
 const adPodePagar = () => AD_MODO==="producao" || (AD_MODO==="teste" && nivel()==="admin");
-const AD_STATUS = {aguardando:["na","Aguardando pagamento"], pago:["warn","Pago · em conferência"], aprovado:["ok","Aprovado"], recusado:["bad","Recusado"], cancelado:["na","Cancelado"], expirado:["na","Expirado"]};
+const AD_STATUS = {aguardando:["na","Aguardando pagamento"], pago:["warn","Pago · em conferência"], aprovado:["ok","No ar"], recusado:["bad","Recusado · devolução em andamento"], cancelado:["na","Cancelado"], expirado:["na","Expirado"], encerrado:["na","Encerrado"], devolvido:["na","Recusado · valor devolvido"]};
 const AD_VAZIO = {nome:"", frase:"", cta:"", seg:"", link:"", cor:0, fmt:"s", pos:"rot", dias:7, meio:"pix"};
 const adDraft = () => { if (!S.adDraft) S.adDraft = Object.assign({}, AD_VAZIO, store.get("anuncio", {})); return S.adDraft; };
 const adBRL = v => v.toLocaleString("pt-BR", {style:"currency", currency:"BRL"});
@@ -4384,11 +4402,11 @@ async function adPrecosCarrega(){ if (LOCAL) adPrecosAplica(store.get("anuncioPr
   try{ const r = await SB.rpc("anuncio_tabela"); if (!r.error && r.data){ if (r.data.pagamento) AD_MODO = r.data.pagamento; if (r.data.dados) adPrecosAplica(r.data.dados); } }catch(e){} }
 /* pedidos da própria pessoa (o servidor só entrega os dela) */
 async function adPedidosCarrega(){ if (!SB || !ME.user){ AD_PEDIDOS = null; return; }
-  try{ const r = await SB.from("anuncio_pedidos").select("id,criado_em,nome,formato,posicao,dias,valor,status,teste,motivo").order("criado_em", {ascending:false}).limit(20); AD_PEDIDOS = r.data || []; }catch(e){ AD_PEDIDOS = null; }
+  try{ const r = await SB.from("anuncio_pedidos").select("id,criado_em,nome,formato,posicao,dias,valor,status,teste,motivo,fim").order("criado_em", {ascending:false}).limit(20); AD_PEDIDOS = r.data || []; }catch(e){ AD_PEDIDOS = null; }
   const box = $("#adpedidos"); if (box) box.innerHTML = adPedidosHTML(); }
 function adPedidosHTML(){ if (!AD_PEDIDOS || !AD_PEDIDOS.length) return ""; const P = AD_PRECO;
   return `<h2 class="adh">Seus pedidos</h2><div class="adsum">${AD_PEDIDOS.map(p=>{ const f = P.formatos.find(x=>x[0]===p.formato) || ["", p.formato], st = AD_STATUS[p.status] || ["na", p.status];
-    return `<div class="kv"><span><b>${esc(p.nome)}</b> · ${f[1]} · ${adDias(p.dias)}${p.teste ? " · teste" : ""}${p.motivo ? `<small class="admot">${esc(p.motivo)}</small>` : ""}</span><b>${adBRL(+p.valor)}<small class="adst ${st[0]}">${st[1]}</small></b></div>`; }).join("")}</div>`; }
+    return `<div class="kv"><span><b>${esc(p.nome)}</b> · ${f[1]} · ${adDias(p.dias)}${p.status==="aprovado" && p.fim ? " · até " + new Date(p.fim).toLocaleDateString("pt-BR", {day:"numeric", month:"short"}) : ""}${p.teste ? " · teste" : ""}${p.motivo ? `<small class="admot">${esc(p.motivo)}</small>` : ""}</span><b>${adBRL(+p.valor)}<small class="adst ${st[0]}">${st[1]}</small></b></div>`; }).join("")}</div>`; }
 /* volta do Mercado Pago: confere o pagamento no servidor e mostra a situação */
 function adVolta(){ let q; try{ q = new URLSearchParams(location.search); }catch(e){ return; } const id = q.get("pedido"); if (!id || !/^[0-9a-f-]{36}$/i.test(id)) return;
   const pay = q.get("payment_id") || q.get("collection_id") || "", st = q.get("status") || q.get("collection_status") || "";
@@ -4548,6 +4566,13 @@ function csatManda(fim){ const c = USO.csat; if (!c || !c.nota || !SB) return; c
   SB.rpc("csat_envia", {p_ctx:Object.assign(usoCtx(), {r:USO.tela || "", seg:USO.ativo}), p_nota:c.nota, p_atributos:[...c.at], p_comentario:com || null}).then(()=>{}, ()=>{});
   if (fim){ store.set("csat", {n:2, ok:true}); uso("csat", "respondido", "", c.nota); } }
 function sheetAnuncio(uid){ const it = findItem(uid); if (!it) return; const a = it.ad;
+  if (a.real) return openSheet(shead("Anúncio") + `<div class="adsh" style="--adc:${a.cor};--adc2:${a.cor2}"><span class="adsq">${adLogo(a, 40)}</span><span><b>${esc(a.nome)}</b><small>${a.seg ? esc(a.seg) + " · " : ""}anúncio pago</small></span></div>
+    <p class="adfrase">${esc(a.frase)}</p>
+    <div class="note">${ic("info")}<span><b>Por que você vê este anúncio:</b> o anunciante comprou este espaço, e ele aparece para todo mundo, na mesma posição. A rede.online não usa seu perfil, suas organizações, seus temas nem posição política para escolher anúncios, e anúncio não muda o seu algoritmo. A peça passou pela curadoria.</span></div>
+    <div class="sheetacts"><a class="btn ink block" href="${esc(a.link)}" target="_blank" rel="sponsored noopener noreferrer">Visitar ${esc(a.nome)} ${ic("ext","sm")}</a>
+    <button class="btn ghost block" type="button" data-act="adoculta" data-a="${a.id}">Não mostrar mais ${esc(a.nome)}</button>
+    <button class="btn ghost block" type="button" data-act="anunciar">Anuncie aqui</button></div>
+    <p class="srcnote" style="margin-top:8px">Leva a ${esc(hostOf(a.link) || a.link)}. Viu algo errado neste anúncio? Escreva para contato@arede.online.</p>`, "Anúncio");
   openSheet(shead("Anúncio") + `<div class="adsh" style="--adc:${a.cor};--adc2:${a.cor2}"><span class="adsq">${adLogo(a, 40)}</span><span><b>${esc(a.nome)}</b><small>${esc(a.seg)} · anunciante de exemplo</small></span></div>
     <p class="adfrase">${esc(a.frase)}</p>
     <div class="note">${ic("info")}<span><b>Por que você vê este anúncio:</b> ele aparece para todo mundo nesta aba, na mesma posição. A rede.online não usa seu perfil, suas organizações, seus temas nem posição política para escolher anúncios, e anúncio não muda o seu algoritmo.</span></div>
@@ -4829,13 +4854,20 @@ function planBlock(Q, final, g){
   const take = (pred, w=LOOK+1) => { const n = Math.min(Q.length, w); for (let i=0;i<n;i++) if (pred(Q[i])) return Q.splice(i,1)[0]; return null; };
   const cell = (it, size, r, c, rs, cs) => ({uid:it.uid, size, area:[r,c,rs,cs]});
   /* a mídia só sobe para o bloco atual se já estiver perto (janela curta): assim imagens e vídeos ficam espalhados pelo feed */
+  const adFmt = it => it.anuncio ? (it.ad.fmt || "s") : "", adPeq = it => it.anuncio && adFmt(it)!=="w";
   const mediaCol = (c, w=LOOK+1) => { let m = take(it=>!isTextual(it) && !it.anuncio, w);
-    if (!m){ const a = take(it=>it.anuncio, w); if (!a) return null; const p = take(it=>it.tipo==="imagem", LOOK+6);
+    if (!m){ const a = take(adPeq, w); if (!a) return null; if (adFmt(a)==="t") return [cell(a,"t",1,c,2,2)];
+      const p = take(it=>it.tipo==="imagem", LOOK+6);
       return p ? [cell(p,"s",1,c,1,2), cell(a,"s",2,c,1,2)] : [cell(a,"t",1,c,2,2)]; }   /* anúncio sozinho ocupa a coluna toda: sem buraco embaixo dele */
     if (m.tipo==="video") return [cell(m,"t",1,c,2,2)];
     /* anúncio é sempre quadradinho: entra como o par pequeno de uma imagem */
-    const m2 = take(it=>it.anuncio, 3) || take(it=>it.tipo==="imagem", 2);
+    const ad2 = take(it=>it.anuncio && adFmt(it)==="s", 3);
+    if (!ad2){ const av = take(it=>it.anuncio && adFmt(it)==="t", 3); if (av){ Q.unshift(av); } }   /* vertical não vira par pequeno: volta para a fila e ganha a coluna dele */
+    const m2 = ad2 || take(it=>it.tipo==="imagem", 2);
     return m2 ? [cell(m,"s",1,c,1,2), cell(m2,"s",2,c,1,2)] : [cell(m,"t",1,c,2,2)]; };
+  if (Q[0] && Q[0].anuncio && adFmt(Q[0])==="w"){   /* Destaque: dois terços da largura, altura inteira, ao lado de uma coluna de mídia */
+    const ad = Q.shift(), right = g.side, c = right ? 1 : 5, col = mediaCol(c, LOOK+3) || (t => t ? [cell(t,"t",1,c,2,2)] : null)(take(isTextual, LOOK+3));
+    g.side = !g.side; return {cells:[cell(ad,"w",1,right?3:1,2,4)].concat(col || [])}; }
   if (isTextual(Q[0])){
     const tx = Q.shift(), right = g.side; const col = mediaCol(right ? 1 : 5, 3);
     if (col){ g.side = !g.side; return {cells:[cell(tx,"w",1,right?3:1,2,4)].concat(col)}; }
@@ -4853,10 +4885,7 @@ function planBlock(Q, final, g){
 function tileHTML(it, cl, mode="none"){
   if (it.anuncio){ const a = it.ad, [r,c,rs,cs] = cl.area;
     return `<div class="tile adtile ${cl.size}" style="grid-area:${r} / ${c} / span ${rs} / span ${cs};--adc:${a.cor};--adc2:${a.cor2}" data-tile="${it.uid}" data-size="${cl.size}" data-area="${cl.area}" data-mode="${mode}">
-      <button class="tbtn" type="button" data-act="adopen" data-uid="${it.uid}" aria-label="Anúncio de ${esc(a.nome)}: ${esc(a.frase)}">
-        <span class="adface${a.anim ? " an-" + a.anim : ""}"><span class="adtop"><span class="adtag adtagph" aria-hidden="true"><span class="adlong">Anuncie aqui</span><span class="adshort">Anuncie</span></span>${a.cta ? `<span class="adcta">${esc(a.cta)}</span>` : ""}</span>
-          <span class="admk">${adLogo(a, 34)}</span>
-          <span class="adbot"><b class="adnome">${esc(a.nome)}</b><span class="adtxt"><span class="adlong">${esc(a.frase)}</span><span class="adshort">${esc(a.curta)}</span></span><span class="adseg"><span class="adlong">${esc(a.seg)} · </span>exemplo</span></span></span></button>${AD_CALL}</div>`; }
+      <button class="tbtn" type="button" data-act="adopen" data-uid="${it.uid}" aria-label="Anúncio de ${esc(a.nome)}: ${esc(a.frase)}">${adFaceFeed(a)}</button>${a.real ? "" : AD_CALL}</div>`; }
   const o = ORG[it.org], s = sealOf(it), on = S.saved.has(it.uid), [r,c,rs,cs] = cl.area;
   const isVid = it.tipo==="video", media = !isTextual(it);
   const seal = s.sc!==null ? `<span class="tseal" aria-hidden="true">${sealIco(s,14)}${s.sc}</span>` : "";
@@ -5860,7 +5889,7 @@ async function contaInicia(){
     if (erroUrl) toast("O link do e-mail expirou ou já foi usado. Entre com e-mail e senha ou peça outro link.");
     else if (ME.user) toast("E-mail confirmado. Sua conta está ativa.");
   }
-  cfgCarrega(); adPrecosCarrega(); usoInicia(); await perfilCarrega(); ME.pronto = true; adVolta(); apoioVolta(); if (route()==="anunciar") adPedidosCarrega(); await publicacoesCarrega(); await noticiasCarrega(); contaAtualiza(); logoInicio(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
+  cfgCarrega(); adPrecosCarrega(); adNoArCarrega(); setInterval(()=>{ if (document.visibilityState==="visible") adNoArCarrega(); }, 15 * 60000); usoInicia(); await perfilCarrega(); ME.pronto = true; adVolta(); apoioVolta(); if (route()==="anunciar") adPedidosCarrega(); await publicacoesCarrega(); await noticiasCarrega(); contaAtualiza(); logoInicio(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
   setInterval(()=>{ if (document.visibilityState==="visible") noticiasCarrega(); }, 15 * 60000);
 }
 /* a escolha guardada na conta vale em qualquer aparelho; se a conta ainda não tem, guarda a deste aparelho (quando a pessoa já escolheu) */
@@ -7492,7 +7521,7 @@ document.addEventListener("click", e=>{ const a = e.target.closest && e.target.c
   if (sec==="inicio") noticiasCarrega(); uso("nav", "de-novo", sec); });
 if (S.localAuto && navigator.permissions && navigator.permissions.query) navigator.permissions.query({name:"geolocation"}).then(q=>{ if (q.state==="granted" && Date.now() - (S.localQuando || 0) > 6 * 3600e3) localAtualiza(true); }).catch(()=>{});
 contaInicia();
-if (/[?&]teste=1/.test(location.search)) window.__arede = {donoDe, findItem, S, ME, navConta, LV, aoVivoPinta, adPrecosAplica, USO, uso, usoEnvia, csatTenta, prox, footCtx, footInfo, PRIO, prioDe, historicoPreenche, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
+if (/[?&]teste=1/.test(location.search)) window.__arede = {adReal, AD_REAIS_set:l=>{ AD_REAIS = l; F.key = null; render(); }, donoDe, findItem, S, ME, navConta, LV, aoVivoPinta, adPrecosAplica, USO, uso, usoEnvia, csatTenta, prox, footCtx, footInfo, PRIO, prioDe, historicoPreenche, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
 window.addEventListener("scroll", ()=>{ const t = $("#top"); if (t) t.classList.toggle("scrolled", window.scrollY > 4); }, {passive:true});
 window.addEventListener("resize", debounce(()=>{
   placeLogoDots();
@@ -7541,7 +7570,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 12/11 08:06";
+const VERSAO = "v1 registrada · 12/11 08:15";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
