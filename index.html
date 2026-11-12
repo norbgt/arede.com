@@ -6710,7 +6710,7 @@ const DOCS = {
   ["Denúncias e moderação", ["Qualquer pessoa pode denunciar um conteúdo pelo botão Denunciar ou por contato@arede.online. A denúncia é registrada com data e analisada pela curadoria.", "O conteúdo continua visível até a decisão, salvo casos graves. A curadoria pode ocultar ou remover o que fere estes Termos e pode suspender contas que insistem.", "Quem teve um conteúdo removido pode pedir revisão pelo mesmo contato. Ordens da Justiça são sempre cumpridas."]],
   ["Notícias e conteúdo de terceiros", ["As notícias vêm de veículos e fontes públicas, sempre com o nome da fonte e o link para o original. O texto completo fica no site de quem publicou.", "Se você é responsável por um conteúdo e quer corrigir ou retirar algo, escreva para contato@arede.online."]],
   ["O selo de confiança", ["A nota que aparece nas notícias é uma avaliação da rede.online, feita por critérios públicos e iguais para todas as fontes. Ela não é uma acusação contra nenhum veículo ou pessoa, e pode estar errada.", "Qualquer fonte pode pedir a revisão da sua nota em contato@arede.online."]],
-  ["Anúncios e apoios", ["Os anúncios aparecem marcados como anúncio, iguais para todo mundo, e passam pela curadoria antes de ir ao ar.", "O apoio é uma doação para manter o site. Não dá direito a produto, serviço ou vantagem.", "Nesta fase de teste, os pagamentos ainda não fazem cobranças reais."]],
+  ["Anúncios e apoios", ["Os anúncios aparecem marcados como anúncio, iguais para todo mundo, e passam pela curadoria antes de ir ao ar.", "O apoio é uma doação para manter o site. Não dá direito a produto, serviço ou vantagem.", "Os apoios são cobrados de verdade, pelo Mercado Pago. A compra de anúncios ainda está em teste e não está aberta ao público."]],
   ["Limites", ["A rede.online não garante que o site fique sempre no ar nem que todo conteúdo de terceiros esteja correto. Confira sempre a fonte original."]],
   ["Contato", ["contato@arede.online"]],
   ["Mudanças nestes Termos", ["Quando estes Termos mudarem, a data no alto muda, e mudanças importantes são avisadas no site."]]]}};
@@ -7541,7 +7541,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 12/11 07:35";
+const VERSAO = "v1 registrada · 12/11 08:06";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
