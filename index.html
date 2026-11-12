@@ -1710,6 +1710,7 @@ button.setting{width:100%;border:0;text-align:left;font:inherit;color:inherit;cu
 .toast{position:fixed;left:50%;bottom:calc(var(--nav-space) + var(--safe-b) + 16px);z-index:70;transform:translateX(-50%);max-width:calc(100% - 2*var(--gutter));
   padding:12px 16px;border-radius:14px;background:var(--ink);color:var(--bg);font-size:14px;font-weight:500;box-shadow:var(--shadow)}
 @media (min-width:768px){ .toast{bottom:24px;margin-left:48px} }
+#capbox{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9999}#capbox:empty{display:none}
 </style>
 </head>
 <body>
@@ -3976,6 +3977,17 @@ const DONOS_FONTE = [
 /* conta_rede: a conta oficial da rede (o papel de cada conta não é mais lido em público; 12 nov 2026) */
 let CFG = {selo_donos:false, apoio:"teste", conta_rede:"47746b38-b326-46c5-8dc6-89ed2df03209"};
 const ehContaRede = id => !!id && id === CFG.conta_rede;
+/* DESAFIO CONTRA ROBÔS (Turnstile, Cloudflare): só liga quando o painel tem a chave pública (CFG.turnstile).
+   Cada entrada, cadastro, recuperação ou reenvio pede um sinal novo; quase sempre resolve sozinho, sem nada aparecer.
+   Só quando a Cloudflare desconfia surge uma caixinha para tocar. */
+function capScript(){ if (window.turnstile) return Promise.resolve(); if (capScript.p) return capScript.p;
+  return capScript.p = new Promise((ok, er)=>{ const sc = document.createElement("script"); sc.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"; sc.async = true;
+    sc.onload = ok; sc.onerror = ()=>{ capScript.p = null; er(); }; document.head.appendChild(sc); }); }
+async function capToken(){ if (!CFG.turnstile) return undefined; try{ await capScript(); }catch(e){ return undefined; }
+  let box = document.getElementById("capbox"); if (!box){ box = document.createElement("div"); box.id = "capbox"; box.setAttribute("aria-live", "polite"); document.body.appendChild(box); }
+  return new Promise(ok=>{ let feito = false, id = null; const fim = t=>{ if (feito) return; feito = true; try{ if (id !== null) turnstile.remove(id); }catch(e){} ok(t); };
+    try{ id = turnstile.render(box, {sitekey:CFG.turnstile, appearance:"interaction-only", language:"pt-br", callback:fim, "error-callback":()=>fim(undefined), "timeout-callback":()=>fim(undefined)}); }catch(e){ fim(undefined); }
+    setTimeout(()=>fim(undefined), 90000); }); }
 async function cfgCarrega(){ if (!SB) return; try{ const r = await SB.rpc("config_publica"); if (r.error || !r.data) return; const antes = CFG.selo_donos; CFG = Object.assign({}, CFG, r.data);
   if (antes !== CFG.selo_donos) render(); }catch(e){} }
 function donoDe(it){ if (!CFG.selo_donos) return null; const o = ORG[it.org] || {}; if (!o.fonte) return null; const d = DONOS_FONTE.find(x=>x.nome.test(o.nome || "")); if (!d) return null;
@@ -7298,7 +7310,7 @@ const A = {
   trocasenhaok: async b => { const at = $("#tsat").value, no = $("#tsno").value, mail = ME.user.email, sa = senhaAvalia(no, [mail.split("@")[0], ...((ME.perfil && ME.perfil.nome) || "").split(/\s+/)]);
     if (!at) return sheetErro("Escreva a senha atual."); if (!sa.ok) return sheetErro("Nova senha: " + sa.msg); if (at===no) return sheetErro("A nova senha precisa ser diferente da atual.");
     sheetErro(""); ocupado(b, true, "Conferindo…");
-    const c = await SB.auth.signInWithPassword({email:mail, password:at}); if (c.error){ ocupado(b, false); return sheetErro(/invalid/i.test(c.error.message) ? "A senha atual não confere." : erroAuth(c.error)); }
+    const c = await SB.auth.signInWithPassword({email:mail, password:at, options:{captchaToken:await capToken()}}); if (c.error){ ocupado(b, false); return sheetErro(/invalid/i.test(c.error.message) ? "A senha atual não confere." : erroAuth(c.error)); }
     const {error} = await SB.auth.updateUser({password:no}); if (error){ ocupado(b, false); return sheetErro(erroAuth(error)); }
     try{ await SB.auth.signOut({scope:"others"}); }catch(e){} ocupado(b, false); closeSheet(); toast("Senha trocada. Os outros aparelhos saíram da conta."); },
   sairtodos: async () => { try{ await SB.auth.signOut({scope:"global"}); }catch(e){} ME.user = null; ME.perfil = null; ME.acesso = null; toast("Você saiu da conta em todos os aparelhos."); go("conta"); },
@@ -7319,7 +7331,7 @@ const A = {
   apagacontaok: async b => { const sen = $("#apsen").value, uid = ME.user.id, dp = ((ME.acesso || {}).pedido || {}).doc_path;
     if (!sen) return sheetErro("Escreva sua senha."); if ($("#aptxt").value.trim().toUpperCase()!=="APAGAR") return sheetErro("Escreva APAGAR para confirmar.");
     sheetErro(""); ocupado(b, true, "Apagando…");
-    const c = await SB.auth.signInWithPassword({email:ME.user.email, password:sen}); if (c.error){ ocupado(b, false); return sheetErro(/invalid/i.test(c.error.message) ? "A senha não confere." : erroAuth(c.error)); }
+    const c = await SB.auth.signInWithPassword({email:ME.user.email, password:sen, options:{captchaToken:await capToken()}}); if (c.error){ ocupado(b, false); return sheetErro(/invalid/i.test(c.error.message) ? "A senha não confere." : erroAuth(c.error)); }
     try{ const l = await SB.storage.from("midia").list(uid, {limit:1000}); if (l.data && l.data.length) await SB.storage.from("midia").remove(l.data.map(f=>uid + "/" + f.name)); }catch(e){}
     if (dp) await SB.storage.from("verificacao-docs").remove([dp]).catch(()=>{});
     const {error} = await SB.rpc("apagar_conta"); if (error){ ocupado(b, false); return sheetErro(/admin/i.test(error.message) ? "A conta de administração não é apagada pelo site." : /reauth/i.test(error.message) ? "Confirme a senha de novo." : erroAuth(error)); }
@@ -7337,22 +7349,22 @@ const A = {
     /* a resposta é a mesma, exista ou não uma conta com esse e-mail: assim ninguém descobre quem está na rede testando endereços.
        Campo-armadilha preenchido ou formulário enviado em menos de 2 segundos é robô: recebe a mesma tela, sem ir ao servidor. */
     const robo = !!($("#csite") && $("#csite").value) || Date.now() - (S.contaAbriu || 0) < 2000;
-    const {error} = robo ? {error:null} : await SB.auth.signUp({email:mail, password:sen, options:{data:{nome, cidade:cid, aceite:ACEITE_VERSAO}, emailRedirectTo:SITE + "#perfil"}});
+    const {error} = robo ? {error:null} : await SB.auth.signUp({email:mail, password:sen, options:{captchaToken:await capToken(), data:{nome, cidade:cid, aceite:ACEITE_VERSAO}, emailRedirectTo:SITE + "#perfil"}});
     ocupado(b, false);
     if (error && !/already registered|already been registered/i.test(error.message || "")) return formErro(erroAuth(error));
     S.contaTab = "entrar"; ME.pend = `${passosConta(2)}<b class="ntit">Confirme seu e-mail</b>Se <b>${esc(mail)}</b> ainda não tinha conta, enviamos um link de confirmação: toque nele e depois entre aqui. Se já tinha, é só entrar ou recuperar a senha.<span class="nact"><button class="linkbtn" type="button" data-act="reenviar" data-m="${esc(mail)}">Reenviar e-mail</button></span>`;
     render(); },
   reenviar: async b => { b.disabled = true; setTimeout(()=>{ if (b.isConnected) b.disabled = false; }, 60000);   /* um reenvio por minuto */
-    const {error} = await SB.auth.resend({type:"signup", email:b.dataset.m, options:{emailRedirectTo:SITE + "#perfil"}}); toast(error ? erroAuth(error) : "E-mail reenviado."); },
+    const {error} = await SB.auth.resend({type:"signup", email:b.dataset.m, options:{emailRedirectTo:SITE + "#perfil", captchaToken:await capToken()}}); toast(error ? erroAuth(error) : "E-mail reenviado."); },
   entrar: async b => { const mail = $("#lmail").value.trim().toLowerCase(), sen = $("#lsen").value;
     if (!mailBom(mail) || !sen) return formErro("Escreva seu e-mail e sua senha.");
     formErro(""); ocupado(b, true, "Entrando…");
-    const {error} = await SB.auth.signInWithPassword({email:mail, password:sen}); ocupado(b, false);
+    const {error} = await SB.auth.signInWithPassword({email:mail, password:sen, options:{captchaToken:await capToken()}}); ocupado(b, false);
     if (error){ formErro(erroAuth(error)); if (/not confirmed/i.test(error.message)){ ME.pend = `<b class="ntit">Falta confirmar o e-mail</b>Toque no link que enviamos para <b>${esc(mail)}</b>.<span class="nact"><button class="linkbtn" type="button" data-act="reenviar" data-m="${esc(mail)}">Reenviar e-mail</button></span>`; render(); } return; }
     ME.pend = null; await perfilCarrega(); toast("Bem-vinda à rede" + (ME.perfil ? ", " + ME.perfil.nome.split(" ")[0] : "") + "."); go("perfil"); },
   esqueci: async b => { const mail = ($("#lmail") ? $("#lmail").value.trim().toLowerCase() : "");
     if (!mailBom(mail)) return formErro("Escreva o e-mail da conta e toque de novo em Esqueci a senha.");
-    const {error} = await SB.auth.resetPasswordForEmail(mail, {redirectTo:SITE + "#nova-senha"});
+    const {error} = await SB.auth.resetPasswordForEmail(mail, {redirectTo:SITE + "#nova-senha", captchaToken:await capToken()});
     if (error) return formErro(erroAuth(error)); formErro(""); ME.pend = `<b class="ntit">Confira seu e-mail</b>Se houver uma conta com <b>${esc(mail)}</b>, chega um link para criar uma nova senha.`; render(); },
   novasenha: async b => { const v = $("#nsen").value, sa = senhaAvalia(v, [((ME.user && ME.user.email) || "").split("@")[0]]); if (!sa.ok) return formErro("Senha: " + sa.msg);
     ocupado(b, true); const {error} = await SB.auth.updateUser({password:v}); ocupado(b, false);
@@ -7793,7 +7805,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 12/11 17:24";
+const VERSAO = "v1 registrada · 12/11 19:46";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
