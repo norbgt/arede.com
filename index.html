@@ -207,6 +207,11 @@ img,svg{max-width:100%}
 .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
 @media (min-width:768px){ .tabs{-webkit-mask-image:none;mask-image:none} }
 .status[hidden]{display:none}
+.docleg{max-width:680px;padding:8px 0 40px;font-size:15px;line-height:1.55}
+.docleg h2{font-size:16px;margin:26px 0 6px}.docleg ul{margin:0;padding-left:20px;display:grid;gap:6px}.docleg p{margin:0}
+.docleg .docdata{font-size:12.5px;color:var(--muted);margin-bottom:10px}.docleg .docintro{font-size:16.5px}
+.docleg .docfim{margin-top:28px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.docleg a{color:var(--accent)}
 .pubredes{display:grid;justify-items:center;gap:14px;padding:22px var(--gutter)}
 .vischip{display:inline-flex;align-items:center;gap:6px;margin:10px auto 2px;padding:6px 10px 6px 12px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:600;cursor:pointer}
 .vischip .icon{width:14px;height:14px}
@@ -690,6 +695,7 @@ h1 .fic{font-size:11px;vertical-align:4px}
 .sbm[data-m="antigo"]{color:var(--warn)}.sbm[data-m="antigo"] .icon{color:var(--warn)}
 .sbm[data-m="proprio"]{color:var(--warn);font-weight:600}.sbm[data-m="proprio"] .icon{color:var(--warn)}
 .sbexp li[data-m="proprio"] .icon{color:var(--warn)}
+.sbaviso{margin:10px 0 0;font-size:12px;line-height:1.45;color:var(--muted)}.sbaviso a{color:inherit;text-decoration:underline}
 .sbm[data-m="oficial"] .icon{color:var(--ok)}
 /* checagem de agência com mais destaque: fundo verde suave, nome da marca em negrito */
 .sbm[data-m="checado"]{margin-left:-8px;padding:4px 11px 4px 8px;border-radius:999px;background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ink)}
@@ -3842,6 +3848,7 @@ function sealBox(it, compacto){
     ${m.length ? `<span class="sbmarcas">${m.map(x=>`<span class="sbm" data-m="${x.k}">${ic(x.ic,"sm")}<span class="sbt">${x.t}</span>${x.d ? `<span class="sbd"> · ${esc(x.d)}</span>` : ""}</span>`).join("")}</span>` : ""}</summary>
     ${s.sc!==null?`<div class="scale" role="img" aria-label="Nota ${s.sc} de 100"><i style="left:${s.sc}%"></i></div><div class="scalelbl"><span>Baixa</span><span>Moderada</span><span>Alta</span></div>`:""}
     ${m.length ? `<ul class="sbexp">${m.map(x=>`<li data-m="${x.k}">${ic(x.ic,"sm")}<span>${x.k==="dono" ? "" : `<b>${x.t}</b> `}${x.x}</span></li>`).join("")}</ul>` : ""}
+    <p class="sbaviso">A nota é uma avaliação da rede.online, por critérios públicos e iguais para todas as fontes. Não é uma acusação e pode estar errada. <a href="#termos">Como funciona e como pedir revisão</a></p>
     <div class="checks">${sealChecks(it)}</div>
     <p class="note" style="margin:10px 0"><span>Verificação automática com fontes públicas. Contestações passam por uma nova verificação automática, independente da primeira, com registro público. O selo avalia fatos, nunca opiniões ou posições políticas.</span></p>
     ${it.ext && it.ext.verif.length ? `<div class="vsrc"><b>${ORG[it.org].fonte ? "A mesma notícia em outras fontes" : "Fontes que confirmam"}</b>${it.ext.verif.map(v=>`<a href="${v.url}" target="_blank" rel="noopener"><span>${esc(v.fonte)}<small>${esc(v.papel||"")}${v.o_que_confirma?" · "+esc(v.o_que_confirma):""}</small></span>${ic("ext","sm")}</a>`).join("")}</div>`
@@ -4463,7 +4470,7 @@ function sheetAdSemPagamento(){ const v = adPreco(adDraft());
 /* =====================================================================
    MEDIÇÃO DE USO E CSAT (teste de usabilidade de 11 a 15 nov 2026; decisão da Amanda: sem aviso na tela neste período)
    Registra como o site é usado: telas e tempo em cada uma, toques (pelo nome da ação), toques sem resposta, toques repetidos,
-   erros, avisos que o site mostrou e saídas para as fontes. Depois de 45 s de navegação, pergunta a nota (CSAT).
+   erros, avisos que o site mostrou e saídas para as fontes. Depois de 1 minuto de navegação, pergunta a nota (CSAT).
    O que NÃO é registrado: conta, e-mail, endereço de rede, texto digitado, busca, e qual conteúdo foi aberto (só o tipo do cartão).
    A visita leva dois códigos aleatórios (visitante e sessão) e, se veio por link de convite, o código do convite.
    Só roda em arede.online, para sozinha no fim do teste, respeita o pedido de não rastrear do navegador e marca o uso da administração.
@@ -4486,7 +4493,7 @@ function usoInicia(){
   uso("inicio", usoRota(), ref === location.hostname ? "" : ref.slice(0, 60), null, {l:innerWidth, h:innerHeight, lg:(navigator.language || "").slice(0, 8), volta:store.get("usoVisitas", 0)});
   store.set("usoVisitas", store.get("usoVisitas", 0) + 1);
   usoTela();
-  setInterval(()=>{ if (document.visibilityState !== "visible") return; USO.ativo++; USO.telaT++; if (USO.ativo % 8 === 0) usoEnvia(); if (USO.ativo >= 45) csatTenta(); }, 1000);
+  setInterval(()=>{ if (document.visibilityState !== "visible") return; USO.ativo++; USO.telaT++; if (USO.ativo % 8 === 0) usoEnvia(); if (USO.ativo >= 60) csatTenta();   /* 12 nov 2026: a pesquisa de satisfação só aparece depois de 1 minuto de navegação (antes, 45 s) */ }, 1000);
   addEventListener("scroll", ()=>{ if (window.scrollY > USO.rol) USO.rol = window.scrollY; }, {passive:true});
   addEventListener("hashchange", usoTela);
   document.addEventListener("visibilitychange", ()=>{ if (document.visibilityState === "hidden") usoEnvia(true); });
@@ -4522,7 +4529,7 @@ function usoClique(e){ const t = e.target; if (!t || !t.closest) return; const a
   /* três toques ou mais no mesmo lugar em menos de um segundo: sinal de que algo não respondeu */
   USO.cliques = USO.cliques.filter(c=>agora - c.t < 900 && Math.abs(c.x - e.clientX) < 30 && Math.abs(c.y - e.clientY) < 30); USO.cliques.push({t:agora, x:e.clientX, y:e.clientY});
   if (USO.cliques.length === 3) uso("raiva", nome || usoDesc(t)); }
-/* CSAT: uma vez por visita, depois de 45 s de navegação, quando não há folha aberta nem campo em uso. No máximo duas vezes por pessoa. */
+/* CSAT: uma vez por visita, depois de 1 minuto de navegação, quando não há folha aberta nem campo em uso. No máximo duas vezes por pessoa. */
 function csatTenta(){ if (!USO.on || USO.csatVisto) return; const st = store.get("csat", {n:0, ok:false}); if (st.ok || st.n >= 2){ USO.csatVisto = true; return; }
   const ae = document.activeElement, digitando = ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName);
   if ($("#layer .scrim") || digitando || ["conta","nova-senha","anunciar","ate-depois"].includes(usoRota()) || document.querySelector("video:not([muted])")) return;
@@ -5343,6 +5350,12 @@ function screenConfig(){
     <h2 class="sectitle">Aparência</h2>
     <div class="setting stack"><span class="t"><b>Tema</b><small>Automático segue o seu aparelho</small></span>
       <div class="chips" role="radiogroup" aria-label="Tema">${[["auto","Automático"],["claro","Claro"],["escuro","Escuro"]].map(([k,t])=>`<button class="chip" type="button" role="radio" data-act="tema" data-v="${k}" aria-checked="${S.tema===k}">${t}</button>`).join("")}</div></div>
+    <h2 class="sectitle">Regras e contato</h2>
+    <div class="list">
+      <a class="setting l1" href="#termos"><span class="t"><b>Termos de uso</b></span>${ic("back","sm flip")}</a>
+      <a class="setting l1" href="#privacidade"><span class="t"><b>Privacidade</b><small>O que guardamos e os seus direitos</small></span>${ic("back","sm flip")}</a>
+      <a class="setting l1" href="mailto:contato@arede.online"><span class="t"><b>Falar com a rede</b><small>contato@arede.online · pedidos sobre os seus dados, denúncias e correções</small></span>${ic("back","sm flip")}</a>
+    </div>
     ${SOBRE_ON ? `<h2 class="sectitle">Sobre a rede.online</h2>
     <div class="list">
       <a class="setting l1" href="#manifesto"><span class="t"><b>Manifesto</b></span>${ic("back","sm flip")}</a>
@@ -5558,20 +5571,28 @@ function detailHTML(it, uid, mode, inline){
     <div class="pinside">${links.length||sibs.length ? `<section class="pinsec s"><h3 class="pinh">${it.ext ? "Outras fontes sobre isto" : "Conteúdos vinculados"}</h3><div class="lks">${links.map(linkRow).join("")}${sibs.map(sibRow).join("")}</div></section>` : ""}</div>
     ${it.ext && o.fonte ? `<div class="pinend">${mobBox(it)}</div>` : ""}</article>`;
 }
-/* DENÚNCIA (Estrutura #4): o conteúdo continua visível; a revisão é automática, sem interferência humana,
-   com registro público; recurso = nova revisão automática independente. Ordens judiciais são sempre cumpridas. */
-const MOTIVOS = [["ataque","Ataque ou discriminação contra pessoa ou grupo"],["ameaca","Ameaça ou incitação à violência"],["dados","Exposição de dados pessoais"],["falsa","Informação falsa"]];
+/* DENÚNCIA (refeita em 12 nov 2026): a denúncia é registrada no servidor, com data e protocolo, e a curadoria decide.
+   O conteúdo continua visível até a decisão. Saiu a "revisão automática" simulada, que não existia de verdade. */
+const MOTIVOS = [["ataque","Ataque ou discriminação contra pessoa ou grupo"],["ameaca","Ameaça ou incitação à violência"],["dados","Exposição de dados pessoais"],["falsa","Informação falsa"],["menor","Envolve criança ou adolescente de forma imprópria"],["direitos","Usa obra ou imagem sem autorização"],["outro","Outro motivo"]];
 function reportBox(it){ const r = S.reports[it.uid];
   if (!r) return `<button class="linkbtn muted rep" type="button" data-act="report" data-uid="${it.uid}">${ic("flag","sm")} Denunciar</button>`;
   const m = (MOTIVOS.find(x=>x[0]===r.m)||MOTIVOS[0])[1];
-  if (r.st==="rev" || r.st==="rec") return `<div class="repbox">${ic("clock","sm")}<span><b>${r.st==="rec"?"Recurso em revisão automática":"Em revisão automática"}</b> · ${m}. O conteúdo continua visível até o resultado.</span></div>`;
-  return `<div class="repbox ok">${ic("check","sm")}<span><b>Revisão automática: ${r.st==="rec-ok"?"recurso analisado, ":""}sem violação</b> · registro público ${r.cod}. ${r.st==="ok"?`<button class="linkbtn" type="button" data-act="recorrer" data-uid="${it.uid}">Recorrer</button>`:""}</span></div>`; }
-const repTag = it => { const r = S.reports[it.uid]; return r && (r.st==="rev"||r.st==="rec") ? `<span class="reptag">Em revisão</span>` : ""; };
+  return `<div class="repbox ok">${ic("check","sm")}<span><b>Denúncia registrada</b>${r.cod ? ` · protocolo ${r.cod}` : ""} · ${m}. A curadoria vai analisar. O conteúdo continua visível até a decisão.</span></div>`; }
+const repTag = it => S.reports[it.uid] ? `<span class="reptag">Denunciado por você</span>` : "";
 function sheetReport(uid){
   openSheet(shead("Denunciar") + `<p style="color:var(--muted);font-size:14px">O que este conteúdo fere?</p>
-    <div class="list" role="radiogroup" aria-label="Motivo">${MOTIVOS.map(([k,t])=>`<button class="setting" type="button" role="radio" aria-checked="false" data-act="repmot" data-k="${k}"><span class="t"><b>${t}</b>${k==="falsa"?"<small>Vai para a verificação do selo de confiabilidade</small>":""}</span></button>`).join("")}</div>
-    <div class="note">${ic("info")}<span>O conteúdo continua visível durante a revisão. A revisão é automática, sem interferência humana, e o resultado fica registrado de forma pública. Quem publicou pode recorrer. Ordens judiciais são sempre cumpridas. <button class="linkbtn" type="button" data-nav-to="funciona" style="padding:0;min-height:0">Como a rede.online funciona</button></span></div>
+    <div class="list" role="radiogroup" aria-label="Motivo">${MOTIVOS.map(([k,t])=>`<button class="setting" type="button" role="radio" aria-checked="false" data-act="repmot" data-k="${k}"><span class="t"><b>${t}</b>${k==="falsa"?"<small>Também conta para a nota de confiança do conteúdo</small>":""}</span></button>`).join("")}</div>
+    <div class="field" style="margin-top:12px"><label for="repdet">Quer explicar? (opcional)</label><textarea id="repdet" rows="2" maxlength="1000"></textarea></div>
+    ${ME.user ? "" : `<div class="field"><label for="repcon">Seu e-mail, se quiser resposta (opcional)</label><input id="repcon" type="email" maxlength="200" autocapitalize="none"></div>`}
+    <div class="note">${ic("info")}<span>A denúncia é registrada com data e analisada pela curadoria. O conteúdo continua visível até a decisão. Ordens da Justiça são sempre cumpridas. <a href="#termos" data-act="close">Termos de uso</a></span></div>
+    <p class="ferr" role="alert" hidden></p>
     <button class="btn ink block" type="button" data-act="repsend" data-uid="${uid}" disabled>Enviar denúncia</button>`, "Denunciar"); }
+async function curDen(n=0){ const box = $("#curden"); if (!box){ if (n < 12) setTimeout(()=>curDen(n + 1), 300); return; }
+  const {data, error} = await SB.from("denuncias").select("id,alvo,titulo,url,motivo,detalhe,contato,criado_em").eq("status","aberta").order("criado_em").limit(200);
+  if (error) return box.innerHTML = `<p class="empty">${esc(erroAuth(error))}</p>`;
+  box.innerHTML = (data || []).map(d=>`<article class="curitem"><div><small>${esc((MOTIVOS.find(x=>x[0]===d.motivo) || ["", d.motivo])[1])} · ${new Date(d.criado_em).toLocaleString("pt-BR", {day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"})} · protocolo ${d.id.replace(/-/g,"").slice(0,8).toUpperCase()}</small>
+      <b>${esc(d.titulo || d.alvo)}</b>${d.detalhe ? `<p>${esc(d.detalhe)}</p>` : ""}${d.contato ? `<p>Contato: ${esc(d.contato)}</p>` : ""}
+      <div class="row">${d.url ? `<a class="btn sm" href="${esc(d.url)}" target="_blank" rel="noopener">Abrir</a>` : ""}<button class="btn sm primary" type="button" data-act="dencont" data-id="${d.id}" data-s="removido">Procede</button><button class="btn sm ghost" type="button" data-act="dencont" data-id="${d.id}" data-s="mantido">Não procede</button></div></div></article>`).join("") || `<p class="empty">Nenhuma denúncia aberta.</p>`; }
 function screenPin(uid){
   const it = findItem(uid); if (!it) return `<div class="container"><div class="empty"><p>${PIN_ESPERA ? "Carregando o conteúdo…" : "Este conteúdo não está mais disponível."}</p>${PIN_ESPERA ? "" : `<button class="btn ink" type="button" data-nav-to="inicio">Voltar ao feed</button>`}</div></div>`;
   const ant = NAV[NAV.length - 2] || "inicio", volta = /^(inicio|alta|explorar)$/.test(ant) ? "Voltar ao feed" : "Voltar";
@@ -5761,6 +5782,7 @@ function render(){
   else if (r==="participar"){ main.innerHTML = screenPartTodos(); }
   else if (r==="perfil"){ main.innerHTML = screenProfile(); fillProfile(); }
   else if (r==="config") main.innerHTML = screenConfig();
+  else if (r==="termos" || r==="privacidade") main.innerHTML = screenDoc(r);
   else if (r==="perfil-ver"){ main.innerHTML = screenPublic(); fillPublic(); }
   else if (r.startsWith("org-")){ main.innerHTML = screenOrg(r.slice(4)); fillOrg(); }
   else if (r.startsWith("pin-")){ main.innerHTML = screenPin(r.slice(4)); fillPin(r.slice(4)); }
@@ -6353,6 +6375,7 @@ function sheetEntender(id){ const x = ENT_BASE.find(y=>y.id===id) || {}, limpa =
     <p class="ferr" role="alert" hidden></p><button class="btn primary block" type="button" data-act="entsalva" data-id="${esc(id || "")}">${id ? "Salvar" : "Criar rascunho"}</button></div>`, id ? "Editar nota" : "Nova nota"); }
 /* curadoria da conversa: denúncias de comentários, candidatas a colaborador e sinais para o selo */
 async function curadoriaConversa(box){
+  curDen();
   const [d, c, s] = await Promise.all([SB.from("comentario_denuncias").select("comentario_id,motivo,criado_em,comentarios(id,texto,status,perfis(nome))").eq("status","aberta").order("criado_em").limit(200), SB.rpc("colaborador_candidatos"),
     SB.from("sinais").select("id,tipo,status,ajuste,fonte_url,peso,criado_em,comentarios(texto,perfis(nome,colaborador)),noticias(titulo,selo_ajuste,fontes(nome,nota))").in("status",["aberto","auto"]).order("criado_em", {ascending:false}).limit(150)]);
   if (d.error && c.error && s.error) return box.innerHTML = `<p class="empty">${esc(erroAuth(d.error))}</p>`;
@@ -6373,6 +6396,7 @@ async function curadoriaConversa(box){
     ${cand.map(x=>`<article class="curitem"><div><small>${x.atende ? "Atende aos critérios" : "Ainda não atende"}${x.colaborador ? " · já é colaborador" : ""}</small><b>${esc(x.nome)}</b>
       <p>${esc(x.cidade || "sem cidade")} · conta há ${x.dias} dias · ${x.comentarios} comentários · ${x.uteis} úteis de ${x.pessoas} pessoas · ${x.com_fonte} com fonte · ${x.removidos} removidos</p>
       <div class="row">${x.colaborador ? `<button class="btn sm ghost" type="button" data-act="colabdefine" data-id="${x.id}" data-v="0">Tirar o destaque</button>` : `<button class="btn sm${x.atende ? " primary" : ""}" type="button" data-act="colabdefine" data-id="${x.id}" data-v="1">Confirmar colaborador</button>`}</div></div></article>`).join("") || `<p class="empty">Ninguém comentou ainda.</p>`}
+    <h2 class="curh">Conteúdos denunciados</h2><p class="curnota">Denúncias de notícias e publicações, com data e protocolo. “Procede” registra a sua decisão; a retirada do conteúdo é feita na fila dele.</p><div id="curden"><p class="empty">Carregando…</p></div>
     <h2 class="curh">Comentários denunciados · ${Object.keys(den).length}</h2><p class="curnota">O comentário continua no ar até você decidir.</p>
     ${Object.entries(den).map(([id, x])=>`<article class="curitem"><div><small>${x.n} ${x.n===1 ? "denúncia" : "denúncias"} · ${esc((x.c.perfis || {}).nome || "Conta")}${x.c.status==="oculto" ? " · já oculto" : ""}</small><p>${esc(x.c.texto)}</p>
       <div class="row"><button class="btn sm primary" type="button" data-act="dendecide" data-id="${id}" data-s="removido">Ocultar comentário</button><button class="btn sm ghost" type="button" data-act="dendecide" data-id="${id}" data-s="mantido">Manter</button></div></div></article>`).join("") || `<p class="empty">Nenhuma denúncia aberta.</p>`}`; }
@@ -6589,7 +6613,8 @@ function screenConta(){
     <div class="field"><label for="ccid">Cidade (opcional)</label><input id="ccid" type="text" maxlength="80" placeholder="Ex.: São Paulo, SP"><small class="hint">Aparece no seu perfil e ajuda a mostrar o que acontece perto de você. <button class="linkbtn inl" type="button" data-act="localpede" data-para="ccid">Usar minha localização</button></small></div>
     <div class="hpot" aria-hidden="true"><label for="csite">Não preencha este campo</label><input id="csite" type="text" tabindex="-1" autocomplete="off"></div>
     ${seusDadosNota()}
-    <label class="ichk"><input type="checkbox" id="cok"><span>Li o <a href="#manifesto">manifesto</a> e aceito as regras da rede. Meus dados são usados só para a minha conta.</span></label>
+    <label class="ichk"><input type="checkbox" id="c18"><span>Tenho 18 anos ou mais. A rede.online é para adultos.</span></label>
+    <label class="ichk"><input type="checkbox" id="cok"><span>Li e aceito os <a href="#termos" target="_blank" rel="noopener">Termos de uso</a> e a <a href="#privacidade" target="_blank" rel="noopener">Privacidade</a>.</span></label>
     <p class="ferr" role="alert" hidden></p>
     <button class="btn primary block" type="button" data-act="cadastrar">Criar conta</button>
     <p class="inota">Você vai receber um e-mail da rede.online para confirmar o cadastro. A conta só funciona depois da confirmação.</p>`
@@ -6639,7 +6664,7 @@ function sheetApoie(){
     <ul class="aplista">
       <li>${ic("check","sm")}<span>Promovemos conteúdos responsáveis</span></li>
       <li>${ic("check","sm")}<span>O pagamento é feito no Mercado Pago</span></li>
-      <li>${ic("lock","sm")}<span>Não guardamos dados transacionais</span></li></ul>
+      <li>${ic("lock","sm")}<span>Não guardamos seus dados financeiros</span></li></ul>
     <button class="btn primary block" type="button" data-act="apoiepagar" style="margin-top:14px">${ic("raio","sm")} <span id="aptxt">Apoiar com R$ ${APOIO_V}</span></button></div>`, "Apoie"); }
 function apoioValor(){ const o = $("#apoutro"), n = o && o.value ? Math.round(+o.value) : APOIO_V; return n; }
 function apoioVolta(){ let q; try{ q = new URLSearchParams(location.search); }catch(e){ return; } const id = q.get("apoio"); if (!id || !/^[0-9a-f-]{36}$/i.test(id)) return;
@@ -6657,6 +6682,43 @@ function apoioSituacao(e, r){ const v = r && r.valor ? adBRL(+r.valor) : "", tes
     : e==="analise" ? ["Pagamento em análise", "O Mercado Pago ainda está processando. Quando confirmar, o apoio entra sozinho."]
     : ["Apoio não concluído", "Nada foi cobrado. Se quiser, é só tentar de novo pelo botão Apoie."];
   openSheet(shead(t) + `<div class="sform"><p style="margin:0">${x}</p>${teste}${e==="conferindo" ? "" : `<button class="btn block" type="button" data-act="close" style="margin-top:14px">Fechar</button>`}</div>`, t); }
+
+/* TERMOS DE USO E PRIVACIDADE (12 nov 2026): textos em linguagem simples, descrevem o que o site faz hoje.
+   Versão inicial, escrita pelo Claude a pedido da Amanda; ainda sem revisão de advogado. O aceite do cadastro guarda DOCS_VERSAO. */
+const DOCS_VERSAO = "12 de novembro de 2026";
+const DOCS = {
+ privacidade:{t:"Privacidade", intro:"A rede.online guarda o mínimo para a sua conta funcionar. Seu e-mail não aparece para ninguém. Você pode baixar o que guardamos sobre você e apagar a sua conta quando quiser, direto na conta.", s:[
+  ["Para quem é", ["A rede.online é para pessoas com 18 anos ou mais. Não criamos contas para menores de idade."]],
+  ["O que guardamos da sua conta", ["E-mail e senha. A senha fica embaralhada: ninguém da rede consegue ler.", "Perfil: o nome que você escolheu, a cidade e o texto sobre você, se você preencher.", "O que você publica, seus comentários, os comentários que marcou como úteis e as denúncias que fez.", "Curtidas, itens salvos, pastas, votos, apoios a propostas e presenças em eventos, para você encontrar tudo em qualquer aparelho.", "Contas de outras redes que você ligar ao perfil: só o nome de usuário público.", "O aceite dos Termos e desta página, com a data.", "A forma de ver o feed que você escolheu.", "O histórico de leitura dos últimos 7 dias, só para contar o limite de conteúdos novos por hora. Depois disso é apagado."]],
+  ["Documento de verificação", ["Só existe se você pedir a verificação da conta. Você envia uma foto ou PDF de um documento, e só a curadoria vê.", "O arquivo é apagado assim que o pedido é aprovado ou recusado, ou se você desistir. Fica guardado apenas o resultado."]],
+  ["Medição de uso, sem identificar você", ["O site registra como as pessoas navegam: telas abertas, toques, erros e tipo de aparelho. Usa um código aleatório do aparelho, sem nome nem e-mail. Esses registros são apagados em 90 dias.", "Depois de um minuto de navegação, o site pode pedir uma nota de satisfação. A resposta é opcional, não leva o seu nome e é apagada em 180 dias.", "Quando alguém troca a forma de ver o feed, o servidor conta a troca, sem guardar quem trocou."]],
+  ["Pagamentos", ["Anúncios: guardamos o pedido ligado à conta de quem anuncia (a peça, o valor e a situação).", "Apoios: guardamos o valor, a data, a situação e o número do pagamento. Não guardamos quem apoiou.", "Dados de cartão e de banco ficam só no Mercado Pago. A rede.online não vê nem guarda esses dados."]],
+  ["O que fica só no seu aparelho", ["Preferências, temas do algoritmo, a sua cidade e os lugares do seu interesse. Somem se você limpar os dados do navegador."]],
+  ["O que não guardamos", ["A sua posição. Com a sua permissão, ela é usada só para descobrir a cidade e é descartada.", "O seu endereço de rede (IP). Para limitar abusos, usamos um código embaralhado dele, que muda a cada dia e é apagado em 2 dias."]],
+  ["Notas escritas por inteligência artificial", ["Algumas notícias trazem o bloco “Para entender”. Quando a nota é escrita por IA, o bloco avisa. Para escrever, o servidor envia a um serviço de IA o título e o resumo da notícia e o texto de até 12 comentários, sem o nome de quem escreveu."]],
+  ["Vídeos do YouTube", ["Os vídeos tocam no player do YouTube, no endereço sem cookies de rastreio. Quando a capa de um vídeo aparece na tela, o seu aparelho já fala com o YouTube. Para que isso só aconteça ao tocar em Assistir, desligue “Reproduzir vídeos automaticamente” em Configurações."]],
+  ["Quem vê o quê", ["Todo mundo: seu nome, cidade do perfil, texto sobre você, selo de verificação, o que você publica e o que comenta.", "Só você: seu e-mail, seus pedidos, seu histórico de leitura, suas curtidas, pastas e votos.", "A curadoria: os pedidos de organização e de verificação, as denúncias e os sinais para o selo de confiança."]],
+  ["Onde os dados ficam", ["No Supabase (banco de dados e login). O site e o domínio usam GitHub e Cloudflare, e os pagamentos, o Mercado Pago. Esses serviços podem guardar dados fora do Brasil."]],
+  ["O que não fazemos", ["Não vendemos nem cedemos dados pessoais.", "Os anúncios são por espaço de tela, iguais para todo mundo. Nunca usam o perfil de quem lê."]],
+  ["Seus direitos, na prática", ["Baixar seus dados: Conta › Seus dados › Baixar meus dados.", "Corrigir: Conta › nome, cidade e texto sobre você.", "Apagar tudo: Conta › Seus dados › Apagar minha conta. Apaga na hora o perfil, as publicações, os comentários e o que está ligado à conta.", "Qualquer outro pedido sobre os seus dados: contato@arede.online. Respondemos em até 15 dias."]],
+  ["Mudanças neste texto", ["Quando este texto mudar, a data no alto muda, e mudanças importantes são avisadas no site."]]]},
+ termos:{t:"Termos de uso", intro:"Estas são as regras para usar a rede.online. O site está em fase de teste: pode mudar, ter falhas ou sair do ar.", s:[
+  ["Quem pode usar", ["Qualquer pessoa pode ler. Para criar conta, é preciso ter 18 anos ou mais e aceitar estes Termos e a Privacidade."]],
+  ["A sua conta", ["Você responde pelo que é feito com a sua conta. Use um e-mail seu e uma senha que só você conheça.", "Você pode apagar a conta quando quiser, em Conta › Seus dados."]],
+  ["O que você publica", ["O que você publica continua sendo seu. Ao publicar, você autoriza a rede.online a mostrar esse conteúdo no site.", "Você responde pelo que publica e comenta. Publique só o que você tem o direito de publicar."]],
+  ["O que não pode", ["Ataque ou discriminação contra pessoa ou grupo.", "Ameaça ou incitação à violência.", "Exposição de dados pessoais de outras pessoas.", "Informação que você sabe que é falsa.", "Conteúdo que envolva crianças ou adolescentes de forma imprópria.", "Uso de obra de outra pessoa sem autorização.", "Qualquer conteúdo ilegal, spam ou tentativa de enganar o sistema.", "Propaganda eleitoral paga, de candidato ou de partido."]],
+  ["Denúncias e moderação", ["Qualquer pessoa pode denunciar um conteúdo pelo botão Denunciar ou por contato@arede.online. A denúncia é registrada com data e analisada pela curadoria.", "O conteúdo continua visível até a decisão, salvo casos graves. A curadoria pode ocultar ou remover o que fere estes Termos e pode suspender contas que insistem.", "Quem teve um conteúdo removido pode pedir revisão pelo mesmo contato. Ordens da Justiça são sempre cumpridas."]],
+  ["Notícias e conteúdo de terceiros", ["As notícias vêm de veículos e fontes públicas, sempre com o nome da fonte e o link para o original. O texto completo fica no site de quem publicou.", "Se você é responsável por um conteúdo e quer corrigir ou retirar algo, escreva para contato@arede.online."]],
+  ["O selo de confiança", ["A nota que aparece nas notícias é uma avaliação da rede.online, feita por critérios públicos e iguais para todas as fontes. Ela não é uma acusação contra nenhum veículo ou pessoa, e pode estar errada.", "Qualquer fonte pode pedir a revisão da sua nota em contato@arede.online."]],
+  ["Anúncios e apoios", ["Os anúncios aparecem marcados como anúncio, iguais para todo mundo, e passam pela curadoria antes de ir ao ar.", "O apoio é uma doação para manter o site. Não dá direito a produto, serviço ou vantagem.", "Nesta fase de teste, os pagamentos ainda não fazem cobranças reais."]],
+  ["Limites", ["A rede.online não garante que o site fique sempre no ar nem que todo conteúdo de terceiros esteja correto. Confira sempre a fonte original."]],
+  ["Contato", ["contato@arede.online"]],
+  ["Mudanças nestes Termos", ["Quando estes Termos mudarem, a data no alto muda, e mudanças importantes são avisadas no site."]]]}};
+function screenDoc(k){ const d = DOCS[k], outro = k==="termos" ? ["privacidade","Privacidade"] : ["termos","Termos de uso"];
+  return header(`<div class="toprow"><button class="iconbtn" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button><h1 class="pagehead" style="font-size:19px">${d.t}</h1><div class="spacer"></div></div>`)
+  + `<div class="container"><article class="docleg"><p class="docdata">Versão de ${DOCS_VERSAO}</p><p class="docintro">${d.intro}</p>
+    ${d.s.map(([h, ps])=>`<h2>${h}</h2>${ps.length > 1 ? `<ul>${ps.map(p=>`<li>${p}</li>`).join("")}</ul>` : `<p>${ps[0]}</p>`}`).join("")}
+    <p class="docfim">Leia também: <a href="#${outro[0]}">${outro[1]}</a>. Dúvidas: <a href="mailto:contato@arede.online">contato@arede.online</a></p></article></div>`; }
 function contaSeguranca(){ const u = ME.user, ult = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString("pt-BR", {day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"}) : "";
   const chev = ic("back","sm flip");
   return `<section class="acard" aria-labelledby="hseg"><h2 id="hseg">Segurança da conta</h2><div class="list">
@@ -6703,7 +6765,7 @@ document.addEventListener("input", e=>{ const i = e.target; if (!i.matches || !i
   const f = i.closest(".field") || i.parentNode.parentNode, nome = ($("#cnome") || {}).value || (ME.perfil && ME.perfil.nome) || "", mail = (($("#cmail") || {}).value || (ME.user && ME.user.email) || "").split("@")[0];
   const a = senhaAvalia(i.value, nome.split(/\s+/).concat(mail)), m = f.querySelector(".pwm"), h = f.querySelector(".hint");
   if (m) m.dataset.n = a.n; if (h){ h.textContent = a.msg; h.classList.toggle("ok", a.ok); } });
-const ACEITE_VERSAO = "v1-2026-11-10";      /* versão do texto aceito no cadastro; o servidor guarda quando foi aceito */
+const ACEITE_VERSAO = "v2-2026-11-12";      /* versão do texto aceito no cadastro; o servidor guarda quando foi aceito */
 const mailBom = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
 const ERROS_AUTH = [[/invalid login/i,"E-mail ou senha incorretos."],[/email not confirmed/i,"Confirme seu e-mail antes de entrar. Procure a mensagem da rede.online na caixa de entrada (e no spam)."],
   [/already registered|already been registered/i,"Não foi possível criar a conta com esses dados. Se você já tem conta, entre ou recupere a senha."],[/rate limit|too many/i,"Muitas tentativas em pouco tempo. Espere alguns minutos e tente de novo."],
@@ -6862,7 +6924,7 @@ function sheetInscricao(uid, k){
 function sheetMsgs(){
   const m = [["bairro-vivo","Coordenação Bairro Vivo","A pauta de sábado está no mural."],["hortas-leste","Rede de Hortas","Você pode levar as mudas às 8h?"],["pedala-cwb","Frente Pedala Curitiba","Obrigada por confirmar a pedalada!"]];
   openSheet(shead("Mensagens") + `<div>${m.map(([o,n,t])=>`<div class="msg">${avatar(ORG[o])}<span class="t"><b>${n}</b><small>${t}</small></span></div>`).join("")}</div>
-    <div class="note">${ic("lock")}<span>Conversas com criptografia de ponta a ponta.</span></div>`, "Mensagens");
+    <div class="note">${ic("info")}<span>Tela de exemplo: as mensagens ainda não estão funcionando.</span></div>`, "Mensagens");
 }
 
 /* =====================================================================
@@ -7028,7 +7090,8 @@ const A = {
     if (nome.length < 2) return formErro("Escreva seu nome.");
     if (!mailBom(mail)) return formErro("Confira o e-mail.");
     const sa = senhaAvalia(sen, nome.split(/\s+/).concat(mail.split("@")[0])); if (!sa.ok) return formErro("Senha: " + sa.msg);
-    if (!$("#cok").checked) return formErro("Para criar a conta, aceite as regras da rede.");
+    if (!$("#c18").checked) return formErro("Para criar a conta, é preciso ter 18 anos ou mais.");
+    if (!$("#cok").checked) return formErro("Para criar a conta, aceite os Termos de uso e a Privacidade.");
     if (!SB) return formErro("Sem conexão com o servidor. Verifique a internet.");
     formErro(""); ocupado(b, true, "Criando a conta…");
     /* a resposta é a mesma, exista ou não uma conta com esse e-mail: assim ninguém descobre quem está na rede testando endereços.
@@ -7226,12 +7289,15 @@ const A = {
     const y = $("#layer .sheet").scrollTop; $("#layer .sheet").innerHTML = `<div class="grab" aria-hidden="true"></div>` + intBody(); $("#layer .sheet").scrollTop = y; },
   intsave: () => { S.interesses = S.intDraft.slice(); persist("interesses"); closeSheet(); const y = window.scrollY; render(); window.scrollTo(0,y); toast(S.interesses.length ? "Interesses públicos atualizados." : "Seu perfil não mostra interesses."); },
   repmot: b => { $$('#layer [data-act="repmot"]').forEach(x=>x.setAttribute("aria-checked", x===b)); const s2 = $('#layer [data-act="repsend"]'); s2.disabled = false; s2.dataset.m = b.dataset.k; },
-  repsend: b => { const u = b.dataset.uid, m = b.dataset.m; closeSheet();
-    if (m==="falsa"){ toast("Enviado para a verificação do selo. O resultado aparece no selo do conteúdo."); return; }
-    S.reports[u] = {m, st:"rev"}; refresh(u); toast("Denúncia recebida. O conteúdo segue visível durante a revisão automática.");
-    setTimeout(()=>{ S.reports[u].st = "ok"; S.reports[u].cod = "RP-" + Math.random().toString(36).slice(2,7).toUpperCase(); refresh(u); }, 2600); },
-  recorrer: b => { const u = b.dataset.uid; S.reports[u].st = "rec"; refresh(u); toast("Recurso recebido: nova revisão automática, independente da primeira.");
-    setTimeout(()=>{ S.reports[u].st = "rec-ok"; refresh(u); }, 2600); },
+  repsend: async b => { const u = b.dataset.uid, m = b.dataset.m, it = findItem(u) || {}, err = $("#layer .ferr");
+    const det = ($("#repdet") || {}).value || "", con = ($("#repcon") || {}).value || "";
+    if (!SB){ S.reports[u] = {m}; closeSheet(); refresh(u); return toast("Sem conexão com o servidor: a denúncia ficou só neste aparelho. Envie também para contato@arede.online."); }
+    ocupado(b, true, "Enviando…");
+    const {data, error} = await SB.rpc("denuncia_envia", {p_alvo:u, p_titulo:it.titulo || "", p_url:(it.ext && it.ext.url) || (SITE + "#pin-" + u), p_motivo:m, p_detalhe:det, p_contato:con});
+    if (error){ ocupado(b, false); if (err){ err.textContent = erroAuth(error); err.hidden = false; } return; }
+    S.reports[u] = {m, cod:data}; closeSheet(); refresh(u); uso("denuncia", m); toast("Denúncia registrada. A curadoria vai analisar."); },
+  dencont: async b => { ocupado(b, true); const {error} = await SB.rpc("denuncia_decide", {p_id:b.dataset.id, p_status:b.dataset.s}); if (error){ ocupado(b, false); return toast(erroAuth(error)); }
+    toast(b.dataset.s==="removido" ? "Registrado como procedente. Retire o conteúdo na fila dele." : "Registrado como não procedente."); curDen(); },
   propor: b => { const o = ORG[b.dataset.org]; openSheet(shead("Propor votação") + `
     <div class="note">${ic("info")}<span>Qualquer membro com direito a voto pode propor. A proposta vai a voto quando reunir apoio de <b>20%</b> dos membros com direito a voto (${Math.ceil(Math.round(o.membros*.66)*APOIO)} de ${Math.round(o.membros*.66)} em ${o.nome}).</span></div>
     <div class="field"><label for="ptit">Proposta</label><input id="ptit" type="text" placeholder="Ex.: Assembleia mensal aberta ao bairro"></div>
@@ -7475,7 +7541,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 12/11 07:11";
+const VERSAO = "v1 registrada · 12/11 07:35";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
