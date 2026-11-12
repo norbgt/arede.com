@@ -4863,9 +4863,12 @@ function cabeFrases(el, full, alt, fits, max=99){
   if (!best && alt){ el.textContent = alt; if (fits()) best = alt; }
   el.textContent = best; el.hidden = !best; return !!best;
 }
-function fitTiles(root){
-  const faces = [...(root||document).querySelectorAll(".tface")];
+function fitTiles(root, forca){
+  /* cada cartão é ajustado uma vez por tamanho (11 nov 2026): antes, toda leva nova reajustava todos os cartões já prontos, e o celular travava.
+     Sem "root" (fontes prontas, tela girada) ou com forca, ajusta de novo. */
+  const tudo = !root || forca, faces = [...(root||document).querySelectorAll(".tface")];
   faces.forEach(f=>{ const t = f.querySelector(".ftitle"), p = f.querySelector(".tbody > p"); if (!p) return;
+    const tam = f.clientWidth + "x" + f.clientHeight; if (!tudo && f.dataset.fit === tam) return; if (f.clientWidth) f.dataset.fit = tam; else delete f.dataset.fit;
     /* 1. o título cabe inteiro: diminui a letra até caber junto com o cabeçalho e o pé */
     p.hidden = true; t.style.fontSize = ""; let fs = parseFloat(getComputedStyle(t).fontSize);
     while (f.scrollHeight > f.clientHeight + 1 && fs > 12){ fs -= 1; t.style.fontSize = fs + "px"; }
@@ -4933,7 +4936,7 @@ document.addEventListener("error", e=>{ const im = e.target; if (!im || !im.clos
   if (!im.closest(".tph")) return;
   const f = im.closest(".tface"), tile = im.closest(".tile"); const u = tile && tile.dataset.tile;
   if (u){ const o = (F.grid && F.grid.obj && F.grid.obj[u]); if (o) o.fotoFalhou = true; }
-  im.parentNode.remove(); if (f){ f.classList.remove("comfoto"); fitTiles(tile); } }, true);
+  im.parentNode.remove(); if (f){ f.classList.remove("comfoto"); fitTiles(tile, true); } }, true);
 /* expansão no lugar: o cartão aberto entra logo depois do bloco do item tocado */
 function tileOpen(box, grid, uid, scroll=true){
   const old = box.querySelector(":scope > .xcard"); if (old) old.remove();
@@ -4981,7 +4984,7 @@ function fillExplore(){
   const box = $("#emas"); if (!box) return;
   if (!items.length){ box.className = ""; box.innerHTML = `<p class="empty">Nada encontrado para “${esc(S.exploreQ)}”.</p>`; return; }
   const lim = nivel()==="visitante" ? ACESSO.visitante.porAba : 0, corte = lim && items.length > lim;
-  const lista = corte ? items.slice(0, lim) : items, LOTE = 40;
+  const lista = corte ? items.slice(0, lim) : items, LOTE = 24;
   const g = makeGrid("explore", box, lista.slice(0, LOTE), "none"); let feitos = Math.min(LOTE, lista.length);
   const fim = document.getElementById("emaisx"); if (fim) fim.remove();
   if (g && feitos < lista.length){ const sen = document.createElement("div"); sen.id = "emaisx"; sen.style.height = "1px"; box.after(sen);
@@ -6579,7 +6582,7 @@ const APOIO_VALORES = [10, 25, 50, 100];
 let APOIO_V = 25;
 function sheetApoie(){
   openSheet(shead("Apoie") + `<div class="sform">
-    <p style="margin:0">Sua doação ajuda a manter a arede.online</p>
+    <p style="margin:0">Sua doação ajuda a manter a rede.online</p>
     <div class="apvals" role="group" aria-label="Valor do apoio">${APOIO_VALORES.map(v=>`<button type="button" data-act="apoieval" data-v="${v}" aria-pressed="${APOIO_V===v}">R$ ${v}</button>`).join("")}</div>
     <label class="apoutro">Outro valor: R$ <input id="apoutro" type="number" inputmode="numeric" min="5" max="5000" step="1" placeholder="5 a 5.000" value="${APOIO_VALORES.includes(APOIO_V) ? "" : APOIO_V}"></label>
     <ul class="aplista">
@@ -7418,7 +7421,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 21:00";
+const VERSAO = "v1 registrada · 11/11 21:09";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
