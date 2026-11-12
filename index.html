@@ -126,6 +126,8 @@ img,svg{max-width:100%}
 .logo .ext{display:inline-flex;align-items:baseline}
 @media (max-width:429px){ .top .toprow{gap:4px} .logo{font-size:21px} }
 @media (max-width:359px){ .logo{font-size:20px} .lchev{width:14px;height:14px;margin-left:2px} }
+.semsobre .navfoot[href="#manifesto"]{display:none}
+.semsobre .logo{cursor:default}
 .lchev{align-self:center;width:14px;height:14px;margin-left:2px;fill:none;stroke:var(--muted);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 /* o ponto se move: parado, fica entre "a" e "rede" ("a.rede", a rede, ligada ao manifesto); ao passar o mouse, corre para
    entre "rede" e "online" e a marca se completa: "arede.online". Duas posições-fantasma (.lg) marcam onde ele pousa;
@@ -4730,7 +4732,11 @@ window.addEventListener("message", e=>{ const d = e.data; if (!d) return;
     try{ history.replaceState(null, "", "#" + h); }catch(err){} lastRoute = route(); } });
 const painelRow = () => LOCAL ? `<button class="setting painel" type="button" data-nav-to="painel"><span class="t"><b>Painel de controle <span class="plock" title="Só no seu computador: não está online nem é público" aria-label="Só no seu computador, não está online nem é público">${ic("lock","sm")}</span></b></span>${ic("back","sm flip")}</button>` : "";
 /* o logo da barra superior abre "Sobre arede.online": Manifesto e Como arede.online funciona */
-const LOGO = `<button class="logo" type="button" data-act="sobre" aria-haspopup="dialog" aria-label="a rede.online: manifesto e como funciona"><span class="lw" aria-hidden="true">a<i class="ldot lg lga"></i>rede<span class="ext"><i class="ldot lg lgb"></i><span class="com">online</span></span><i class="ldot lmove"></i></span><svg class="lchev" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>`;
+/* 12 nov 2026: no site aberto, por enquanto sem Manifesto nem Como funciona: a marca não abre nada e fica sem a setinha; o movimento continua.
+   Na cópia da administradora (com o painel) tudo segue como antes. */
+const SOBRE_ON = LOCAL;
+if (!SOBRE_ON) document.body.classList.add("semsobre");
+const LOGO = `<button class="logo" type="button" ${SOBRE_ON ? 'data-act="sobre" aria-haspopup="dialog" aria-label="a rede.online: manifesto e como funciona"' : 'data-act="logover" aria-label="a rede.online"'}><span class="lw" aria-hidden="true">a<i class="ldot lg lga"></i>rede<span class="ext"><i class="ldot lg lgb"></i><span class="com">online</span></span><i class="ldot lmove"></i></span>${SOBRE_ON ? `<svg class="lchev" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>` : ""}</button>`;
 const header = (inner) => `<header class="top" id="top"><div class="topin container">${inner}</div></header>`;
 const avatar = (o, cls="av") => o.daRedeConta ? `<span class="${cls} rede" aria-hidden="true"><span class="amark">a<i></i></span></span>` : `<span class="${cls}" style="background:${o.cor}" aria-hidden="true">${o.sigla}</span>`;
 function statusLine(){
@@ -5337,12 +5343,12 @@ function screenConfig(){
     <h2 class="sectitle">Aparência</h2>
     <div class="setting stack"><span class="t"><b>Tema</b><small>Automático segue o seu aparelho</small></span>
       <div class="chips" role="radiogroup" aria-label="Tema">${[["auto","Automático"],["claro","Claro"],["escuro","Escuro"]].map(([k,t])=>`<button class="chip" type="button" role="radio" data-act="tema" data-v="${k}" aria-checked="${S.tema===k}">${t}</button>`).join("")}</div></div>
-    <h2 class="sectitle">Sobre a rede.online</h2>
+    ${SOBRE_ON ? `<h2 class="sectitle">Sobre a rede.online</h2>
     <div class="list">
       <a class="setting l1" href="#manifesto"><span class="t"><b>Manifesto</b></span>${ic("back","sm flip")}</a>
       <a class="setting l1" href="#funciona"><span class="t"><b>Como a rede.online funciona</b></span>${ic("back","sm flip")}</a>
       ${painelRow()}
-    </div>
+    </div>` : ""}
     <p class="ver">a rede.online · versão ${VERSAO}</p></div>`;
 }
 /* VISUALIZAR PERFIL — o que as outras pessoas veem, conforme as escolhas de privacidade */
@@ -6977,6 +6983,7 @@ const A = {
       uso("apoie", "pagamento"); location.href = j.url; }
     catch(e){ ocupado(b, false); toast("Sem conexão com o servidor. Tente de novo."); } },
   visdet: () => sheetVis(),
+  logover: () => logoAbre(),
   pedeverif: async b => { ocupado(b, true, "Enviando…"); const {error} = await SB.from("verificacao_pedidos").insert({user_id:ME.user.id}); ocupado(b, false);
     if (error && !/duplicate|unique/i.test(error.message || "")) return toast(erroAuth(error)); await perfilCarrega(); toast("Pedido de verificação na fila."); render(); },
   desisteverif: async b => { const dp = ((ME.acesso || {}).pedido || {}).doc_path; if (dp) await SB.storage.from("verificacao-docs").remove([dp]).catch(()=>{});
@@ -7468,7 +7475,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 12/11 07:06";
+const VERSAO = "v1 registrada · 12/11 07:11";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
