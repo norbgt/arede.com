@@ -7015,6 +7015,7 @@ const ERROS_AUTH = [[/sem_conta/i,"Entre na sua conta para sugerir uma fonte."],
   [/limite_comentarios.*hora/i,"Você chegou ao limite de comentários desta hora. Tente de novo mais tarde."],[/limite_comentarios/i,"Você chegou ao limite de comentários de hoje."],[/limite_uteis/i,"Muitas marcações em pouco tempo. Tente de novo mais tarde."],
   [/comentarios_fonte_para_confirmar/i,"Para confirmar ou contestar, informe o endereço da fonte."],[/comentarios_fonte_url_check|fonte_url/i,"O endereço da fonte precisa começar com https://"],
   [/limite_hora/i,"Você chegou ao limite de publicações desta hora. Tente de novo mais tarde."],[/limite_dia/i,"Você chegou ao limite de publicações de hoje. Tente de novo amanhã."],
+  [/captcha/i,"Não conseguimos confirmar que é uma pessoa. Recarregue a página e tente de novo; se aparecer uma caixinha, toque nela."],
   [/weak|pwned|leaked|compromised/i,"Essa senha já apareceu em vazamentos de outros sites. Escolha outra."],
   [/password/i,"A senha não foi aceita: use no mínimo 10 caracteres, com letras e números ou símbolos."],[/fetch|network/i,"Sem conexão com o servidor. Verifique a internet."]];
 const erroAuth = e => { const m = (e && e.message) || String(e); const f = ERROS_AUTH.find(([re])=>re.test(m)); return f ? f[1] : "Não deu certo: " + m; };
@@ -7805,7 +7806,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 12/11 19:46";
+const VERSAO = "v1 registrada · 12/11 20:22";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
