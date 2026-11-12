@@ -99,6 +99,14 @@ img,svg{max-width:100%}
 /* conta conectada (11 nov 2026): no lugar do ícone de pessoa, as iniciais de quem está logada; sem conta, o ícone e "Entrar" */
 .navme{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--fill);color:var(--on-fill);font-size:11px;font-weight:700;letter-spacing:.02em;line-height:1}
 .navme[hidden]{display:none}
+.rorig{border:0;padding:0;margin:0 0 14px}.rorig legend{font-size:13px;font-weight:600;margin-bottom:6px;padding:0}
+.rorig .seg{display:flex;gap:6px;margin-bottom:10px}.rorig .seg label{flex:1;position:relative}.rorig .seg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.rorig .seg span{display:block;text-align:center;padding:9px 10px;border-radius:10px;border:1px solid var(--line);font-size:14px;font-weight:600;color:var(--muted)}
+.rorig .seg input:checked+span{background:var(--fill);color:var(--on-fill);border-color:transparent}.rorig .seg input:focus-visible+span{outline:2px solid var(--ink);outline-offset:2px}
+.rorig .rautbox .seg span{padding:7px 10px;font-size:13px}
+.rorig:has(input[value="autoral"]:checked) .rfontebox{display:none}.rorig:has(input[value="fonte"]:checked) .rautbox{display:none}
+.tseal.tfonte{font-weight:600}.tseal.tfonte.bad{color:#B42318}
+.pubfonte{display:flex;gap:6px;align-items:center;font-size:14px;color:var(--muted);margin:10px 0 0}.pubfonte a{color:var(--ink);font-weight:600}
 .redimg{display:flex;gap:12px;align-items:center;margin:0 0 12px}.redimg img{width:72px;height:72px;object-fit:cover;border-radius:10px;flex:none}
 .cintro{margin:0 0 14px;color:var(--muted);line-height:1.45}
 .navbtn.logada .icon{display:none}
@@ -3702,7 +3710,7 @@ function rapidoAplica(l){
   if (S.rapido==="alta") return l.filter(it=>!it.daArte && it.min <= 4320 && calor(it) > 0).sort((a,b)=>calor(b)-calor(a) || a.min-b.min);
   return l; }
 const rapidosHTML = () => `<div class="qf" role="group" aria-label="Filtros rápidos">${RAPIDOS.map(([k,n,i])=>`<button class="qchip" type="button" data-act="rapido" data-k="${k}" aria-pressed="${S.rapido===k}">${ic(i,"sm")}${n}</button>`).join("")}</div>`;
-const kindOf = it => it.base ? it.doc : desmente(it) ? "Desmentido" + (veredito(it) ? " · " + veredito(it) : "") : ehChecagem(it) && it.ext ? "Checagem" : it.arte ? "Arte · " + (CAT_ARTE[it.catArte] || "Imagem") : it.daRede ? (TIPO_REDE[it.rtipo] || "Publicação") + " · " + REDES[it.rede].nome : it.ext && it.tipo==="texto" && ORG[it.org] && ORG[it.org].fonte ? (it.lingua && it.lingua!=="pt" ? "Notícia · " + it.lingua.toUpperCase() : "Notícia") : it.tipo==="votacao" ? (it.fase==="apoios" ? "Proposta de votação" : it.critico ? "Eleição" : "Votação formal") : KIND[it.tipo];
+const kindOf = it => it.autoral ? "Autoral · " + (it.autoral==="arte" ? "Arte" : "Ficção") : it.base ? it.doc : desmente(it) ? "Desmentido" + (veredito(it) ? " · " + veredito(it) : "") : ehChecagem(it) && it.ext ? "Checagem" : it.arte ? "Arte · " + (CAT_ARTE[it.catArte] || "Imagem") : it.daRede ? (TIPO_REDE[it.rtipo] || "Publicação") + " · " + REDES[it.rede].nome : it.ext && it.tipo==="texto" && ORG[it.org] && ORG[it.org].fonte ? (it.lingua && it.lingua!=="pt" ? "Notícia · " + it.lingua.toUpperCase() : "Notícia") : it.tipo==="votacao" ? (it.fase==="apoios" ? "Proposta de votação" : it.critico ? "Eleição" : "Votação formal") : KIND[it.tipo];
 const KIND = {video:"Vídeo", imagem:"Publicação", texto:"Publicação", evento:"Evento", enquete:"Enquete rápida", votacao:"Votação formal", chamado:"Chamado", documento:"Documento"};
 /* cada aba tem o leiaute que melhor serve ao seu tipo (4º campo):
    blocos (Início misto) · video (1 coluna) · agenda (eventos e chamados, pelo que acontece ou vence primeiro) · cedula (voto no cartão) · arquivo (lista de documentos) */
@@ -3758,6 +3766,10 @@ const STOPS = [[0,[192,54,44]],[45,[194,122,14]],[70,[110,154,58]],[85,[46,139,8
 function tone(sc){ for(let k=1;k<STOPS.length;k++){ const [a,ca]=STOPS[k-1],[b,cb]=STOPS[k]; if(sc<=b){ const t=(sc-a)/(b-a); return "rgb("+ca.map((v,i)=>Math.round(v+(cb[i]-v)*t)).join(",")+")"; } } return "rgb(15,107,62)"; }
 function sealOf(it){
   const sc = it.id in SEAL ? SEAL[it.id] : (String(it.uid).startsWith("c") ? null : 80);
+  if (it.autoral) return {sc:null, lv:"na", label:"Conteúdo autoral"};
+  if (it.fontePub && it.fontePub.situacao==="avaliacao") return {sc:null, lv:"pend", label:"Fonte não verificada"};
+  if (it.fontePub && it.fontePub.situacao==="recusada") return {sc:null, lv:"bad", label:"Fonte não confiável", tone:tone(12)};
+  if (it.conta && !it.fontePub && sc===null && !it.arte && !["votacao","enquete"].includes(it.tipo)) return {sc:null, lv:"pend", label:"Sem fonte"};
   /* publicação original (conta real ou criada no protótipo) ainda não passa pelo motor: não é "sem fatos", é "ainda sem selo" */
   if (sc===null && !it.arte && (it.conta || String(it.uid).startsWith("c")) && !["votacao","enquete"].includes(it.tipo)) return {sc:null, lv:"pend", label:"Ainda sem selo"};
   if (sc===null) return {sc:null, lv:"na", label:"Sem fatos a checar"};
@@ -3784,6 +3796,14 @@ function sealChecks(it){
     if (o.linha) q += L("warn", /ativista/i.test(o.linha) ? "Mídia ativista" : "Linha editorial", o.linha.replace(/^m[íi]dia ativista:\s*/i,"").replace(/^./,c=>c.toUpperCase()) + " Vale ler junto com outras fontes.");
     q += L(it.ext.verif.length ? "ok" : "warn", o.fonte ? "Outras fontes cobriram" : "Fontes que confirmam", it.ext.verif.length ? `${it.ext.verif.length} ${it.ext.verif.length===1?"fonte":"fontes"} da base: ${it.ext.verif.map(v=>v.fonte).join(", ")}.` : "Só esta fonte, por enquanto.");
     return q; }
+  if (it.conta){ const quem = L("ok", o.verificado ? "Perfil verificado" : "Conta real", o.verificado ? `${o.nome}: ${VERIF[o.verificado][0].toLowerCase()}.` : `${o.nome} tem conta confirmada por e-mail.`), fp = it.fontePub;
+    if (it.autoral) return quem + L("na", "Conteúdo autoral", (it.autoral==="arte" ? "Arte" : "Ficção") + ", como a autora declarou. O selo avalia fatos; obra autoral não recebe nota.");
+    if (!fp) return quem + L("na", "Sem fonte", "Publicada antes de o link de fonte ser obrigatório. Não recebe nota.");
+    const lk = `<a href="${esc(it.fonteUrl)}" target="_blank" rel="noopener nofollow">${esc(fp.dominio)} ↗</a>`;
+    if (fp.situacao==="avaliacao") return quem + L("warn", "Fonte não verificada", `${lk} ainda não está na base de fontes da rede. Entrou para avaliação da curadoria; se for confiável, a publicação ganha o selo da fonte.`);
+    if (fp.situacao==="recusada") return quem + L("bad", "Fonte não confiável", `A curadoria avaliou ${lk} e não a reconheceu como fonte confiável. Confira em outras fontes antes de compartilhar.`);
+    return quem + L(s.lv, "Fonte citada: " + esc(fp.nome), `${lk} está na base de fontes da rede, com selo ${fp.nota}. A nota é a da fonte.`)
+      + L("na", "Texto da publicação", "O que a autora escreveu não é checado automaticamente. Confira se bate com a fonte."); }
   if (s.lv==="pend") return L("ok", o.verificado ? "Perfil verificado" : o.pessoa ? "Conta real" : "Publicado na rede", o.verificado ? `${o.nome}: ${VERIF[o.verificado][0].toLowerCase()}.` : o.pessoa ? `${o.nome} tem conta confirmada por e-mail.` : `Publicado direto na rede por ${o.nome}.`)
     + L("na","Afirmações checadas","Publicação original: a verificação automática de conteúdo original é a próxima etapa do selo. Até lá, não recebe nota.");
   let r = L(verified?"ok":"warn", "Organização verificada", verified ? `Identidade e coordenação de ${o.nome} conferidas.` : "Grupo sem responsáveis identificados.");
@@ -3847,7 +3867,9 @@ function seloMarcas(it){ const o = ORG[it.org] || {}, nat = String(o.natureza ||
   const ordem = ["checado","proprio"]; return m.filter(x=>ordem.includes(x.k)).sort((a,b)=>ordem.indexOf(a.k)-ordem.indexOf(b.k)).concat(m.filter(x=>!ordem.includes(x.k))); }   /* checagem de agência vem primeiro: é a marca de mais peso */
 function sealBox(it, compacto){
   const s = sealOf(it), m = seloMarcas(it);
-  const sub = s.sc!==null ? `Nota ${s.sc} de 100` : (s.lv==="pend" ? "Publicação original, ainda não verificada" : it.arte ? "Arte e expressão" : it.daRede ? "Crítica, gosto ou coleção" : "Pergunta, pedido ou opinião");
+  const sub = s.sc!==null ? `Nota ${s.sc} de 100${it.fontePub ? " · da fonte citada" : ""}` : it.autoral ? (it.autoral==="arte" ? "Arte" : "Ficção") + " · declarada pela autora"
+    : it.fontePub && it.fontePub.situacao==="avaliacao" ? esc(it.fontePub.dominio) + " · em avaliação pela curadoria" : it.fontePub && it.fontePub.situacao==="recusada" ? esc(it.fontePub.dominio) + " · avaliada pela curadoria"
+    : it.conta && s.label==="Sem fonte" ? "Publicada sem link de fonte" : (s.lv==="pend" ? "Publicação original, ainda não verificada" : it.arte ? "Arte e expressão" : it.daRede ? "Crítica, gosto ou coleção" : "Pergunta, pedido ou opinião");
   return `<details class="sealbox${compacto?" sbmini":""}" ${s.lv==="bad"?"open":""}><summary>${sealIco(s,compacto?22:26)}<span class="t"><b>${s.label}</b><small>${sub}</small></span><span class="linkbtn">Detalhes</span>
     ${m.length ? `<span class="sbmarcas">${m.map(x=>`<span class="sbm" data-m="${x.k}">${ic(x.ic,"sm")}<span class="sbt">${x.t}</span>${x.d ? `<span class="sbd"> · ${esc(x.d)}</span>` : ""}</span>`).join("")}</span>` : ""}</summary>
     ${s.sc!==null?`<div class="scale" role="img" aria-label="Nota ${s.sc} de 100"><i style="left:${s.sc}%"></i></div><div class="scalelbl"><span>Baixa</span><span>Moderada</span><span>Alta</span></div>`:""}
@@ -4108,9 +4130,12 @@ function footInfo(it){
   }
 }
 /* topo, título e pé do cartão textual: os mesmos no Início (blocos) e no mosaico (Buscar, organizações) */
+/* selo pequeno do cartão; publicação com fonte não verificada ou não confiável mostra isso no lugar da nota */
+const sealTag = (it, s) => s.sc!==null ? `<span class="tseal" aria-hidden="true">${sealIco(s,14)}${s.sc}</span>`
+  : it.fontePub && it.fontePub.situacao!=="base" ? `<span class="tseal tfonte ${s.lv}">${sealIco(s,14)}${it.fontePub.situacao==="recusada" ? "Fonte não confiável" : "Fonte não verificada"}</span>` : "";
 function textParts(it){
   const o = ORG[it.org], s = sealOf(it);
-  const seal = s.sc!==null ? `<span class="tseal" aria-hidden="true">${sealIco(s,14)}${s.sc}</span>` : "";
+  const seal = sealTag(it, s);
   const kind = it.tipo==="documento" && it.doc ? it.doc : kindOf(it);
   /* o tema saiu do topo (10 nov 2026): virou etiqueta no pé do cartão, junto dos interesses de quem lê */
   const head = `<span class="thead">${seal}<span class="fkind pinkind" style="--k:${it.tipo==="votacao"||it.tipo==="documento"?"var(--ink)":o.cor}">${kind}</span>${repTag(it)}</span>`;
@@ -4151,7 +4176,7 @@ function card(item, mode){
 /* ---------- cartões das abas de tipo: cada aba destaca o que importa naquele tipo ---------- */
 function tabCard(it, mode, v){
   const o = ORG[it.org], s = sealOf(it), uid = it.uid;
-  const seal = s.sc!==null ? `<span class="tseal" aria-hidden="true">${sealIco(s,14)}${s.sc}</span>` : "";
+  const seal = sealTag(it, s);
   const kind = it.tipo==="documento" && it.doc ? it.doc : kindOf(it);
   const open = (inner, cls="") => `<button class="lmain ${cls}" type="button" data-act="open" data-uid="${uid}" aria-label="Abrir ${kindOf(it)}: ${esc(it.titulo)}. ${s.label}${s.sc!==null?", nota "+s.sc:""}">${inner}</button>`;
   const who = `<span class="lwho"><span class="capav" style="background:${o.cor}" aria-hidden="true">${o.sigla}</span><span class="capname">${o.nome}${ficTag(o)}</span></span>`;
@@ -4892,7 +4917,7 @@ function tileHTML(it, cl, mode="none"){
       <button class="tbtn" type="button" data-act="adopen" data-uid="${it.uid}" aria-label="Anúncio de ${esc(a.nome)}: ${esc(a.frase)}">${adFaceFeed(a)}</button>${a.real ? "" : AD_CALL}</div>`; }
   const o = ORG[it.org], s = sealOf(it), on = S.saved.has(it.uid), [r,c,rs,cs] = cl.area;
   const isVid = it.tipo==="video", media = !isTextual(it);
-  const seal = s.sc!==null ? `<span class="tseal" aria-hidden="true">${sealIco(s,14)}${s.sc}</span>` : "";
+  const seal = sealTag(it, s);
   const k = `<span class="fkind pinkind" style="--k:${it.tipo==="votacao"?"var(--ink)":o.cor}">${kindOf(it)}</span>`;
   const vis = it.tipo==="imagem" ? (it.foto && !it.fotoFalhou ? `<span class="arteimg" style="--fundo:url('${esc(it.foto)}')"><img src="${esc(it.foto)}" alt="${esc(it.titulo)}${it.artista ? ", arte de " + esc(it.artista) : ""}" loading="lazy" decoding="async" referrerpolicy="no-referrer"></span>` : art(it, 1.25, false))
     : isVid && it.yt ? `${ytCapa(it, 1.6)}<span class="xplay" aria-hidden="true">${ic("play")}<span>${esc(o.nome)}</span></span>`
@@ -5580,7 +5605,7 @@ function detailHTML(it, uid, mode, inline){
     : `<div class="pinbar"><button class="iconbtn barback" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button>${tipoTopo}
         ${likeBtn(it)}<button class="iconbtn" type="button" data-act="share" data-uid="${uid}" aria-label="Copiar link">${ic("share")}</button>${saveBtn(uid)}${editBtn(it, uid)}${podeApagar(it) ? `<button class="iconbtn" type="button" data-act="apagarreal" data-uid="${uid}" aria-label="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}" title="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}">${ic("trash")}</button>` : ""}</div>`;
   const TitleTag = inline ? "h2" : "h1", open = !!S.textOpen[uid];
-  const text = `<div class="pintext ${open?"open":""}">${bodyOf(it).map(p=>`<p class="pinbody">${esc(p)}</p>`).join("")}</div>
+  const text = `<div class="pintext ${open?"open":""}">${bodyOf(it).map(p=>`<p class="pinbody">${esc(p)}</p>`).join("")}</div>${it.fonteUrl ? `<p class="pubfonte">${ic("ext","sm")}<span>Fonte: <a href="${esc(it.fonteUrl)}" target="_blank" rel="noopener nofollow">${esc((it.fontePub && it.fontePub.nome) || (it.fontePub && it.fontePub.dominio) || it.fonteUrl)}</a></span></p>` : ""}
        <button class="linkbtn moretext" type="button" data-act="moretext" data-uid="${uid}" hidden aria-expanded="${open}">${open?"Mostrar menos":"Mostrar mais"}</button>`;
   return `<article class="pin ${isImg?"two":"one"} ${inline?"xcard":"page"}" data-uid="${uid}" ${inline?`data-x="${uid}"`:'id="pinwrap"'} aria-label="${esc(it.titulo)}">
     ${isImg?`<div class="pl">${vis}</div>`:""}
@@ -5941,7 +5966,11 @@ function itemDaPublicacao(p){
   if (p.tipo==="evento"){ const d = ex.data ? dmy(ex.data) : null;
     Object.assign(it, {dia:d ? String(d.getDate()) : "—", mes:d ? MESES[d.getMonth()] : "", ano:d ? d.getFullYear() : "", hora:ex.hora || "", local:ex.local || "", vao:0, dataEv:ex.data || ""}); }
   if (p.tipo==="chamado" || p.tipo==="abaixo") Object.assign(it, {meta:Math.max(1, +ex.meta || 1), tem:0, un:p.tipo==="abaixo" ? "assinaturas" : (ex.un || "pessoas"), quando:ex.prazo || "", ate:99});
-  RESUMO[id] = (p.texto || "").split(/\n\s*\n/)[0]; BODY[id] = (p.texto || "").split(/\n\s*\n/).filter(Boolean); SEAL[id] = null;
+  /* FONTE OU AUTORAL (12 nov 2026): o servidor confere o link e grava a situação da fonte (publicacao_fonte) */
+  if (ex.autoral==="arte" || ex.autoral==="ficcao") it.autoral = ex.autoral;
+  else if (ex.fonte && ex.fonte_url){ it.fontePub = ex.fonte; it.fonteUrl = ex.fonte_url; }
+  RESUMO[id] = (p.texto || "").split(/\n\s*\n/)[0]; BODY[id] = (p.texto || "").split(/\n\s*\n/).filter(Boolean);
+  SEAL[id] = it.fontePub && it.fontePub.situacao==="base" && it.fontePub.nota != null ? +it.fontePub.nota : null;
   return it;
 }
 /* HISTÓRICO E PRIORIDADE (10 nov 2026): cada conta tem uma reputação de 0 a 100, calculada no servidor pelo histórico na rede
@@ -6811,7 +6840,7 @@ document.addEventListener("input", e=>{ const i = e.target; if (!i.matches || !i
   if (m) m.dataset.n = a.n; if (h){ h.textContent = a.msg; h.classList.toggle("ok", a.ok); } });
 const ACEITE_VERSAO = "v2-2026-11-12";      /* versão do texto aceito no cadastro; o servidor guarda quando foi aceito */
 const mailBom = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
-const ERROS_AUTH = [[/invalid login/i,"E-mail ou senha incorretos."],[/email not confirmed/i,"Confirme seu e-mail antes de entrar. Procure a mensagem da rede.online na caixa de entrada (e no spam)."],
+const ERROS_AUTH = [[/sem_fonte/i,"Coloque o link da fonte, ou marque “É autoral” se for arte ou ficção sua."],[/invalid login/i,"E-mail ou senha incorretos."],[/email not confirmed/i,"Confirme seu e-mail antes de entrar. Procure a mensagem da rede.online na caixa de entrada (e no spam)."],
   [/already registered|already been registered/i,"Não foi possível criar a conta com esses dados. Se você já tem conta, entre ou recupere a senha."],[/rate limit|too many/i,"Muitas tentativas em pouco tempo. Espere alguns minutos e tente de novo."],
   [/limite_comentarios.*hora/i,"Você chegou ao limite de comentários desta hora. Tente de novo mais tarde."],[/limite_comentarios/i,"Você chegou ao limite de comentários de hoje."],[/limite_uteis/i,"Muitas marcações em pouco tempo. Tente de novo mais tarde."],
   [/comentarios_fonte_para_confirmar/i,"Para confirmar ou contestar, informe o endereço da fonte."],[/comentarios_fonte_url_check|fonte_url/i,"O endereço da fonte precisa começar com https://"],
@@ -6838,10 +6867,16 @@ function sheetCriarReal(k, ed){ const nome = TIPOS_REAIS[k], pf = ME.perfil || {
     ${k==="evento" ? `<div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="rdata">Data</label><input id="rdata" type="date" min="${ed && ex.data && ex.data < new Date().toISOString().slice(0,10) ? ex.data : new Date().toISOString().slice(0,10)}" value="${v(ex.data)}"></div><div class="field" style="flex:1"><label for="rhora">Hora</label><input id="rhora" type="time" value="${horaInput(ex.hora)}"></div></div>
       <div class="field"><label for="rlocal">Local</label><input id="rlocal" type="text" maxlength="120" placeholder="Ex.: Praça da Sé" value="${v(ex.local)}"></div>` : ""}
     ${k==="chamado" || k==="abaixo" ? `<div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="rmeta">${k==="abaixo" ? "Meta de assinaturas" : "Quantas pessoas"}</label><input id="rmeta" type="number" min="1" inputmode="numeric" value="${ex.meta || (k==="abaixo" ? 300 : 20)}"></div><div class="field" style="flex:1"><label for="rprazo">Prazo</label><input id="rprazo" type="text" maxlength="40" placeholder="Ex.: até 30 nov" value="${v(ex.prazo)}"></div></div>` : ""}
+    <fieldset class="rorig"><legend>De onde vem</legend>
+      <div class="seg rorigseg" role="radiogroup" aria-label="De onde vem"><label><input type="radio" name="rorig" value="fonte"${ed && ex.autoral ? "" : " checked"}><span>Tem fonte</span></label><label><input type="radio" name="rorig" value="autoral"${ed && ex.autoral ? " checked" : ""}><span>É autoral</span></label></div>
+      <div class="field rfontebox"><label for="rfonte">Link da fonte</label><input id="rfonte" type="url" inputmode="url" maxlength="500" autocapitalize="none" spellcheck="false" placeholder="https://" value="${v(ex.fonte_url)}">
+        <small class="hint">A notícia, o documento ou o dado público de onde veio a informação. A publicação leva o selo da fonte. Fonte que a rede ainda não conhece aparece como <b>não verificada</b> e vai para a curadoria.</small></div>
+      <div class="rautbox"><div class="seg" role="radiogroup" aria-label="Tipo de obra autoral"><label><input type="radio" name="raut" value="arte"${ex.autoral==="ficcao" ? "" : " checked"}><span>Arte</span></label><label><input type="radio" name="raut" value="ficcao"${ex.autoral==="ficcao" ? " checked" : ""}><span>Ficção</span></label></div>
+        <small class="hint">Obra sua: ilustração, cartaz, conto, poema. Leva a etiqueta <b>Autoral</b> e não recebe selo, porque o selo avalia fatos.</small></div></fieldset>
     <div class="field"><label for="rtxt">Texto</label><textarea id="rtxt" maxlength="5000" placeholder="Escreva aqui. Uma linha em branco separa os parágrafos.">${ed ? v(ed.texto) : ""}</textarea></div>
     ${ed && ed.imagem_url ? `<div class="redimg"><img src="${esc(ed.imagem_url)}" alt="Imagem atual" referrerpolicy="no-referrer"><label class="chkrow"><input id="rsemfoto" type="checkbox"> <span>Tirar esta imagem</span></label></div>` : ""}
     <div class="field"><label for="rfoto">${ed && ed.imagem_url ? "Trocar a imagem (opcional)" : "Imagem (opcional)"}</label><input id="rfoto" type="file" accept="image/jpeg,image/png,image/webp"><small class="hint">JPG, PNG ou WebP, até 5 MB. Use só imagens suas ou que você pode publicar.</small>
-      ${veArte() ? `<label class="chkrow"><input id="rarte" type="checkbox"${ex.arte ? " checked" : ""}> <span><b>É uma arte</b> · cartaz, ilustração, lambe. Aparece também na aba Arte, com o seu nome como autoria.</span></label>` : ""}</div>
+</div>
     <div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="rtema">Tema</label><select id="rtema">${TEMAS.map(t=>`<option${ed && ed.tema===t ? " selected" : ""}>${t}</option>`).join("")}</select></div>
       <div class="field" style="flex:1"><label for="rcid">Cidade</label><input id="rcid" type="text" maxlength="80" value="${esc(ed ? (ed.cidade || "") : (pf.cidade || ""))}"></div></div>
     <p class="ferr" role="alert" hidden></p>
@@ -7172,11 +7207,14 @@ const A = {
   editarpub: b => { const it = findItem(b.dataset.uid); if (!podeEditar(it)) return; sheetCriarReal(it.raw.tipo, it.raw); },
   publicarreal: async b => { const ed = b.dataset.ed, velha = ed ? (POOL.find(x=>x.uuid===ed) || {}).raw : null, k = b.dataset.k, tit = $("#rtit").value.trim(), txt = $("#rtxt").value.trim(), f = $("#rfoto").files[0];
     if (tit.length < 3) return formErro("Escreva um título (pelo menos 3 letras).");
-    const extra = velha ? Object.assign({}, velha.extra || {}) : {}; if (velha && $("#rarte")) delete extra.arte;
+    const extra = velha ? Object.assign({}, velha.extra || {}) : {}; delete extra.arte; delete extra.fonte;
+    const orig = ($('input[name="rorig"]:checked') || {}).value, aut = ($('input[name="raut"]:checked') || {}).value, furl = ($("#rfonte").value || "").trim();
+    if (orig==="autoral"){ extra.autoral = aut==="ficcao" ? "ficcao" : "arte"; delete extra.fonte_url; }
+    else { if (!/^https?:\/\/[^\/\s?#]+\.[^\/\s?#]+/i.test(furl)) return formErro("Coloque o link da fonte, começando com https://. Se for obra sua, marque “É autoral”."); extra.fonte_url = furl; delete extra.autoral; }
     if (k==="evento"){ extra.data = $("#rdata").value; extra.hora = ($("#rhora").value || "").replace(/^0/,"").replace(":00","h").replace(":","h"); extra.local = $("#rlocal").value.trim();
       if (!extra.data) return formErro("Escolha a data do evento."); if (!extra.local) return formErro("Diga o local do evento."); }
     if (k==="chamado" || k==="abaixo"){ extra.meta = Math.max(1, +$("#rmeta").value || 1); extra.prazo = $("#rprazo").value.trim(); }
-    if ($("#rarte") && $("#rarte").checked){ if (!f) return formErro("Para marcar como arte, escolha a imagem."); extra.arte = true; }
+    if (extra.autoral==="arte" && (f || (velha && velha.imagem_url && !($("#rsemfoto") && $("#rsemfoto").checked)))) extra.arte = true;   /* arte com imagem entra também na aba Arte */
     if (f && f.size > 5*1024*1024) return formErro("A imagem passa de 5 MB.");
     formErro(""); ocupado(b, true, f ? "Enviando a imagem…" : ed ? "Salvando…" : "Publicando…");
     let imagem_url = velha && !($("#rsemfoto") && $("#rsemfoto").checked) ? velha.imagem_url || null : null;
@@ -7595,7 +7633,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 12/11 08:54";
+const VERSAO = "v1 registrada · 12/11 09:09";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
