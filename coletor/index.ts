@@ -1,12 +1,14 @@
 // arede.online · COLETOR de notícias
 // Lê os feeds (RSS/Atom) das fontes com selo, guarda só título, chamada do veículo, um trecho de até 800 caracteres, data, imagem de capa e link,
 // evita repetidas, agrupa a mesma notícia em fontes diferentes (cobertura cruzada) e manda para o feed ou para a fila.
-// Modos: ?modo=descobrir (acha o feed de cada fonte) · ?modo=coletar (padrão) · ?modo=agrupar (junta a mesma notícia entre idiomas).
+// Modos: ?modo=descobrir (acha o feed de cada fonte) · ?modo=coletar (padrão) · ?modo=agrupar (junta a mesma notícia entre idiomas)
+//   · ?modo=reclassificar&pagina=N (refaz o tema das notícias dos últimos 30 dias com os temas de temas.ts).
 // Lotes: ?lote=0..9 (as fontes se dividem em 10).
 // Canais do YouTube: feed_tipo "youtube", lidos pelo RSS público do canal (só vídeos longos, sem Shorts nem lives).
 // Idiomas: português, inglês e espanhol vão direto para o feed (selo 80+); cada notícia guarda o idioma, e quem lê escolhe as origens.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { XMLParser } from "npm:fast-xml-parser@4.4.1";
+import { temaDe } from "./temas.ts";
 
 const SB = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 const UA = "Mozilla/5.0 (compatible; arede-coletor/1.0; +https://arede.online/)";
@@ -214,21 +216,9 @@ const comuns = (a: Set<string>, b: Set<string>) => { let i = 0; for (const w of 
 const mesmaPorNomes = (x: any, y: any) => { if (x.en.size < 3 || y.en.size < 3 || x.et.size < 2 || y.et.size < 2) return false;
   const i = comuns(x.en, y.en); return i >= 3 && i / Math.min(x.en.size, y.en.size) >= 0.6 && comuns(x.et, y.et) >= 2; };
 const mesmaNoticia = (x: any, y: any) => (x.pw.size >= 4 && y.pw.size >= 4 && parecido(x.pw, y.pw) >= 0.6) || mesmaPorNomes(x, y);
-const TEMAS: [string, RegExp][] = [
-  ["Mobilidade", /\b(onibus|metro|metrô|transporte|ciclovia|bicicleta|transito|mobilidade|tarifa|brt|trem|transit|bus|cycling|autobus|movilidad|ciclovia|trafico)\b/],
-  ["Moradia", /\b(moradia|habitac\w*|despejo|aluguel|ocupac\w*|sem.teto|minha casa|reintegrac\w*|housing|eviction|homeless|vivienda|desalojo\w*|alquiler\w*|personas sin hogar)\b/],
-  ["Hortas e alimentação", /\b(fome|aliment\w*|horta\w*|agricultura familiar|seguranca alimentar|merenda|agroecolog\w*|cesta basica|hunger|food|hambre|alimentacion|huerta\w*)\b/],
-  ["Educação", /\b(escola\w*|educac\w*|ensino|professor\w*|universidade\w*|enem|creche\w*|alunos?|school\w*|education|teacher\w*|escuela\w*|educacion|docente\w*|universidad\w*|estudiantes?)\b/],
-  ["Cultura", /\b(cultura\w*|festival|museu|cinema|musica|teatro|livros?|artistas?|patrimonio|culture|museum|museo)\b/],
-  ["Saúde pública", /\b(saude|sus|hospita\w*|ubs|vacina\w*|dengue|medic\w*|epidemi\w*|doenc\w*|health|vaccine\w*|disease\w*|salud|hospital\w*|vacuna\w*|enfermedad\w*)\b/],
-  ["Meio ambiente", /\b(desmatamento|clima\w*|queimada\w*|amazonia|floresta\w*|ambient\w*|poluic\w*|enchente\w*|cop ?30|carbono|climate|deforestation|wildfire\w*|flood\w*|clima\w*|deforestacion|incendio\w*|inundacion\w*|medio ambiente)\b/],
-  ["Saneamento", /\b(saneamento|esgoto|abastecimento|drenagem|lixo|residuos|sabesp|sanitation|sewage|drinking water|saneamiento|agua potable|alcantarillado|residuos)\b/],
-  ["Juventude", /\b(jove\w*|juventude|adolescente\w*|youth|teen\w*|juventud|jovenes)\b/],
-  ["Orçamento participativo", /\b(orcamento|prefeitura\w*|vereador\w*|licitac\w*|audiencia publica|emenda\w*|camara municipal|conselho\w*|budget|city council|presupuesto\w*|ayuntamiento\w*|alcaldia\w*|concejo\w*)\b/],
-];
+// os temas (14) e o classificador ficam em temas.ts, o mesmo arquivo que o site usa para os filtros
 // fora do escopo da rede (esporte, entretenimento, sorteios): guardada como recusada, para não voltar na próxima coleta
-const FORA = /\b(futebol|campeonato|brasileirao|libertadores|copa do brasil|goleada|gols?|tenis|masters de|formula 1|ufc|nba|nfl|bbb|big brother|novela|reality|celebridade\w*|famosos|horoscopo|signo|loteria|mega.sena|lotofacil|quina|palmeiras|corinthians|flamengo|vasco|santos fc|gremio|cruzeiro|soccer|premier league|champions league|super bowl|playoffs?|touchdown|celebrity|celebrities|horoscope|lottery|powerball|futbol|liga mx|laliga|goles?|telenovela\w*|farandula|horoscopo|loteria|rugby|cricket|grand prix)\b/;
-const temaDe = (t: string) => { const n = norm(t); for (const [k, re] of TEMAS) if (re.test(n)) return k; return "Geral"; };
+const FORA = /\b(futebol|campeonato|brasileirao|libertadores|copa do brasil|goleada|gols?|tenis|masters de|formula 1|ufc|nba|nfl|bbb|big brother|novela|reality|celebridade\w*|famosos|horoscopo|signo|loteria|mega.sena|lotofacil|quina|palmeiras|corinthians|flamengo|vasco|santos fc|gremio|cruzeiro|soccer|premier league|champions league|super bowl|playoffs?|touchdown|celebrity|celebrities|horoscope|lottery|powerball|futbol|liga mx|laliga|goles?|telenovela\w*|farandula|horoscopo|loteria|rugby|cricket|grand prix|atacante|zagueiro|goleiro|meio-campista|tecnico do|tecnico da selecao|bayern|real madrid|juventus|psg|nrl|afl|golden boot|copa do mundo de futebol|selecao brasileira de futebol|surf|surfing games|jockey|turfe)\b/;
 // idioma: o declarado no feed quando é pt, en ou es; senão, palavras frequentes do próprio texto
 const MARCAS: Record<string, RegExp> = {
   pt: /\b(do|da|dos|das|nao|sao|com|uma|pelo|pela|tambem|mais|ao|aos|esta|governo)\b/g,
@@ -267,7 +257,7 @@ async function coleta(f: any, recentes: any[]) {
     const grupo: string = par ? par.grupo : crypto.randomUUID();   // cada notícia tem um grupo; a mesma notícia em outra fonte entra no mesmo
     const lg = idiomaDe(i.titulo + " " + (i.chamada || ""), lingua || (yt ? f.lingua : ""));   // o RSS do YouTube não diz o idioma: vale o do canal
     const n = { fonte_id: f.id, url: i.url, titulo: i.titulo.slice(0, 300), chamada: i.chamada, resumo: i.resumo || "", lingua: lg, imagem_url: i.imagem_url, publicada_em: i.publicada_em && !isNaN(+i.publicada_em) ? i.publicada_em.toISOString() : new Date().toISOString(),
-      impressao: imp, grupo, tema: temaDe(i.titulo + " " + (i.chamada || "")), status: FORA.test(imp) ? "recusada" : f.nota >= NOTA_DIRETO && IDIOMAS.includes(lg) ? "publicada" : "fila" };
+      impressao: imp, grupo, tema: temaDe(i.titulo, i.chamada), status: FORA.test(imp) ? "recusada" : f.nota >= NOTA_DIRETO && IDIOMAS.includes(lg) ? "publicada" : "fila" };
     novas.push(n); recentes.push({ id: null, fonte_id: f.id, impressao: imp, grupo, pw, en, et, yt });
   }
   if (novas.length) { const { error } = await SB.from("noticias").upsert(novas, { onConflict: "url", ignoreDuplicates: true }); if (error) return { erro: "Banco: " + error.message, novas: 0 }; }
@@ -280,6 +270,16 @@ Deno.serve(async (req) => {
   const { data: ok } = await SB.rpc("coletor_chave_confere", { k: chave });
   if (!ok) return new Response(JSON.stringify({ erro: "não autorizado" }), { status: 401 });
   const modo = q.get("modo") || "coletar", lote = Math.max(0, Math.min(LOTES - 1, +(q.get("lote") || 0)));
+  if (modo === "reclassificar") {
+    // aplica os temas atuais às notícias dos últimos ?dias (padrão 30), uma página de 2000 por chamada (?pagina=0,1,2...)
+    const dias = Math.max(1, Math.min(120, +(q.get("dias") || 30))), pag = Math.max(0, +(q.get("pagina") || 0));
+    const { data: ns, error } = await SB.from("noticias").select("id,titulo,chamada,tema").gte("publicada_em", new Date(Date.now() - dias * 864e5).toISOString())
+      .order("id").range(pag * 2000, pag * 2000 + 1999);
+    if (error) return new Response(JSON.stringify({ erro: error.message }), { status: 500 });
+    const m = (ns || []).map((n: any) => ({ id: n.id, tema: temaDe(n.titulo, n.chamada), antes: n.tema })).filter((x: any) => x.tema !== x.antes).map(({ id, tema }: any) => ({ id, tema }));
+    let mudou = 0; for (let k = 0; k < m.length; k += 500) { const { data } = await SB.rpc("aplica_temas", { m: m.slice(k, k + 500) }); mudou += data || 0; }
+    return new Response(JSON.stringify({ modo, pagina: pag, lidas: (ns || []).length, mudou, mais: (ns || []).length === 2000 }), { headers: { "content-type": "application/json" } });
+  }
   const { data: todas } = await SB.from("fontes").select("*").eq("ativa", true).order("id");
   const fontes = (todas || []).filter((f: any, i: number) => i % LOTES === lote);
   const agora = new Date().toISOString(), rel: any[] = [];
