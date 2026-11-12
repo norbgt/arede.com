@@ -99,6 +99,9 @@ img,svg{max-width:100%}
 /* conta conectada (11 nov 2026): no lugar do ícone de pessoa, as iniciais de quem está logada; sem conta, o ícone e "Entrar" */
 .navme{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--fill);color:var(--on-fill);font-size:11px;font-weight:700;letter-spacing:.02em;line-height:1}
 .navme[hidden]{display:none}
+.sugmin{list-style:none;margin:0;padding:0}.sugmin li{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.sugmin li>span:first-child{display:flex;flex-direction:column;min-width:0}.sugmin small{color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.sugst{flex:none;font-size:12px;font-weight:600;padding:3px 8px;border-radius:99px;background:var(--surface-2);color:var(--muted)}.sugst.ok{color:#1F7A4D}.sugst.no{color:#B42318}
 .rorig{border:0;padding:0;margin:0 0 14px}.rorig legend{font-size:13px;font-weight:600;margin-bottom:6px;padding:0}
 .rorig .seg{display:flex;gap:6px;margin-bottom:10px}.rorig .seg label{flex:1;position:relative}.rorig .seg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
 .rorig .seg span{display:block;text-align:center;padding:9px 10px;border-radius:10px;border:1px solid var(--line);font-size:14px;font-weight:600;color:var(--muted)}
@@ -3687,7 +3690,9 @@ function sheetOrigens(){
     <h3 class="osec">Idiomas de origem</h3>${origensLista()}
     <h3 class="osec">Ordem do feed</h3>${origensOrdem()}
     <div class="oref"><span class="reftag" aria-hidden="true"><span>${["Brasil","Espanha","EUA"].map(bandeira).join("")}</span> 3 países</span>
-      <p><b>Reforço internacional.</b> Quando a mesma notícia é publicada por fontes de mais de um país, ela ganha esta marca. O mesmo texto republicado conta uma vez só.</p></div>`, "Origem das notícias");
+      <p><b>Reforço internacional.</b> Quando a mesma notícia é publicada por fontes de mais de um país, ela ganha esta marca. O mesmo texto republicado conta uma vez só.</p></div>
+    <h3 class="osec">Fontes</h3><p class="lnote osub">Conhece um site confiável que a rede ainda não lê? Sugira: depois da curadoria, ele entra na base de fontes.</p>
+    <button class="btn block" type="button" data-act="sugfonte">${ic("plus","sm")} Sugerir uma fonte</button>`, "Origem das notícias");
   /* a mudança da região é ouvida em um lugar só (abaixo), porque o bloco é redesenhado a cada ajuste */
   origensConta(); }
 /* FILTROS RÁPIDOS (9 nov 2026): na linha do algoritmo, um toque recorta o feed da aba atual; um por vez.
@@ -6670,6 +6675,7 @@ function screenConta(){
       <p class="ferr" role="alert" hidden></p>
       <button class="btn primary block" type="button" data-act="perfilsalva">Salvar</button>
       <button class="btn block" type="button" data-act="create">${ic("plus","sm")} Criar uma publicação real</button>
+      <button class="btn block" type="button" data-act="sugfonte">${ic("check","sm")} Sugerir uma fonte</button>
       ${pf.papel==="admin" ? `<a class="btn block" href="#curadoria">${ic("check","sm")} Curadoria do coletor</a>` : ""}
       <div class="note">${ic("lock")}<span>Seu e-mail não aparece para ninguém. O que você publica fica no servidor da rede e qualquer pessoa vê no site; você pode apagar quando quiser.</span></div>
       ${acessoCard()}<div id="histbox"></div>${contaSeguranca()}
@@ -6725,6 +6731,35 @@ function verifForm(){ return `<div class="vform"><fieldset class="vtipo"><legend
   <label class="vfile"><span>Foto ou PDF do documento (até 5 MB)</span><input id="vdoc" type="file" accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"></label>
   <p class="inota">${ic("lock","sm")}<span>Só a curadoria vê o arquivo. Ele nunca aparece no seu perfil e é apagado assim que o pedido é decidido.</span></p>
   <p class="ferr" role="alert" hidden></p><button class="btn block" type="button" data-act="enviaverif">${ic("vfy","sm")} Enviar para verificação</button></div>`; }
+/* SUGERIR FONTE (12 nov 2026): conta cadastrada sugere um site; a curadoria avalia no painel (Fontes › Sugeridas) e,
+   aceito, ele entra na base de fontes e passa a ser lido. O servidor (fonte_sugere) diz se já está na base ou já foi recusado. */
+const SUG_ST = {pendente:["Em avaliação","pend"], aceita:["Entrou na base","ok"], recusada:["Não entrou","no"]};
+function sheetSugFonte(){
+  if (!ME.user){ openSheet(shead("Sugerir uma fonte") + `<p style="margin:0 0 14px">Quem tem conta pode sugerir sites confiáveis para a base de fontes da rede. É grátis.</p>
+    <a class="btn primary block" href="#conta" data-act="criarconta">Criar conta</a><a class="btn block" href="#conta" data-act="acessar">Já tenho conta</a>`, "Sugerir uma fonte"); return; }
+  openSheet(shead("Sugerir uma fonte") + `<div class="sform">
+    <p style="margin:0 0 12px;color:var(--muted)">A curadoria confere se o site é público e identificável, se mostra de onde vêm os dados e se publica correções. Aceito, ele entra na base de fontes, passa a ser lido pela rede e as publicações que o citam ganham o selo dele.</p>
+    <div class="field"><label for="sfurl">Endereço do site</label><input id="sfurl" type="url" inputmode="url" autocapitalize="none" spellcheck="false" maxlength="500" placeholder="https://"></div>
+    <div class="field"><label for="sfnome">Nome da fonte (opcional)</label><input id="sfnome" type="text" maxlength="120" placeholder="Ex.: Agência Pública"></div>
+    <div class="field"><label for="sfmot">Por que é confiável (opcional)</label><textarea id="sfmot" maxlength="500" rows="3" placeholder="Ex.: reportagem com autoria, expediente e página de correções"></textarea></div>
+    <p class="ferr" role="alert" hidden></p>
+    <button class="btn primary block" type="button" data-act="sugfonteenvia">Enviar sugestão</button>
+    <div id="minhassug"></div></div>`, "Sugerir uma fonte");
+  minhasSugCarrega(); }
+async function minhasSugCarrega(){ const box = $("#minhassug"); if (!box || !SB) return;
+  try{ const r = await SB.rpc("minhas_sugestoes"); if (r.error || !r.data || !r.data.length){ box.innerHTML = ""; return; }
+    box.innerHTML = `<h3 class="osec">Suas sugestões</h3><ul class="sugmin">${r.data.map(x=>{ const st = SUG_ST[x.status] || SUG_ST.pendente;
+      return `<li><span><b>${esc(x.nome || x.dominio)}</b><small>${esc(x.dominio)}</small></span><span class="sugst ${st[1]}">${st[0]}${x.status==="aceita" && x.nota != null ? " · selo " + x.nota : ""}</span></li>`; }).join("")}</ul>`; }catch(e){} }
+async function sugFonteEnvia(b){ const url = ($("#sfurl").value || "").trim(); if (url.length < 4) return formErro("Escreva o endereço do site.");
+  formErro(""); ocupado(b, true, "Enviando…");
+  try{ const {data, error} = await SB.rpc("fonte_sugere", {p_url:url, p_nome:$("#sfnome").value.trim() || null, p_motivo:$("#sfmot").value.trim() || null});
+    ocupado(b, false); if (error) return formErro(erroAuth(error));
+    const d = esc(data.dominio || "");
+    if (data.situacao==="base") return formErro(`${esc(data.nome)} (${d}) já está na base de fontes, com selo ${data.nota}.`);
+    if (data.situacao==="recusada") return formErro(`${d} já foi avaliado pela curadoria e não entrou na base.`);
+    if (data.situacao==="ja_sugeriu") return formErro(`Você já sugeriu ${d}. Ele está com a curadoria.`);
+    $("#sfurl").value = ""; $("#sfnome").value = ""; $("#sfmot").value = ""; toast(`Sugestão enviada: ${data.dominio} foi para a curadoria.`); minhasSugCarrega(); }
+  catch(e){ ocupado(b, false); formErro(erroAuth(e)); } }
 /* APOIE (11 nov 2026): doação para manter a arede.online, sem produto, serviço ou vantagem em troca.
    Não precisa de conta; a rede não guarda quem apoiou. Pagamento no Mercado Pago (função apoio-cobra), conferido pela função apoio-aviso. */
 const APOIO_VALORES = [10, 25, 50, 100];
@@ -6817,7 +6852,7 @@ function screenNovaSenha(){
     <p class="ferr" role="alert" hidden></p><button class="btn primary block" type="button" data-act="novasenha">Salvar nova senha</button>`
     : `<p class="empty">Abra o link que enviamos por e-mail para criar uma nova senha.</p>`}</div>`;
 }
-const formErro = t => { const e = $("#main .ferr") || $("#layer .ferr"); if (e){ e.textContent = t; e.hidden = !t; } };
+const formErro = t => { const e = $("#layer .ferr") || $("#main .ferr"); if (e){ e.textContent = t; e.hidden = !t; } };
 /* SENHA (10 nov 2026): o comprimento vale mais que símbolos. Mínimo de 10 caracteres, com letras e números ou símbolos;
    recusa as senhas mais comuns e as que repetem o nome ou o e-mail. A senha nunca é guardada no aparelho. */
 const SENHA_MIN = 10;
@@ -6840,7 +6875,7 @@ document.addEventListener("input", e=>{ const i = e.target; if (!i.matches || !i
   if (m) m.dataset.n = a.n; if (h){ h.textContent = a.msg; h.classList.toggle("ok", a.ok); } });
 const ACEITE_VERSAO = "v2-2026-11-12";      /* versão do texto aceito no cadastro; o servidor guarda quando foi aceito */
 const mailBom = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
-const ERROS_AUTH = [[/sem_fonte/i,"Coloque o link da fonte, ou marque “É autoral” se for arte ou ficção sua."],[/invalid login/i,"E-mail ou senha incorretos."],[/email not confirmed/i,"Confirme seu e-mail antes de entrar. Procure a mensagem da rede.online na caixa de entrada (e no spam)."],
+const ERROS_AUTH = [[/sem_conta/i,"Entre na sua conta para sugerir uma fonte."],[/link_invalido/i,"Confira o endereço do site. Ex.: https://www.exemplo.com.br"],[/rede_social/i,"Sugira o site da fonte, não um perfil em rede social."],[/limite: até 10 sugest/i,"Você chegou ao limite de 10 sugestões por dia. Tente amanhã."],[/sem_fonte/i,"Coloque o link da fonte, ou marque “É autoral” se for arte ou ficção sua."],[/invalid login/i,"E-mail ou senha incorretos."],[/email not confirmed/i,"Confirme seu e-mail antes de entrar. Procure a mensagem da rede.online na caixa de entrada (e no spam)."],
   [/already registered|already been registered/i,"Não foi possível criar a conta com esses dados. Se você já tem conta, entre ou recupere a senha."],[/rate limit|too many/i,"Muitas tentativas em pouco tempo. Espere alguns minutos e tente de novo."],
   [/limite_comentarios.*hora/i,"Você chegou ao limite de comentários desta hora. Tente de novo mais tarde."],[/limite_comentarios/i,"Você chegou ao limite de comentários de hoje."],[/limite_uteis/i,"Muitas marcações em pouco tempo. Tente de novo mais tarde."],
   [/comentarios_fonte_para_confirmar/i,"Para confirmar ou contestar, informe o endereço da fonte."],[/comentarios_fonte_url_check|fonte_url/i,"O endereço da fonte precisa começar com https://"],
@@ -7240,6 +7275,8 @@ const A = {
 
   ctype: b => { S.mobRef = null; sheetCreateForm(b.dataset.k); },
   ctypereal: b => sheetCriarReal(b.dataset.k),
+  sugfonte: () => { if (ME.offline || !SB) return toast("Sugerir fontes funciona no site online."); sheetSugFonte(); },
+  sugfonteenvia: b => sugFonteEnvia(b),
   msgs: sheetMsgs,
   adjust: sheetAdjust,
   algo: () => { S.algo = !S.algo; persist("algo"); render(); toast(S.algo ? "Algoritmo ligado." : "Algoritmo desligado: conteúdo amplo, sem usar seu perfil."); },
@@ -7584,7 +7621,7 @@ document.addEventListener("click", e=>{ const a = e.target.closest && e.target.c
   if (sec==="inicio") noticiasCarrega(); uso("nav", "de-novo", sec); });
 if (S.localAuto && navigator.permissions && navigator.permissions.query) navigator.permissions.query({name:"geolocation"}).then(q=>{ if (q.state==="granted" && Date.now() - (S.localQuando || 0) > 6 * 3600e3) localAtualiza(true); }).catch(()=>{});
 contaInicia();
-if (/[?&]teste=1/.test(location.search)) window.__arede = {adReal, AD_REAIS_set:l=>{ AD_REAIS = l; F.key = null; render(); }, donoDe, findItem, S, ME, navConta, LV, aoVivoPinta, adPrecosAplica, USO, uso, usoEnvia, csatTenta, prox, footCtx, footInfo, PRIO, prioDe, historicoPreenche, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
+if (/[?&]teste=1/.test(location.search)) window.__arede = {sheetSugFonte, adReal, AD_REAIS_set:l=>{ AD_REAIS = l; F.key = null; render(); }, donoDe, findItem, S, ME, navConta, LV, aoVivoPinta, adPrecosAplica, USO, uso, usoEnvia, csatTenta, prox, footCtx, footInfo, PRIO, prioDe, historicoPreenche, alvoDe, PENT, COMS, pentHTML, comsHTML, PREV, cidadeNoAparelho, munCarrega, lugarSinal, lugaresInteresse, lugarInteresse, localAtualiza, nivel, ACESSO, acessoVideo, acessoPub, ledger, FEED:F, itemDaPublicacao, POOL, source, ORG, SEAL, F, passa:(it)=>passa(it,S.filt), S, ME, render, go, F, altaTeste: d => { ALTA = d; altaDesenha(); }, noticiasTeste: d => noticiasAplica(d, Date.now())};
 window.addEventListener("scroll", ()=>{ const t = $("#top"); if (t) t.classList.toggle("scrolled", window.scrollY > 4); }, {passive:true});
 window.addEventListener("resize", debounce(()=>{
   placeLogoDots();
@@ -7633,7 +7670,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 12/11 09:46";
+const VERSAO = "v1 registrada · 12/11 10:17";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
