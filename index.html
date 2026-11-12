@@ -99,6 +99,7 @@ img,svg{max-width:100%}
 /* conta conectada (11 nov 2026): no lugar do ícone de pessoa, as iniciais de quem está logada; sem conta, o ícone e "Entrar" */
 .navme{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--fill);color:var(--on-fill);font-size:11px;font-weight:700;letter-spacing:.02em;line-height:1}
 .navme[hidden]{display:none}
+.redimg{display:flex;gap:12px;align-items:center;margin:0 0 12px}.redimg img{width:72px;height:72px;object-fit:cover;border-radius:10px;flex:none}
 .cintro{margin:0 0 14px;color:var(--muted);line-height:1.45}
 .navbtn.logada .icon{display:none}
 .navbtn.logada[aria-current="page"] .navme{box-shadow:0 0 0 2px var(--surface-2),0 0 0 3.5px var(--ink)}
@@ -3356,6 +3357,7 @@ const ICON = {
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   plus:'<path d="M12 5v14M5 12h14"/>',
   people:'<circle cx="9" cy="9" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="16.5" cy="8.5" r="2.5"/><path d="M16 13.6c2.4 0 4.2 1.6 4.6 4.6"/>',
+  lapis:'<path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/>',
   pessoa:'<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20.5c.8-4 3.7-6 7.5-6s6.7 2 7.5 6"/>',
   entrar:'<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M4 12h11M11 8l4 4-4 4"/>',
   globe:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.3 2.4 3.4 5.2 3.4 8.5s-1.1 6.1-3.4 8.5c-2.3-2.4-3.4-5.2-3.4-8.5S9.7 5.9 12 3.5z"/>',
@@ -5570,13 +5572,13 @@ function detailHTML(it, uid, mode, inline){
   const vis = isImg ? `<div class="pinvis">${isVid && it.yt ? `<div class="ytbox xvid"${S.ytAuto===it.yt ? " data-auto" : ""}>${ytCapa(it)}${ytPlayBtn(it, true)}</div>` : isVid && !it.src ? `<a class="xvid" href="${it.ext ? it.ext.url : "#"}" target="_blank" rel="noopener" aria-label="Assistir: ${esc(it.titulo)}">${art(it, .5625, false)}<span class="xplay big">${ic("play")}<span>Assistir ${it.plat?"no "+esc(it.plat):""}</span></span></a>` : isVid?`<video class="pinvid" ${inline?"":'id="pinvid"'} src="${it.src}" poster="${it.poster}" controls playsinline preload="metadata" style="--ar:${(1/it.ar).toFixed(4)}" aria-label="Vídeo: ${esc(it.titulo)}"></video>`:(it.foto && it.tipo==="imagem" ? `<img class="pinarte" src="${esc(it.foto)}" alt="${esc(it.titulo)}${it.artista ? ", arte de " + esc(it.artista) : ""}" style="aspect-ratio:${(1/(it.ar||1.41)).toFixed(4)}" referrerpolicy="no-referrer">` : art(it, it.ph))}${inline?"":`<button class="iconbtn solid floatback" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button>`}</div>` : "";
   /* tipo na linha dos ícones; autoria vira linha de crédito logo abaixo do título */
   const tipoTopo = `<span class="fkind pinkind toptipo" style="--k:${it.tipo==="votacao"?"var(--ink)":o.cor}">${kindOf(it)}</span><div class="spacer"></div>`;
-  const autor = it.daArte ? "" : `<div class="credito">${avatar(o)}<span class="t"><button class="who" type="button" data-act="openorg" data-org="${o.id}">${o.nome}</button>${verifBtn(o.verificado)}${ficTag(o)}<span class="cm"> · ${it.ext ? dLabel(it.ext.data) : tempo(it.min)}${o.pessoa ? "" : ` · <button class="linkbtn segue${f?" on":""}" type="button" data-act="follow" data-org="${o.id}">${f?(o.real?"Seguindo":"Participando"):(o.real?"Seguir":"Participar")}</button>`}</span></span></div>`;
+  const autor = it.daArte ? "" : `<div class="credito">${avatar(o)}<span class="t"><button class="who" type="button" data-act="openorg" data-org="${o.id}">${o.nome}</button>${verifBtn(o.verificado)}${ficTag(o)}<span class="cm"> · ${it.ext ? dLabel(it.ext.data) : tempo(it.min)}${it.editada ? " · editada" : ""}${o.pessoa ? "" : ` · <button class="linkbtn segue${f?" on":""}" type="button" data-act="follow" data-org="${o.id}">${f?(o.real?"Seguindo":"Participando"):(o.real?"Seguir":"Participar")}</button>`}</span></span></div>`;
   const bar = inline
     ? `<div class="pinbar">${tipoTopo}
-        <button class="iconbtn" type="button" data-act="page" data-uid="${uid}" aria-label="Abrir em página própria" title="Abrir em página própria">${ic("expand")}</button>${likeBtn(it)}<button class="iconbtn" type="button" data-act="share" data-uid="${uid}" aria-label="Copiar link">${ic("share")}</button>${saveBtn(uid)}${podeApagar(it) ? `<button class="iconbtn" type="button" data-act="apagarreal" data-uid="${uid}" aria-label="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}" title="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}">${ic("trash")}</button>` : ""}
+        <button class="iconbtn" type="button" data-act="page" data-uid="${uid}" aria-label="Abrir em página própria" title="Abrir em página própria">${ic("expand")}</button>${likeBtn(it)}<button class="iconbtn" type="button" data-act="share" data-uid="${uid}" aria-label="Copiar link">${ic("share")}</button>${saveBtn(uid)}${editBtn(it, uid)}${podeApagar(it) ? `<button class="iconbtn" type="button" data-act="apagarreal" data-uid="${uid}" aria-label="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}" title="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}">${ic("trash")}</button>` : ""}
         <button class="iconbtn xclose" type="button" data-act="xclose" aria-label="Fechar">${ic("close")}</button></div>`
     : `<div class="pinbar"><button class="iconbtn barback" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button>${tipoTopo}
-        ${likeBtn(it)}<button class="iconbtn" type="button" data-act="share" data-uid="${uid}" aria-label="Copiar link">${ic("share")}</button>${saveBtn(uid)}${podeApagar(it) ? `<button class="iconbtn" type="button" data-act="apagarreal" data-uid="${uid}" aria-label="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}" title="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}">${ic("trash")}</button>` : ""}</div>`;
+        ${likeBtn(it)}<button class="iconbtn" type="button" data-act="share" data-uid="${uid}" aria-label="Copiar link">${ic("share")}</button>${saveBtn(uid)}${editBtn(it, uid)}${podeApagar(it) ? `<button class="iconbtn" type="button" data-act="apagarreal" data-uid="${uid}" aria-label="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}" title="${ME.user && it.autorId===ME.user.id ? "Apagar publicação" : "Remover (moderação)"}">${ic("trash")}</button>` : ""}</div>`;
   const TitleTag = inline ? "h2" : "h1", open = !!S.textOpen[uid];
   const text = `<div class="pintext ${open?"open":""}">${bodyOf(it).map(p=>`<p class="pinbody">${esc(p)}</p>`).join("")}</div>
        <button class="linkbtn moretext" type="button" data-act="moretext" data-uid="${uid}" hidden aria-expanded="${open}">${open?"Mostrar menos":"Mostrar mais"}</button>`;
@@ -5932,7 +5934,8 @@ function orgDaPessoa(pf){ const id = "u-" + pf.id;
 function itemDaPublicacao(p){
   const id = "u" + p.id.replace(/-/g,""), ex = p.extra || {}, criada = new Date(p.criada_em);
   const it = {id, tipo:p.tipo==="abaixo" ? "chamado" : p.tipo, org:orgDaPessoa(p.perfis || {id:p.autor, nome:"Conta da rede"}), tema:p.tema || "Geral", titulo:p.titulo, texto:p.texto || "",
-    cidade:p.cidade || "", min:Math.max(1, Math.round((Date.now() - criada) / 60000)), conta:true, autorId:p.autor, uuid:p.id, publicada:p.publicada, criadaEm:p.criada_em};
+    cidade:p.cidade || "", min:Math.max(1, Math.round((Date.now() - criada) / 60000)), conta:true, autorId:p.autor, uuid:p.id, publicada:p.publicada, criadaEm:p.criada_em, raw:p,
+    editada:!!(p.editada_em && new Date(p.editada_em) - criada > 60000)};
   if (p.imagem_url){ it.foto = p.imagem_url; it.credito = ""; }
   if (ex.arte && p.imagem_url){ it.arte = true; it.catArte = "outros"; it.artista = (p.perfis && p.perfis.nome) || ""; }
   if (p.tipo==="evento"){ const d = ex.data ? dmy(ex.data) : null;
@@ -6618,6 +6621,9 @@ function screenAlta(){
     + `<div class="container alta"><div id="altabody"><p class="empty">Analisando as notícias do dia…</p></div></div>`;
 }
 const minhasReais = () => ME.user ? POOL.filter(it=>it.conta && it.autorId===ME.user.id).map(it=>withUid(it)) : [];
+/* EDITAR (12 nov 2026): só a autora edita a própria publicação; a moderação continua só apagando */
+const podeEditar = it => !!(it && it.conta && it.raw && ME.user && it.autorId===ME.user.id);
+const editBtn = (it, uid) => podeEditar(it) ? `<button class="iconbtn" type="button" data-act="editarpub" data-uid="${uid}" aria-label="Editar publicação" title="Editar publicação">${ic("lapis")}</button>` : "";
 const podeApagar = it => it && it.conta && ME.user && (it.autorId===ME.user.id || (ME.perfil && ME.perfil.papel==="admin"));
 
 /* TELA DA CONTA: entrar, criar conta, e a conta já aberta */
@@ -6824,20 +6830,23 @@ function fotoComprime(file){ return new Promise((ok, no)=>{ const img = new Imag
 
 /* CRIAR com a conta real: publica no servidor, em seu nome */
 const TIPOS_REAIS = {texto:"Publicação", evento:"Evento", chamado:"Chamado", abaixo:"Abaixo-assinado"};
-function sheetCriarReal(k){ const nome = TIPOS_REAIS[k], pf = ME.perfil || {};
-  openSheet(shead(nome) + `
-    <div class="note">${avatar({cor:"#141615", sigla:siglaDe(pf.nome)})}<span>Publicando como <b>${esc(pf.nome || ME.user.email)}</b> · conta real. Fica visível para quem acessa a rede.</span></div>
-    <div class="field"><label for="rtit">Título</label><input id="rtit" type="text" maxlength="140"></div>
-    ${k==="evento" ? `<div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="rdata">Data</label><input id="rdata" type="date" min="${new Date().toISOString().slice(0,10)}"></div><div class="field" style="flex:1"><label for="rhora">Hora</label><input id="rhora" type="time"></div></div>
-      <div class="field"><label for="rlocal">Local</label><input id="rlocal" type="text" maxlength="120" placeholder="Ex.: Praça da Sé"></div>` : ""}
-    ${k==="chamado" || k==="abaixo" ? `<div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="rmeta">${k==="abaixo" ? "Meta de assinaturas" : "Quantas pessoas"}</label><input id="rmeta" type="number" min="1" inputmode="numeric" value="${k==="abaixo" ? 300 : 20}"></div><div class="field" style="flex:1"><label for="rprazo">Prazo</label><input id="rprazo" type="text" maxlength="40" placeholder="Ex.: até 30 nov"></div></div>` : ""}
-    <div class="field"><label for="rtxt">Texto</label><textarea id="rtxt" maxlength="5000" placeholder="Escreva aqui. Uma linha em branco separa os parágrafos."></textarea></div>
-    <div class="field"><label for="rfoto">Imagem (opcional)</label><input id="rfoto" type="file" accept="image/jpeg,image/png,image/webp"><small class="hint">JPG, PNG ou WebP, até 5 MB. Use só imagens suas ou que você pode publicar.</small>
-      ${veArte() ? `<label class="chkrow"><input id="rarte" type="checkbox"> <span><b>É uma arte</b> · cartaz, ilustração, lambe. Aparece também na aba Arte, com o seu nome como autoria.</span></label>` : ""}</div>
-    <div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="rtema">Tema</label><select id="rtema">${TEMAS.map(t=>`<option>${t}</option>`).join("")}</select></div>
-      <div class="field" style="flex:1"><label for="rcid">Cidade</label><input id="rcid" type="text" maxlength="80" value="${esc(pf.cidade || "")}"></div></div>
+const horaInput = h => { const m = String(h||"").match(/^(\d{1,2})h(\d{2})?$/); return m ? m[1].padStart(2,"0") + ":" + (m[2] || "00") : ""; };
+function sheetCriarReal(k, ed){ const nome = TIPOS_REAIS[k], pf = ME.perfil || {}, ex = (ed && ed.extra) || {}, v = x => esc(x == null ? "" : String(x));
+  openSheet(shead(ed ? "Editar " + nome.toLowerCase() : nome) + (ed ? `<div class="note">${ic("lapis")}<span>Quem já viu a publicação passa a ver a versão nova, marcada como <b>editada</b>.</span></div>` : `
+    <div class="note">${avatar({cor:"#141615", sigla:siglaDe(pf.nome)})}<span>Publicando como <b>${esc(pf.nome || ME.user.email)}</b> · conta real. Fica visível para quem acessa a rede.</span></div>`) + `
+    <div class="field"><label for="rtit">Título</label><input id="rtit" type="text" maxlength="140" value="${ed ? v(ed.titulo) : ""}"></div>
+    ${k==="evento" ? `<div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="rdata">Data</label><input id="rdata" type="date" min="${ed && ex.data && ex.data < new Date().toISOString().slice(0,10) ? ex.data : new Date().toISOString().slice(0,10)}" value="${v(ex.data)}"></div><div class="field" style="flex:1"><label for="rhora">Hora</label><input id="rhora" type="time" value="${horaInput(ex.hora)}"></div></div>
+      <div class="field"><label for="rlocal">Local</label><input id="rlocal" type="text" maxlength="120" placeholder="Ex.: Praça da Sé" value="${v(ex.local)}"></div>` : ""}
+    ${k==="chamado" || k==="abaixo" ? `<div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="rmeta">${k==="abaixo" ? "Meta de assinaturas" : "Quantas pessoas"}</label><input id="rmeta" type="number" min="1" inputmode="numeric" value="${ex.meta || (k==="abaixo" ? 300 : 20)}"></div><div class="field" style="flex:1"><label for="rprazo">Prazo</label><input id="rprazo" type="text" maxlength="40" placeholder="Ex.: até 30 nov" value="${v(ex.prazo)}"></div></div>` : ""}
+    <div class="field"><label for="rtxt">Texto</label><textarea id="rtxt" maxlength="5000" placeholder="Escreva aqui. Uma linha em branco separa os parágrafos.">${ed ? v(ed.texto) : ""}</textarea></div>
+    ${ed && ed.imagem_url ? `<div class="redimg"><img src="${esc(ed.imagem_url)}" alt="Imagem atual" referrerpolicy="no-referrer"><label class="chkrow"><input id="rsemfoto" type="checkbox"> <span>Tirar esta imagem</span></label></div>` : ""}
+    <div class="field"><label for="rfoto">${ed && ed.imagem_url ? "Trocar a imagem (opcional)" : "Imagem (opcional)"}</label><input id="rfoto" type="file" accept="image/jpeg,image/png,image/webp"><small class="hint">JPG, PNG ou WebP, até 5 MB. Use só imagens suas ou que você pode publicar.</small>
+      ${veArte() ? `<label class="chkrow"><input id="rarte" type="checkbox"${ex.arte ? " checked" : ""}> <span><b>É uma arte</b> · cartaz, ilustração, lambe. Aparece também na aba Arte, com o seu nome como autoria.</span></label>` : ""}</div>
+    <div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="rtema">Tema</label><select id="rtema">${TEMAS.map(t=>`<option${ed && ed.tema===t ? " selected" : ""}>${t}</option>`).join("")}</select></div>
+      <div class="field" style="flex:1"><label for="rcid">Cidade</label><input id="rcid" type="text" maxlength="80" value="${esc(ed ? (ed.cidade || "") : (pf.cidade || ""))}"></div></div>
     <p class="ferr" role="alert" hidden></p>
-    <button class="btn primary block" type="button" data-act="publicarreal" data-k="${k}">Publicar</button>`, "Criar " + nome);
+    ${ed ? `<button class="btn primary block" type="button" data-act="publicarreal" data-k="${k}" data-ed="${ed.id}">Salvar alterações</button>
+      <button class="btn ghost block" type="button" data-act="close">Cancelar</button>` : `<button class="btn primary block" type="button" data-act="publicarreal" data-k="${k}">Publicar</button>`}`, ed ? "Editar publicação" : "Criar " + nome);
 }
 /* =====================================================================
    11. Folhas (bottom sheet no celular, diálogo no tablet/desktop)
@@ -7160,24 +7169,31 @@ const A = {
     ocupado(b, true, "Salvando…");
     const {error} = await SB.from("perfis").update({nome, cidade:$("#pcid").value.trim() || null, bio:$("#pbio").value.trim() || null}).eq("id", ME.user.id);
     ocupado(b, false); if (error) return formErro(erroAuth(error)); formErro(""); await perfilCarrega(); await publicacoesCarrega(); toast("Perfil salvo."); render(); },
-  publicarreal: async b => { const k = b.dataset.k, tit = $("#rtit").value.trim(), txt = $("#rtxt").value.trim(), f = $("#rfoto").files[0];
+  editarpub: b => { const it = findItem(b.dataset.uid); if (!podeEditar(it)) return; sheetCriarReal(it.raw.tipo, it.raw); },
+  publicarreal: async b => { const ed = b.dataset.ed, velha = ed ? (POOL.find(x=>x.uuid===ed) || {}).raw : null, k = b.dataset.k, tit = $("#rtit").value.trim(), txt = $("#rtxt").value.trim(), f = $("#rfoto").files[0];
     if (tit.length < 3) return formErro("Escreva um título (pelo menos 3 letras).");
-    const extra = {};
+    const extra = velha ? Object.assign({}, velha.extra || {}) : {}; if (velha && $("#rarte")) delete extra.arte;
     if (k==="evento"){ extra.data = $("#rdata").value; extra.hora = ($("#rhora").value || "").replace(/^0/,"").replace(":00","h").replace(":","h"); extra.local = $("#rlocal").value.trim();
       if (!extra.data) return formErro("Escolha a data do evento."); if (!extra.local) return formErro("Diga o local do evento."); }
     if (k==="chamado" || k==="abaixo"){ extra.meta = Math.max(1, +$("#rmeta").value || 1); extra.prazo = $("#rprazo").value.trim(); }
     if ($("#rarte") && $("#rarte").checked){ if (!f) return formErro("Para marcar como arte, escolha a imagem."); extra.arte = true; }
     if (f && f.size > 5*1024*1024) return formErro("A imagem passa de 5 MB.");
-    formErro(""); ocupado(b, true, f ? "Enviando a imagem…" : "Publicando…");
-    let imagem_url = null;
+    formErro(""); ocupado(b, true, f ? "Enviando a imagem…" : ed ? "Salvando…" : "Publicando…");
+    let imagem_url = velha && !($("#rsemfoto") && $("#rsemfoto").checked) ? velha.imagem_url || null : null;
     try{ if (f){ const blob = await fotoComprime(f), nome = ME.user.id + "/" + (crypto.randomUUID ? crypto.randomUUID() : Date.now()) + ".jpg";
         const up = await SB.storage.from("midia").upload(nome, blob, {contentType:"image/jpeg", upsert:false}); if (up.error) throw up.error;
         imagem_url = SB.storage.from("midia").getPublicUrl(nome).data.publicUrl; }
-      b.textContent = "Publicando…";
-      const {error} = await SB.from("publicacoes").insert({tipo:k, titulo:tit, texto:txt, tema:$("#rtema").value, cidade:$("#rcid").value.trim() || null, imagem_url, extra});
-      if (error) throw error; }
+      b.textContent = ed ? "Salvando…" : "Publicando…";
+      const dados = {titulo:tit, texto:txt, tema:$("#rtema").value, cidade:$("#rcid").value.trim() || null, imagem_url, extra};
+      const {error} = ed ? await SB.from("publicacoes").update(dados).eq("id", ed).eq("autor", ME.user.id)
+        : await SB.from("publicacoes").insert(Object.assign({tipo:k}, dados));
+      if (error) throw error;
+      /* a imagem antiga que saiu ou foi trocada é apagada do armazenamento (só as que a própria conta enviou) */
+      if (velha && velha.imagem_url && velha.imagem_url !== imagem_url){ const m = velha.imagem_url.match(/\/midia\/(.+)$/);
+        if (m && m[1].startsWith(ME.user.id + "/")) SB.storage.from("midia").remove([decodeURIComponent(m[1])]).catch(()=>{}); } }
     catch(e){ ocupado(b, false); return formErro(erroAuth(e)); }
     ocupado(b, false); closeSheet(); await publicacoesCarrega();
+    if (ed){ const it = POOL.find(x=>x.uuid===ed); if (it && route().startsWith("pin-")) render(); toast("Publicação editada."); return; }
     if (S.tab!=="tudo" && S.tab!=="publicacoes"){ S.tab = "tudo"; persist("tab"); } go("inicio"); toast("Publicado na rede. Já aparece para quem acessa o site."); },
   apagarreal: async b => { if (b.dataset.ok!=="1"){ b.dataset.ok = "1"; if (b.classList.contains("iconbtn")){ b.classList.add("armado"); toast("Toque de novo na lixeira para apagar de vez."); setTimeout(()=>{ b.dataset.ok=""; b.classList.remove("armado"); }, 6000); } else b.textContent = "Toque de novo para apagar de vez"; return; }
     const it = findItem(b.dataset.uid); if (!it) return; ocupado(b, true, "Apagando…");
@@ -7579,7 +7595,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 12/11 08:42";
+const VERSAO = "v1 registrada · 12/11 08:54";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
