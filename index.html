@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#F2F3EF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0F1110" media="(prefers-color-scheme: dark)">
-<title>arede.online</title>
+<title>a rede.online</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23141615'/%3E%3Ctext x='15' y='45' font-family='Helvetica Neue,Arial,sans-serif' font-weight='700' font-size='40' fill='%23fff'%3Ea%3C/text%3E%3Ccircle cx='47' cy='41' r='5' fill='%238D9BFF'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1675,7 +1675,7 @@ button.setting{width:100%;border:0;text-align:left;font:inherit;color:inherit;cu
 <body>
 <div class="app">
   <nav class="nav" aria-label="Navegação principal">
-    <a class="brand" href="#inicio" aria-label="arede.online, início" title="arede.online"><span class="mark" aria-hidden="true">a<i class="ldot"></i></span></a>
+    <a class="brand" href="#inicio" aria-label="a rede.online, início" title="a rede.online"><span class="mark" aria-hidden="true">a<i class="ldot"></i></span></a>
     <a class="navbtn" href="#inicio" data-nav="inicio" aria-label="Início"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z"/></svg><span class="lbl">Início</span></a>
 
     <a class="navbtn" href="#explorar" data-nav="explorar" aria-label="Buscar"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><span class="lbl">Buscar</span></a>
@@ -3521,7 +3521,7 @@ REAL.itens.forEach(r=>{
 /* SELO DE PERFIL VERIFICADO (9 nov 2026): diz QUEM publica, não se o conteúdo é verdadeiro.
    documento = pessoa com identidade confirmada por documento · oficial = conta comprovadamente de uma fonte oficial.
    Só a curadoria concede (o servidor impede que a própria conta se marque). */
-const VERIF = {documento:["Identidade verificada","A pessoa confirmou a identidade com documento."], oficial:["Conta oficial verificada","arede.online comprovou que a conta pertence à instituição ou fonte oficial que ela diz ser."]};
+const VERIF = {documento:["Identidade verificada","A pessoa confirmou a identidade com documento."], oficial:["Conta oficial verificada","A rede.online comprovou que a conta pertence à instituição ou fonte oficial que ela diz ser."]};
 const verifIco = (v, cls="") => v && VERIF[v] ? `<span class="vfy ${cls}" title="${VERIF[v][0]}" role="img" aria-label="${VERIF[v][0]}">${ic("vfy")}</span>` : "";
 const verifBtn = v => v && VERIF[v] ? `<button class="vfy vbtn3" type="button" data-act="verifinfo" data-v="${v}" aria-label="${VERIF[v][0]}: o que significa">${ic("vfy")}</button>` : "";
 function sheetVerif(v){ const [t, d] = VERIF[v] || VERIF.oficial;
@@ -4402,7 +4402,7 @@ function screenAnunciar(){ const d = adDraft(), P = AD_PRECO, v = adPreco(d), va
   const fAtual = v.f[3], pAtual = v.p[3];
   return header(`<div class="toprow"><button class="iconbtn" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button><h1 class="pagehead">Anuncie aqui</h1></div>`)
   + `<div class="container adflow">
-    <p class="adlead">Monte o anúncio e veja o valor na hora. Ele aparece para todo mundo, no mesmo lugar: arede.online não usa o perfil de quem lê.</p>
+    <p class="adlead">Monte o anúncio e veja o valor na hora. Ele aparece para todo mundo, no mesmo lugar: a rede.online não usa o perfil de quem lê.</p>
     <div class="adsticky"><div id="adpvbox">${adPrevia(d)}</div><div id="admapbox">${adMapa(d)}</div></div>
     <h2 class="adh">1. Sua mensagem</h2>
     <div class="field"><label for="adnome">Marca ou organização</label><input id="adnome" data-ad="nome" maxlength="24" autocomplete="organization" placeholder="Ex.: Padaria Aurora" value="${val("nome")}"></div>
@@ -4433,7 +4433,7 @@ function sheetAdRevisar(){ const d = adDraft(), v = adPreco(d);
     <div class="adpag" role="radiogroup" aria-label="Forma de pagamento">${[["pix","Pix","Confirma na hora"],["cartao","Cartão de crédito","Você escolhe na página do Mercado Pago"]].map(([k,n,sub])=>`<button class="adopt" type="button" role="radio" aria-checked="${d.meio===k}" data-act="admeio" data-v="${k}"><span class="t"><b>${n}</b><small>${sub}</small></span>${d.meio===k ? ic("check") : ""}</button>`).join("")}</div>
     <label class="adok"><input type="checkbox" id="adaceite"><span>Li e aceito as regras de anúncio.</span></label>
     <div class="sheetacts"><button class="btn ink block" type="button" data-act="adpagar">Pagar ${adBRL(v.total)}</button></div>
-    <p class="srcnote" style="margin-top:8px">O pagamento acontece na página segura do Mercado Pago. arede.online não vê nem guarda dados de cartão.</p>
+    <p class="srcnote" style="margin-top:8px">O pagamento acontece na página segura do Mercado Pago. A rede.online não vê nem guarda dados de cartão.</p>
     ${AD_MODO==="teste" && adPodePagar() ? `<div class="note" style="margin-top:10px">${ic("info")}<span><b>Modo de teste.</b> Só a administração vê este pagamento. Use um comprador de teste do Mercado Pago; nenhum dinheiro de verdade é movimentado.</span></div>` : ""}`, "Revisar e pagar"); }
 function sheetAdSemPagamento(){ const v = adPreco(adDraft());
   openSheet(shead("Pagamento em preparação") + `<div class="note">${ic("info")}<span><b>Nada foi cobrado.</b> O pagamento de anúncios ainda não está ligado, e nenhum dado saiu deste aparelho.</span></div>
@@ -4508,7 +4508,7 @@ function csatTenta(){ if (!USO.on || USO.csatVisto) return; const st = store.get
   USO.csatVisto = true; store.set("csat", {n:st.n + 1, ok:false}); USO.csat = {nota:0, at:new Set()}; uso("csat", "mostrado", "", USO.ativo); sheetCsat(); }
 function sheetCsat(){ const c = USO.csat, n = c.nota, perg = !n ? "" : n >= 4 ? "O que mais agradou?" : n === 3 ? "O que pode melhorar?" : "O que mais atrapalhou?";
   const antes = $("#csatcom") ? $("#csatcom").value : (c.com || "");
-  openSheet(shead("Como está sendo usar a arede.online?") + `<div class="csat">
+  openSheet(shead("Como está sendo usar a rede.online?") + `<div class="csat">
     <div class="csnotas" role="radiogroup" aria-label="Nota de 1 a 5">${[1,2,3,4,5].map(i=>`<button class="csn" type="button" role="radio" aria-checked="${n===i}" data-act="csatnota" data-v="${i}" aria-label="Nota ${i}">${i}</button>`).join("")}</div>
     <div class="cslegenda" aria-hidden="true"><span>Muito ruim</span><span>Muito boa</span></div>
     ${n ? `<p class="csperg" id="csperg">${perg}</p>
@@ -4522,7 +4522,7 @@ function csatManda(fim){ const c = USO.csat; if (!c || !c.nota || !SB) return; c
 function sheetAnuncio(uid){ const it = findItem(uid); if (!it) return; const a = it.ad;
   openSheet(shead("Anúncio") + `<div class="adsh" style="--adc:${a.cor};--adc2:${a.cor2}"><span class="adsq">${adLogo(a, 40)}</span><span><b>${esc(a.nome)}</b><small>${esc(a.seg)} · anunciante de exemplo</small></span></div>
     <p class="adfrase">${esc(a.frase)}</p>
-    <div class="note">${ic("info")}<span><b>Por que você vê este anúncio:</b> ele aparece para todo mundo nesta aba, na mesma posição. arede.online não usa seu perfil, suas organizações, seus temas nem posição política para escolher anúncios, e anúncio não muda o seu algoritmo.</span></div>
+    <div class="note">${ic("info")}<span><b>Por que você vê este anúncio:</b> ele aparece para todo mundo nesta aba, na mesma posição. A rede.online não usa seu perfil, suas organizações, seus temas nem posição política para escolher anúncios, e anúncio não muda o seu algoritmo.</span></div>
     <div class="sheetacts"><button class="btn ink block" type="button" disabled>Visitar ${esc(a.nome)} ${ic("ext","sm")}</button>
     <button class="btn ghost block" type="button" data-act="adoculta" data-a="${a.id}">Não mostrar mais ${esc(a.nome)}</button>
     <button class="btn ghost block" type="button" data-act="anunciar">Anuncie aqui</button></div>
@@ -4709,7 +4709,7 @@ window.addEventListener("message", e=>{ const d = e.data; if (!d) return;
     try{ history.replaceState(null, "", "#" + h); }catch(err){} lastRoute = route(); } });
 const painelRow = () => LOCAL ? `<button class="setting painel" type="button" data-nav-to="painel"><span class="t"><b>Painel de controle <span class="plock" title="Só no seu computador: não está online nem é público" aria-label="Só no seu computador, não está online nem é público">${ic("lock","sm")}</span></b></span>${ic("back","sm flip")}</button>` : "";
 /* o logo da barra superior abre "Sobre arede.online": Manifesto e Como arede.online funciona */
-const LOGO = `<button class="logo" type="button" data-act="sobre" aria-haspopup="dialog" aria-label="arede.online: manifesto e como funciona"><span class="lw" aria-hidden="true">a<i class="ldot lg lga"></i>rede<span class="ext"><i class="ldot lg lgb"></i><span class="com">online</span></span><i class="ldot lmove"></i></span><svg class="lchev" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>`;
+const LOGO = `<button class="logo" type="button" data-act="sobre" aria-haspopup="dialog" aria-label="a rede.online: manifesto e como funciona"><span class="lw" aria-hidden="true">a<i class="ldot lg lga"></i>rede<span class="ext"><i class="ldot lg lgb"></i><span class="com">online</span></span><i class="ldot lmove"></i></span><svg class="lchev" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>`;
 const header = (inner) => `<header class="top" id="top"><div class="topin container">${inner}</div></header>`;
 const avatar = (o, cls="av") => o.daRedeConta ? `<span class="${cls} rede" aria-hidden="true"><span class="amark">a<i></i></span></span>` : `<span class="${cls}" style="background:${o.cor}" aria-hidden="true">${o.sigla}</span>`;
 function statusLine(){
@@ -5190,7 +5190,7 @@ function screenProfile(){
       <span class="pwho"><b>${pf ? esc(pf.nome) : "Você"}${pf ? verifIco(pf.verificado) : ""}${ic("back","sm flip")}</b><span class="psub">${pf && pf.cidade ? esc(pf.cidade) + " · " : ""}${S.publico ? "perfil público" : "perfil privado"}</span></span></a><span class="spacer"></span>
       <span class="pacts">${/* topo do perfil (10 nov 2026): um botão para cada destino, sem repetir o Criar da navegação.
           a. (roxo) = sua entrada na arede.online: entrar ou criar conta, ou a sua conta; engrenagem = configurações. Publicar fica só no Criar. */""}
-        <a class="iconbtn pbtn prim" href="#conta" data-act="acessar" aria-label="${ME.user ? "Sua conta na arede.online" : "Acessar arede.online: entrar ou criar conta"}" title="${ME.user ? "Sua conta" : "Acessar arede.online"}"><span class="amark" aria-hidden="true">a<i></i></span></a>
+        <a class="iconbtn pbtn prim" href="#conta" data-act="acessar" aria-label="${ME.user ? "Sua conta na rede.online" : "Acessar a rede.online: entrar ou criar conta"}" title="${ME.user ? "Sua conta" : "Acessar a rede.online"}"><span class="amark" aria-hidden="true">a<i></i></span></a>
         <a class="iconbtn pbtn" href="#config" aria-label="Configurações" title="Configurações">${ic("gear")}</a></span></div>
     <div class="tabs" role="tablist" aria-label="Seu conteúdo">${tabsPerfil()}</div>
     <div class="status" id="pstatus">${profStatus()}</div>`)
@@ -5221,7 +5221,7 @@ function algoPanel(){
   const mixO = S.usarOrgs ? S.mix : 0;
   return `<div class="apanel">
     <section class="acard"><h3>O que alimenta o seu feed</h3>
-      <p class="anote">Só o que você escolheu. arede.online não deduz opiniões.</p>
+      <p class="anote">Só o que você escolheu. A rede.online não deduz opiniões.</p>
       <div class="chips tags">${S.temas.map(t=>`<span class="chip static">${t}</span>`).join("")}</div>
       <p class="anote">${S.usarOrgs ? `E as ${S.follow.size} organizações de que você participa.` : "Suas organizações não são usadas (você desligou)."}</p>
       <div class="amix" role="img" aria-label="Equilíbrio: ${mixO}% organizações, ${100-mixO}% temas"><i style="width:${mixO}%"></i><b style="width:${100-mixO}%"></b></div>
@@ -5283,7 +5283,7 @@ function screenConfig(){
     <h2 class="sectitle">Conta</h2>
     <div class="list">${ME.user
       ? `<a class="setting l1" href="#conta"><span class="t"><b>Sua conta</b><small>Perfil, segurança, seus dados e sair</small></span>${ic("back","sm flip")}</a>`
-      : `<a class="setting l1" href="#conta" data-act="acessar"><span class="t"><b>Acessar arede.online</b><small>Entre ou crie sua conta</small></span>${ic("back","sm flip")}</a>`}</div>
+      : `<a class="setting l1" href="#conta" data-act="acessar"><span class="t"><b>Acessar a rede.online</b><small>Entre ou crie sua conta</small></span>${ic("back","sm flip")}</a>`}</div>
     <h2 class="sectitle">Perfil e privacidade</h2>
     <div class="list">
       <button class="setting l1" type="button" data-act="interesses"><span class="t"><b>Interesses públicos</b><small>${S.interesses.length} de ${MAX_INT} · aparecem no seu perfil</small></span>${ic("back","sm flip")}</button>
@@ -5292,7 +5292,7 @@ function screenConfig(){
       ${switchRow("usarOrgs","Usar minhas organizações no algoritmo","Desligue quando quiser")}
       <button class="setting l1" type="button" data-act="redes"><span class="t"><b>Outras redes</b><small>${(()=>{ const m = S.redes.filter(c=>c.tipo==="minha").length, a = S.redes.length - m; return m || a ? [m ? m + " no perfil" : "", a ? a + " no feed" : ""].filter(Boolean).join(" · ") : "Traga publicações de outras redes"; })()}</small></span>${ic("back","sm flip")}</button>
       <a class="setting l1" href="#perfil-ver"><span class="t"><b>Visualizar perfil</b><small>Veja o que as outras pessoas veem</small></span>${ic("back","sm flip")}</a>
-      <div class="note">${ic("lock")}<span>arede.online não deduz suas opiniões políticas. O algoritmo usa só o que você escolhe aqui, e com o algoritmo desligado nada do seu perfil é usado.</span></div>
+      <div class="note">${ic("lock")}<span>A rede.online não deduz suas opiniões políticas. O algoritmo usa só o que você escolhe aqui, e com o algoritmo desligado nada do seu perfil é usado.</span></div>
     </div>
     <h2 class="sectitle">Seu feed</h2>
     <div class="list">
@@ -5305,13 +5305,13 @@ function screenConfig(){
     <h2 class="sectitle">Aparência</h2>
     <div class="setting stack"><span class="t"><b>Tema</b><small>Automático segue o seu aparelho</small></span>
       <div class="chips" role="radiogroup" aria-label="Tema">${[["auto","Automático"],["claro","Claro"],["escuro","Escuro"]].map(([k,t])=>`<button class="chip" type="button" role="radio" data-act="tema" data-v="${k}" aria-checked="${S.tema===k}">${t}</button>`).join("")}</div></div>
-    <h2 class="sectitle">Sobre arede.online</h2>
+    <h2 class="sectitle">Sobre a rede.online</h2>
     <div class="list">
       <a class="setting l1" href="#manifesto"><span class="t"><b>Manifesto</b></span>${ic("back","sm flip")}</a>
-      <a class="setting l1" href="#funciona"><span class="t"><b>Como arede.online funciona</b></span>${ic("back","sm flip")}</a>
+      <a class="setting l1" href="#funciona"><span class="t"><b>Como a rede.online funciona</b></span>${ic("back","sm flip")}</a>
       ${painelRow()}
     </div>
-    <p class="ver">arede.online · versão ${VERSAO}</p></div>`;
+    <p class="ver">a rede.online · versão ${VERSAO}</p></div>`;
 }
 /* VISUALIZAR PERFIL — o que as outras pessoas veem, conforme as escolhas de privacidade */
 /* VISUALIZAR PERFIL: o que os outros veem. Mesma estrutura do Perfil: abas + status + grade.
@@ -5527,7 +5527,7 @@ const repTag = it => { const r = S.reports[it.uid]; return r && (r.st==="rev"||r
 function sheetReport(uid){
   openSheet(shead("Denunciar") + `<p style="color:var(--muted);font-size:14px">O que este conteúdo fere?</p>
     <div class="list" role="radiogroup" aria-label="Motivo">${MOTIVOS.map(([k,t])=>`<button class="setting" type="button" role="radio" aria-checked="false" data-act="repmot" data-k="${k}"><span class="t"><b>${t}</b>${k==="falsa"?"<small>Vai para a verificação do selo de confiabilidade</small>":""}</span></button>`).join("")}</div>
-    <div class="note">${ic("info")}<span>O conteúdo continua visível durante a revisão. A revisão é automática, sem interferência humana, e o resultado fica registrado de forma pública. Quem publicou pode recorrer. Ordens judiciais são sempre cumpridas. <button class="linkbtn" type="button" data-nav-to="funciona" style="padding:0;min-height:0">Como arede.online funciona</button></span></div>
+    <div class="note">${ic("info")}<span>O conteúdo continua visível durante a revisão. A revisão é automática, sem interferência humana, e o resultado fica registrado de forma pública. Quem publicou pode recorrer. Ordens judiciais são sempre cumpridas. <button class="linkbtn" type="button" data-nav-to="funciona" style="padding:0;min-height:0">Como a rede.online funciona</button></span></div>
     <button class="btn ink block" type="button" data-act="repsend" data-uid="${uid}" disabled>Enviar denúncia</button>`, "Denunciar"); }
 function screenPin(uid){
   const it = findItem(uid); if (!it) return `<div class="container"><div class="empty"><p>${PIN_ESPERA ? "Carregando o conteúdo…" : "Este conteúdo não está mais disponível."}</p>${PIN_ESPERA ? "" : `<button class="btn ink" type="button" data-nav-to="inicio">Voltar ao feed</button>`}</div></div>`;
@@ -5615,11 +5615,11 @@ const layoutAllPins = () => $$(".pin").forEach(layoutPin);
    O texto do manifesto é o original, sem edição: aqui só muda a apresentação.
    Fonte dos textos: manifesto.md e como-funciona.md.
    ===================================================================== */
-const ENV = {"inaug": ["Tudo o que criamos aqui é bem intencionado. Nosso código não tem intenção, nem nunca terá, de fazer mal a ninguém, nem a nenhuma sociedade. Pelo contrário, nossa intenção é salvar a humanidade."], "inter": [["Dizem que bons movimentos políticos partem ou devem partir de um manifesto.", "Difícil é começar dele, visto que seja o primeiro barulho falho, dificilmente voltará à tona com alguma força de modo que seja manifesto mas também um movimento."], ["Tratamos disso. O movimento das coisas a fascinante mutabilidade daquilo que está vivo."], ["O ano é 2026. Escrevemos inicialmente no dia 7 de novembro. É um sábado quente de pancadas de chuva e grandes sinais de mudança."], ["Neste ano, as eleições de outubro começaram com a câmara e o senado tomados por candidatos da direita ou extrema direita, filiados ao PL.", "Pânico."], ["A capital, maior cidade da América Latina, calou."], ["O sentimento ainda era de puro desalento quando os estudantes começaram a sair pelas ruas do Brasil, chamando as pessoas para o voto em defesa da democracia e da soberania nacional."], ["Quinze dias de manifestação.", "Maiores a cada dia."], ["Enquanto a grande mídia brasileira e a Meta, a que tudo indica, tinham grande preferência pelo candidato extremista e submisso ao mercado e aos Estados Unidos, a população saía às ruas."], ["No segundo turno, no dia 25 de outubro, iniciada a apuração e já era possível perceber que alguma coisa progredia de maneira diferente do primeiro turno, tanto numericamente quanto no que era visto pelas redes sociais: o Brasil se movia, de vermelho, para votar."], ["Conseguimos 4 milhões de votos de vantagem após um primeiro turno de derrota, seguido de um dos menores níveis de abstenção da história."], ["Parece finalmente um suspiro."], ["O derrotado, que não reconhece a decisão das urnas, sai em fuga do país menos de 48h depois do dia da eleição. Foge evitando sobrevoar o Brasil, pela Argentina, e sobe até os Estados Unidos."], ["Publica uma carta desastrosa, feita por inteligência artificial, que prova além de todo o resto, que não sabe nem o nome oficial do próprio país, “Estados Unidos do Brasil”."], ["O presidente, em seu quarto mandato e reeleito com o maior número de votos de sua história, é ovacionado mundialmente junto ao povo brasileiro, sendo reconhecida a vitória da democracia por força da ação popular que se movimentou para elegê-lo e dar início ao freio sobre o novo fascismo que havia voltado a perpetuar no mundo."], ["Espalha, então, do Brasil para o mundo a força da possibilidade."], ["As manifestações que também já aconteciam em outros lugares do mundo ganham mais esperança e avançam para os Estados Unidos."], ["Eleições de meio mandato e a onda azul.", "Tsunami, dizem."], ["Texas e Georgia? Gone blue."], ["E a primavera parece ainda mais forte."], ["Pareço então me <s>iludir</s> inspirar outra vez.", "Este é o cenário."], ["Devo então escrever este manifesto."]], "estIntro": "As Estruturas são os princípios que sustentam a rede e orientam cada decisão sobre ela.", "estr": [{"n": "1", "t": "Vale sempre lembrar, o poder emana do povo (Constituição Federal de 1988, art. 1º)."}, {"n": "2", "t": "Este manifesto é estruturado de duas formas, uma em palavras, outra em sua forma digital. Por estes meios, este manifesto se movimenta pelo povo e pelo bem-estar social."}, {"n": "3", "t": "A representatividade pode refletir o poder que emana do povo de maneira cada vez mais simultânea."}, {"n": "4", "t": ["Nem tudo é liberdade de expressão e respeito é a base.", "Qualquer ordem que fere o direito de um, fere o direito de todos e nunca deverá ser considerada representatividade."]}, {"n": "5", "t": "Nenhum poder é hereditário."}, {"n": "6", "t": ["Todo caráter é individual.", "Cada indivíduo é responsável por suas ações. O que resulta de sua ação pode também ser responsabilidade de outra pessoa, mas o indivíduo nunca será dissociado da responsabilidade sobre suas ações."]}, {"n": "7", "t": ["Nossa marca é “arede.online”.", "Nosso manifesto não pertence a nenhum estado ou país. Pertence a todas as nações e circula pela rede internacional enquanto tenta facilitar a capilarização do movimento social transnacional e o estabelecimento de mais conexões humanas."]}, {"n": "8", "t": ["Nem todo movimento político sabe que é um movimento político.", "A rede também provê conteúdo de entretenimento, memes, celebridades, além de conteúdos originais ou pessoais, publicados pelos próprios usuários em sua rede pessoal ou profissional."]}, {"n": "9", "t": "Enquanto as redes sociais atuais estimulam indivíduos e conteúdos extremamente algorítmicos, na rede os indivíduos podem se organizar em comunidades nas quais indivíduos compartilham interesses."}, {"n": "10", "t": ["A rede centraliza um mundo de informações e ajuda a verificar a veracidade do que é compartilhado.", "Os próprios usuários podem fazer curadoria do conteúdo e a lógica de concordância entre as denúncias precisa ser cruzada com fontes diversas para garantir que não há uma ação organizada para influenciar e repercutir negativamente bons assuntos, seja por ação mal intencionada humana, ou programação de agentes de automatização."]}], "regras": [], "fintro": ["arede.online ajuda organizações democráticas a se organizarem: conversar, chamar gente, marcar encontros e decidir juntas.", "Aprendemos com as redes que todo mundo já usa, como Facebook, Instagram e WhatsApp, e com o Pinterest, pela navegação limpa e pela grade. Aqui a navegação é simples e o feed não acaba.", "O algoritmo aprende com o que você faz, mas quem decide é você: dá para ajustar, desligar ou navegar num espaço aberto, que mostra conteúdo de todas as organizações com critérios iguais para todo mundo. É assim que se sai da bolha."], "frules": [{"t": "Bom histórico conta", "p": "Comentários construtivos, com fonte e marcados como úteis por outras pessoas formam o seu histórico. Em todo o feed, inclusive no espaço aberto, publicações de quem tem bom histórico sobem um pouco, e as de quem teve comentários removidos descem um pouco. A regra é a mesma para todo mundo, e você vê o seu histórico na sua conta. Comentários com fonte de quem tem bom histórico também ajudam a ajustar o selo de confiança das notícias, até 10 pontos por notícia."}, {"t": "O algoritmo é seu", "p": "Você liga, desliga e ajusta quando quiser. Todo conteúdo mostra por que apareceu para você. Com ele ligado, o que acontece perto de você (sua cidade, seu estado, o Brasil) sobe no feed. arede.online não tenta adivinhar suas opiniões e, com o algoritmo desligado, não usa nada do seu perfil."}, {"t": "Reforço internacional", "p": "Quando a mesma notícia é publicada por fontes de mais de um país, ela ganha a marca de reforço internacional, com as bandeiras de quem publicou. O mesmo texto republicado por várias fontes conta uma vez só."}, {"t": "Outras redes", "p": "Você pode trazer para o seu perfil o que publica no Letterboxd, no Substack, no Medium e no Pinterest, e acompanhar no feed perfis abertos dessas redes. arede.online lê só o que é público e não publica nada lá em seu nome. Esse conteúdo passa pelo mesmo selo de confiança das notícias e leva a marca de fonte individual."}, {"t": "Qualquer membro pode propor uma votação", "p": "A proposta precisa do apoio de 20% dos membros com direito a voto. Com esse apoio, ela vira votação formal automaticamente."}, {"t": "Participação em tempo real", "p": "Votos, apoios, presenças e voluntários aparecem assim que acontecem."}, {"t": "Denúncias são revisadas automaticamente", "p": "Um conteúdo denunciado por ferir direitos continua no ar enquanto é revisado. A revisão é automática, sem interferência humana, e o resultado fica registrado publicamente. Quem publicou pode recorrer: o recurso passa por uma segunda revisão, independente da primeira. Ordens judiciais são sempre cumpridas."}, {"t": "Mandatos têm prazo", "p": "Toda coordenação é eleita e tem mandato com data para acabar. Em eleições e disputas entre chapas, se o mandato vencer sem nova eleição, a oposição assume por até 30 dias, e a eleição precisa acontecer nesse prazo. Assembleias e votações simples seguem o processo normal."}, {"t": "Sua privacidade vem primeiro", "p": "O voto é secreto e o perfil começa privado. Suas curtidas e compartilhamentos, só você vê. No perfil, você escolhe mostrar até 5 interesses. Participar de uma organização política é um dado sensível e é tratado como tal."}]};
+const ENV = {"inaug": ["Tudo o que criamos aqui é bem intencionado. Nosso código não tem intenção, nem nunca terá, de fazer mal a ninguém, nem a nenhuma sociedade. Pelo contrário, nossa intenção é salvar a humanidade."], "inter": [["Dizem que bons movimentos políticos partem ou devem partir de um manifesto.", "Difícil é começar dele, visto que seja o primeiro barulho falho, dificilmente voltará à tona com alguma força de modo que seja manifesto mas também um movimento."], ["Tratamos disso. O movimento das coisas a fascinante mutabilidade daquilo que está vivo."], ["O ano é 2026. Escrevemos inicialmente no dia 7 de novembro. É um sábado quente de pancadas de chuva e grandes sinais de mudança."], ["Neste ano, as eleições de outubro começaram com a câmara e o senado tomados por candidatos da direita ou extrema direita, filiados ao PL.", "Pânico."], ["A capital, maior cidade da América Latina, calou."], ["O sentimento ainda era de puro desalento quando os estudantes começaram a sair pelas ruas do Brasil, chamando as pessoas para o voto em defesa da democracia e da soberania nacional."], ["Quinze dias de manifestação.", "Maiores a cada dia."], ["Enquanto a grande mídia brasileira e a Meta, a que tudo indica, tinham grande preferência pelo candidato extremista e submisso ao mercado e aos Estados Unidos, a população saía às ruas."], ["No segundo turno, no dia 25 de outubro, iniciada a apuração e já era possível perceber que alguma coisa progredia de maneira diferente do primeiro turno, tanto numericamente quanto no que era visto pelas redes sociais: o Brasil se movia, de vermelho, para votar."], ["Conseguimos 4 milhões de votos de vantagem após um primeiro turno de derrota, seguido de um dos menores níveis de abstenção da história."], ["Parece finalmente um suspiro."], ["O derrotado, que não reconhece a decisão das urnas, sai em fuga do país menos de 48h depois do dia da eleição. Foge evitando sobrevoar o Brasil, pela Argentina, e sobe até os Estados Unidos."], ["Publica uma carta desastrosa, feita por inteligência artificial, que prova além de todo o resto, que não sabe nem o nome oficial do próprio país, “Estados Unidos do Brasil”."], ["O presidente, em seu quarto mandato e reeleito com o maior número de votos de sua história, é ovacionado mundialmente junto ao povo brasileiro, sendo reconhecida a vitória da democracia por força da ação popular que se movimentou para elegê-lo e dar início ao freio sobre o novo fascismo que havia voltado a perpetuar no mundo."], ["Espalha, então, do Brasil para o mundo a força da possibilidade."], ["As manifestações que também já aconteciam em outros lugares do mundo ganham mais esperança e avançam para os Estados Unidos."], ["Eleições de meio mandato e a onda azul.", "Tsunami, dizem."], ["Texas e Georgia? Gone blue."], ["E a primavera parece ainda mais forte."], ["Pareço então me <s>iludir</s> inspirar outra vez.", "Este é o cenário."], ["Devo então escrever este manifesto."]], "estIntro": "As Estruturas são os princípios que sustentam a rede e orientam cada decisão sobre ela.", "estr": [{"n": "1", "t": "Vale sempre lembrar, o poder emana do povo (Constituição Federal de 1988, art. 1º)."}, {"n": "2", "t": "Este manifesto é estruturado de duas formas, uma em palavras, outra em sua forma digital. Por estes meios, este manifesto se movimenta pelo povo e pelo bem-estar social."}, {"n": "3", "t": "A representatividade pode refletir o poder que emana do povo de maneira cada vez mais simultânea."}, {"n": "4", "t": ["Nem tudo é liberdade de expressão e respeito é a base.", "Qualquer ordem que fere o direito de um, fere o direito de todos e nunca deverá ser considerada representatividade."]}, {"n": "5", "t": "Nenhum poder é hereditário."}, {"n": "6", "t": ["Todo caráter é individual.", "Cada indivíduo é responsável por suas ações. O que resulta de sua ação pode também ser responsabilidade de outra pessoa, mas o indivíduo nunca será dissociado da responsabilidade sobre suas ações."]}, {"n": "7", "t": ["Nossa marca é “arede.online”.", "Nosso manifesto não pertence a nenhum estado ou país. Pertence a todas as nações e circula pela rede internacional enquanto tenta facilitar a capilarização do movimento social transnacional e o estabelecimento de mais conexões humanas."]}, {"n": "8", "t": ["Nem todo movimento político sabe que é um movimento político.", "A rede também provê conteúdo de entretenimento, memes, celebridades, além de conteúdos originais ou pessoais, publicados pelos próprios usuários em sua rede pessoal ou profissional."]}, {"n": "9", "t": "Enquanto as redes sociais atuais estimulam indivíduos e conteúdos extremamente algorítmicos, na rede os indivíduos podem se organizar em comunidades nas quais indivíduos compartilham interesses."}, {"n": "10", "t": ["A rede centraliza um mundo de informações e ajuda a verificar a veracidade do que é compartilhado.", "Os próprios usuários podem fazer curadoria do conteúdo e a lógica de concordância entre as denúncias precisa ser cruzada com fontes diversas para garantir que não há uma ação organizada para influenciar e repercutir negativamente bons assuntos, seja por ação mal intencionada humana, ou programação de agentes de automatização."]}], "regras": [], "fintro": ["A rede.online ajuda organizações democráticas a se organizarem: conversar, chamar gente, marcar encontros e decidir juntas.", "Aprendemos com as redes que todo mundo já usa, como Facebook, Instagram e WhatsApp, e com o Pinterest, pela navegação limpa e pela grade. Aqui a navegação é simples e o feed não acaba.", "O algoritmo aprende com o que você faz, mas quem decide é você: dá para ajustar, desligar ou navegar num espaço aberto, que mostra conteúdo de todas as organizações com critérios iguais para todo mundo. É assim que se sai da bolha."], "frules": [{"t": "Bom histórico conta", "p": "Comentários construtivos, com fonte e marcados como úteis por outras pessoas formam o seu histórico. Em todo o feed, inclusive no espaço aberto, publicações de quem tem bom histórico sobem um pouco, e as de quem teve comentários removidos descem um pouco. A regra é a mesma para todo mundo, e você vê o seu histórico na sua conta. Comentários com fonte de quem tem bom histórico também ajudam a ajustar o selo de confiança das notícias, até 10 pontos por notícia."}, {"t": "O algoritmo é seu", "p": "Você liga, desliga e ajusta quando quiser. Todo conteúdo mostra por que apareceu para você. Com ele ligado, o que acontece perto de você (sua cidade, seu estado, o Brasil) sobe no feed. A rede.online não tenta adivinhar suas opiniões e, com o algoritmo desligado, não usa nada do seu perfil."}, {"t": "Reforço internacional", "p": "Quando a mesma notícia é publicada por fontes de mais de um país, ela ganha a marca de reforço internacional, com as bandeiras de quem publicou. O mesmo texto republicado por várias fontes conta uma vez só."}, {"t": "Outras redes", "p": "Você pode trazer para o seu perfil o que publica no Letterboxd, no Substack, no Medium e no Pinterest, e acompanhar no feed perfis abertos dessas redes. A rede.online lê só o que é público e não publica nada lá em seu nome. Esse conteúdo passa pelo mesmo selo de confiança das notícias e leva a marca de fonte individual."}, {"t": "Qualquer membro pode propor uma votação", "p": "A proposta precisa do apoio de 20% dos membros com direito a voto. Com esse apoio, ela vira votação formal automaticamente."}, {"t": "Participação em tempo real", "p": "Votos, apoios, presenças e voluntários aparecem assim que acontecem."}, {"t": "Denúncias são revisadas automaticamente", "p": "Um conteúdo denunciado por ferir direitos continua no ar enquanto é revisado. A revisão é automática, sem interferência humana, e o resultado fica registrado publicamente. Quem publicou pode recorrer: o recurso passa por uma segunda revisão, independente da primeira. Ordens judiciais são sempre cumpridas."}, {"t": "Mandatos têm prazo", "p": "Toda coordenação é eleita e tem mandato com data para acabar. Em eleições e disputas entre chapas, se o mandato vencer sem nova eleição, a oposição assume por até 30 dias, e a eleição precisa acontecer nesse prazo. Assembleias e votações simples seguem o processo normal."}, {"t": "Sua privacidade vem primeiro", "p": "O voto é secreto e o perfil começa privado. Suas curtidas e compartilhamentos, só você vê. No perfil, você escolhe mostrar até 5 interesses. Participar de uma organização política é um dado sensível e é tratado como tal."}]};
 const envBar = r => `<header class="ebar"><button class="ebtn" type="button" data-act="envexit" aria-label="Voltar para a rede">${ic("back")}<span class="emark">arede<i class="ldot"></i><span class="com">online</span></span></button>
-  <nav class="elinks" aria-label="Sobre arede.online"><a href="#manifesto" ${r==="manifesto"?'aria-current="page"':""}>Manifesto</a><a href="#funciona" ${r==="funciona"?'aria-current="page"':""}>Como funciona</a></nav></header>`;
+  <nav class="elinks" aria-label="Sobre a rede.online"><a href="#manifesto" ${r==="manifesto"?'aria-current="page"':""}>Manifesto</a><a href="#funciona" ${r==="funciona"?'aria-current="page"':""}>Como funciona</a></nav></header>`;
 const envFoot = () => `<footer class="efoot"><span class="emark big">arede<i class="ldot"></i><span class="com">online</span></span>
-  <nav aria-label="Rodapé"><a href="#manifesto">Manifesto</a><a href="#funciona">Como arede.online funciona</a><a href="#inicio">Entrar na rede</a></nav><small>versão ${VERSAO}</small></footer>`;
+  <nav aria-label="Rodapé"><a href="#manifesto">Manifesto</a><a href="#funciona">Como a rede.online funciona</a><a href="#inicio">Entrar na rede</a></nav><small>versão ${VERSAO}</small></footer>`;
 /* parágrafos curtos do Interlude viram "batidas": linhas grandes, como respiros do texto */
 const beat = p => p.length===1 && p[0].replace(/<[^>]+>/g,"").length <= 34;
 /* abertura do manifesto: frase definida pela Amanda (8 nov), a partir do Interlude */
@@ -5630,7 +5630,7 @@ function screenManifesto(){
   return envBar("manifesto") + `<div class="env">
     <section class="ehero"><p class="ekick">Manifesto · 7 de novembro de 2026</p>
       <h1 class="ebig">${HERO.replace(/<s>(.*?)<\/s>\s*(\S+)/, "<s class='ecut'>$1</s> <span class='eacc'>$2</span>")}</h1>
-      <div class="ecta"><a class="ebtn2" href="#interlude" data-act="toid" data-id="interlude">Ler o manifesto</a><a class="ebtn2 ghost" href="#funciona">Como arede.online funciona</a></div></section>
+      <div class="ecta"><a class="ebtn2" href="#interlude" data-act="toid" data-id="interlude">Ler o manifesto</a><a class="ebtn2 ghost" href="#funciona">Como a rede.online funciona</a></div></section>
     <section class="eband"><p><span class="eblab">Premissa</span>${ENV.inaug[0]}</p></section>
     <section class="etext" id="interlude"><h2 class="elabel">(Interlude)</h2>
       ${ENV.inter.map(p => beat(p) ? `<p class="ebeat">${p[0]}</p>` : `<p>${p.join("<br>")}</p>`).join("")}</section>
@@ -5647,7 +5647,7 @@ function screenManifesto(){
 }
 function screenFunciona(){
   return envBar("funciona") + `<div class="env">
-    <section class="ehero"><p class="ekick marca">arede.online</p><h1 class="ebig">Como arede.online <span class="eacc">funciona</span></h1>
+    <section class="ehero"><p class="ekick marca">a rede.online</p><h1 class="ebig">Como a rede.online <span class="eacc">funciona</span></h1>
       ${ENV.fintro.map((x,i)=>`<p class="${i?"elead2":"elead"}">${x}</p>`).join("")}</section>
     <section class="erules">${ENV.frules.map((r,i)=>`<article class="erow"><span class="enum">${String(i+1).padStart(2,"0")}</span><div><h2>${r.t}</h2><p>${r.p}</p></div></article>`).join("")}</section>
     <section class="eband"><p>Leia também o <a href="#manifesto">manifesto</a>.</p></section>
@@ -5739,7 +5739,7 @@ function render(){
   }
   const logoNovo = main.querySelector(".logo");   /* a marca é a mesma em toda tela: mantém o elemento antigo, e o movimento segue sem pulo */
   if (logoVelho && logoNovo && logoVelho !== logoNovo && logoVelho.getAttribute("aria-label")===logoNovo.getAttribute("aria-label")) logoNovo.replaceWith(logoVelho);
-  document.title = pr==="painel" ? "Painel de controle · arede.online" : "arede.online";
+  document.title = pr==="painel" ? "Painel de controle · a rede.online" : "a rede.online";
   window.scrollTo(0, same ? window.scrollY : restore);
   placeLogoDots();
   if (PENDING){ const el = document.getElementById(PENDING); PENDING = null; if (el) requestAnimationFrame(()=>scrollToEl(el)); }
@@ -5902,15 +5902,15 @@ function noticiasAplica(data, ref){
 
 /* =====================================================================
    OUTRAS REDES: o que a pessoa publica em outras redes vai para o perfil dela (e, se ela escolher, também para o feed);
-   perfis abertos que ela acompanha por lá entram no feed dela. arede.online lê só o feed público de cada perfil
+   perfis abertos que ela acompanha por lá entram no feed dela. A rede.online lê só o feed público de cada perfil
    (função "redes" no servidor) e não publica nada lá. Tudo passa pelo mesmo selo das notícias, com a marca "fonte individual".
    ===================================================================== */
 const REDES = {
-  facebook:{nome:"Facebook", cor:"#1F4FB8", aberta:false, porque:"Para ler as publicações do seu perfil, arede.online precisa de um app registrado na Meta, e a Meta precisa revisar e aprovar esse app. A conexão chega assim que a aprovação sair."},
-  instagram:{nome:"Instagram", cor:"#A3195B", aberta:false, porque:"Desde dezembro de 2024 o Instagram só deixa outros apps lerem contas profissionais (de criador ou de empresa), e só por um app aprovado pela Meta. A conexão chega assim que o app da arede.online for aprovado. Contas pessoais seguem de fora, por decisão da Meta."},
+  facebook:{nome:"Facebook", cor:"#1F4FB8", aberta:false, porque:"Para ler as publicações do seu perfil, a rede.online precisa de um app registrado na Meta, e a Meta precisa revisar e aprovar esse app. A conexão chega assim que a aprovação sair."},
+  instagram:{nome:"Instagram", cor:"#A3195B", aberta:false, porque:"Desde dezembro de 2024 o Instagram só deixa outros apps lerem contas profissionais (de criador ou de empresa), e só por um app aprovado pela Meta. A conexão chega assim que o app da rede.online for aprovado. Contas pessoais seguem de fora, por decisão da Meta."},
   pinterest:{nome:"Pinterest", cor:"#B60014", aberta:true, campo:"Seu usuário ou uma pasta", ex:"ex.: amanda ou amanda/cidades", vem:"os pins que você salva, seus e de outras pessoas", tema:"Cultura", opiniao:true},
   letterboxd:{nome:"Letterboxd", cor:"#2C3440", aberta:true, campo:"Seu usuário no Letterboxd", ex:"ex.: amanda", vem:"seu diário de filmes, críticas e listas", tema:"Cultura", opiniao:true},
-  spotify:{nome:"Spotify", cor:"#11753A", aberta:false, porque:"O Spotify libera apps novos para no máximo 5 pessoas, todas com Premium. Para abrir a todo mundo, exige empresa registrada e 250 mil usuários por mês. A conexão fica guardada para quando arede.online chegar lá."},
+  spotify:{nome:"Spotify", cor:"#11753A", aberta:false, porque:"O Spotify libera apps novos para no máximo 5 pessoas, todas com Premium. Para abrir a todo mundo, exige empresa registrada e 250 mil usuários por mês. A conexão fica guardada para quando a rede.online chegar lá."},
   substack:{nome:"Substack", cor:"#C2410C", aberta:true, campo:"Endereço da publicação", ex:"ex.: nome.substack.com", vem:"os textos da sua publicação", opiniao:false},
   medium:{nome:"Medium", cor:"#1A1A1A", aberta:true, campo:"Seu usuário no Medium", ex:"ex.: @amanda", vem:"os seus textos", opiniao:false}
 };
@@ -5932,7 +5932,7 @@ const redeEndereco = (k, u) => { u = String(u || "").trim().replace(/^@/, ""); i
   return k==="letterboxd" ? `https://letterboxd.com/${u}/` : k==="pinterest" ? `https://www.pinterest.com/${u}/` : k==="medium" ? `https://medium.com/@${u}` : k==="substack" ? `https://${u.includes(".") ? u : u + ".substack.com"}` : ""; };
 const redeOpcoes = (opt, R) => `<h3 class="osec">O que aparece no seu perfil?</h3><div class="ropts" role="radiogroup" aria-label="O que aparece no seu perfil">
     ${opt("link","Só o link","Seu perfil mostra o endereço da sua conta.")}${opt("perfil","Link e prévia das publicações","As mais recentes aparecem no seu perfil.")}${opt("perfil_feed","Link, prévia e feed","A prévia vai também ao feed de quem segue você.")}</div>
-    <small class="ohint">A prévia só funciona se o seu perfil no ${R.nome} for público. arede.online lê só o que é público lá, sem pedir a sua senha.</small>`;
+    <small class="ohint">A prévia só funciona se o seu perfil no ${R.nome} for público. A rede.online lê só o que é público lá, sem pedir a sua senha.</small>`;
 /* os links das contas conectadas, no perfil (o que as outras pessoas veem) */
 const redeLinks = center => { const m = S.redes.filter(c=>c.tipo==="minha" && REDES[c.rede]); if (!m.length) return "";
   return `<div class="chips rlks"${center ? ' style="justify-content:center"' : ""} aria-label="Em outras redes">${m.map(c=>{ const url = c.perfil || redeEndereco(c.rede, c.usuario), miolo = `${redeBadge(c.rede, "mini")}<span>${REDES[c.rede].nome}</span>`;
@@ -6009,7 +6009,7 @@ function sheetRedes(){
       return `<div class="orow rrow">${redeBadge(c.rede)}<span class="ot"><b>${esc(c.nome || c.usuario)}</b><small>${REDES[c.rede].nome} · ${esc(c.usuario)} · ${n} ${n===1?"publicação":"publicações"}</small></span><button class="btn sm ghost" type="button" data-act="redeajustar" data-id="${c.id}">Ajustar</button></div>`; }).join("")
       : `<p class="lnote rvazio">Nenhum ainda. Dá para acompanhar um crítico no Letterboxd, uma publicação no Substack, alguém no Medium ou uma pasta no Pinterest.</p>`}
       <button class="btn block" type="button" data-act="redeconectar" data-r="${REDES_ABERTAS.find(k=>k==="substack")}" data-t="acompanha">${ic("plus","sm")} Acompanhar um perfil</button></div>
-    <div class="note">${ic("lock")}<span>arede.online lê só o que é público, pelo feed aberto de cada perfil. Nada é publicado lá em seu nome. Ao desconectar, tudo o que veio de lá sai daqui.</span></div>`, "Outras redes"); }
+    <div class="note">${ic("lock")}<span>A rede.online lê só o que é público, pelo feed aberto de cada perfil. Nada é publicado lá em seu nome. Ao desconectar, tudo o que veio de lá sai daqui.</span></div>`, "Outras redes"); }
 function sheetRedeConectar(k, tipo){ const R = REDES[k]; S.redeDraft = {rede:k, tipo, destino:S.redeDraft && S.redeDraft.tipo===tipo ? S.redeDraft.destino : null};
   const opt = (v, t, d) => `<button class="ropt" type="button" role="radio" data-act="redeopt" data-v="${v}" aria-checked="${S.redeDraft.destino===v}"><span class="rdot" aria-hidden="true"></span><span><b>${t}</b><small>${d}</small></span></button>`;
   openSheet(shead(tipo==="minha" ? "Conectar o " + R.nome : "Acompanhar um perfil") + `<div class="rform">
@@ -6037,7 +6037,7 @@ function sheetRedeEmBreve(k){ const R = REDES[k];
     <button class="btn block" type="button" data-act="redes">Voltar para as redes</button></div>`, R.nome); }
 function sealChecksRede(it, L){ const R = REDES[it.rede], o = ORG[it.org], s = sealOf(it);
   let q = L("warn", "Fonte individual", (it.minha ? "Publicado por você" : "Publicado por " + esc(o.nome)) + " no " + R.nome + ", sem verificação editorial. Vale ler junto com outras fontes.");
-  q += L("ok", "Perfil público", it.minha ? "Você conectou este perfil. arede.online lê o feed aberto dele, e nada é publicado lá." : "Lido pelo feed aberto do " + R.nome + ". Só você vê que acompanha este perfil.");
+  q += L("ok", "Perfil público", it.minha ? "Você conectou este perfil. A rede.online lê o feed aberto dele, e nada é publicado lá." : "Lido pelo feed aberto do " + R.nome + ". Só você vê que acompanha este perfil.");
   if (s.lv==="na") q += L("na", "Afirmações checadas", "Crítica, gosto ou coleção: o selo avalia fatos, não opiniões.");
   else q += L(it.ext.verif.length ? "ok" : "warn", "Fontes que confirmam", it.ext.verif.length ? `${it.ext.verif.length} ${it.ext.verif.length===1?"fonte":"fontes"} da base sobre o mesmo assunto: ${it.ext.verif.map(v=>esc(v.fonte)).join(", ")}.` : "Nenhuma fonte da base trouxe o mesmo assunto ainda. A nota sobe quando alguma trouxer.");
   if (it.repost) q += L("warn", "Salvo de outra pessoa", "No Pinterest, o perfil reúne o que a pessoa salvou. A autoria original pode ser de outra pessoa.");
@@ -6060,7 +6060,7 @@ function pedidosLista(){ if (!MEUS_PEDIDOS || !MEUS_PEDIDOS.length) return `<div
 function sheetOrgPedido(){ S.pedTema = S.pedTema || "";
   const sem = !SB || ME.offline;
   const corpo = sem ? `<div class="note">${ic("info")}<span>Sem conexão com o servidor agora. O pedido precisa dele para chegar à curadoria. Tente de novo quando a internet voltar.</span></div>`
-    : !ME.user ? `<div class="note">${ic("lock")}<span>Para pedir o cadastro, acesse arede.online com seu e-mail. Assim a curadoria sabe quem pediu.</span></div><a class="btn primary block" href="#conta" data-act="acessar">Acessar arede.online</a>`
+    : !ME.user ? `<div class="note">${ic("lock")}<span>Para pedir o cadastro, acesse a rede.online com seu e-mail. Assim a curadoria sabe quem pediu.</span></div><a class="btn primary block" href="#conta" data-act="acessar">Acessar a rede.online</a>`
     : `<label class="olbl" for="pnomeorg">Nome da organização</label><input id="pnomeorg" class="input" type="text" maxlength="120" autocomplete="organization">
       <label class="olbl" for="pcidorg">Cidade</label><input id="pcidorg" class="input" type="text" maxlength="80" list="capitaisorg" placeholder="Cidade, UF"><datalist id="capitaisorg">${CAPITAIS.map(c=>`<option value="${c}">`).join("")}</datalist>
       <span class="olbl" id="ptemaorg">Tema principal</span><div class="chips" role="radiogroup" aria-labelledby="ptemaorg">${TEMAS.map(t=>`<button class="chip" type="button" role="radio" data-act="pedtema" data-v="${esc(t)}" aria-checked="${S.pedTema===t}">${t}</button>`).join("")}</div>
@@ -6152,7 +6152,7 @@ function aoVivoHTML(){ const l = lvLista(), c = l.find(x=>x.k===LV_ON), e = c &&
     <div class="lvlist">${l.map(x=>`<button class="lvch" type="button" data-act="vivoabre" data-canal="${esc(x.k)}" aria-pressed="${x.k===LV_ON}" aria-label="${esc(x.nome)}${rot(x) ? ", " + rot(x) : ""}"><span class="lvdot" data-e="${lvEstado(x) || "nd"}" aria-hidden="true"></span>${esc(x.nome)}</button>`).join("")}</div>
     ${!c ? "" : src ? `<div class="lvbox"><iframe class="lvframe" src="${src}" title="Transmissão ao vivo: ${esc(c.nome)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
       <p class="lvcred"><span>Transmissão oficial: <b>${esc(c.nome)}</b> · YouTube</span><span class="lvsp"></span><a href="${esc(c.url)}" target="_blank" rel="noopener">Ver no canal ↗</a><button type="button" data-act="vivofecha">Fechar</button></p>
-      <p class="lvnota">Sinal do próprio canal, sem cortes. A arede.online não exibe anúncios nesta aba.</p>`
+      <p class="lvnota">Sinal do próprio canal, sem cortes. A rede.online não exibe anúncios nesta aba.</p>`
     : `<div class="note lvfora">${ic("info")}<span><b>${e==="fora" ? esc(c.nome) + " está sem transmissão neste momento." : "A transmissão de " + esc(c.nome) + " abre no canal oficial."}</b> ${e==="fora" ? "As próximas aparecem no canal oficial." : ""}</span></div>
       <p class="lvcred"><a href="${esc(c.url)}" target="_blank" rel="noopener">Ver no canal ↗</a><span class="lvsp"></span><button type="button" data-act="vivofecha">Fechar</button></p>`}`; }
 function aoVivoPinta(){ const box = $("#aovivo"); if (!box || box.hidden) return; if (LV_IO){ LV_IO.disconnect(); LV_IO = null; }
@@ -6541,7 +6541,7 @@ function screenConta(){
     <label class="ichk"><input type="checkbox" id="cok"><span>Li o <a href="#manifesto">manifesto</a> e aceito as regras da rede. Meus dados são usados só para a minha conta.</span></label>
     <p class="ferr" role="alert" hidden></p>
     <button class="btn primary block" type="button" data-act="cadastrar">Criar conta</button>
-    <p class="inota">Você vai receber um e-mail da arede.online para confirmar o cadastro. A conta só funciona depois da confirmação.</p>`
+    <p class="inota">Você vai receber um e-mail da rede.online para confirmar o cadastro. A conta só funciona depois da confirmação.</p>`
     : `
     <div class="field"><label for="lmail">E-mail</label><input id="lmail" type="email" autocomplete="username" inputmode="email" maxlength="254" autocapitalize="none" spellcheck="false"></div>
     <div class="field"><label for="lsen">Senha</label><div class="pw"><input id="lsen" type="password" autocomplete="current-password"><button class="linkbtn" type="button" data-act="versenha" data-for="lsen">Mostrar</button></div></div>
@@ -6602,7 +6602,7 @@ async function apoioConfere(pay, st){ apoioSituacao("conferindo"); let r = null;
   apoioSituacao(r && r.situacao === "pago" ? "pago" : st === "pending" || st === "in_process" ? "analise" : "nao", r); }
 function apoioSituacao(e, r){ const v = r && r.valor ? adBRL(+r.valor) : "", teste = r && r.teste ? `<p class="srcnote" style="margin-top:8px">Apoio em modo de teste: nenhum dinheiro de verdade foi movimentado.</p>` : "";
   const [t, x] = e==="conferindo" ? ["Conferindo o apoio…", "Só um instante: estamos confirmando com o Mercado Pago."]
-    : e==="pago" ? ["Obrigada pelo apoio!", `Recebemos ${v || "o seu apoio"}. Ele ajuda a manter a arede.online no ar.`]
+    : e==="pago" ? ["Obrigada pelo apoio!", `Recebemos ${v || "o seu apoio"}. Ele ajuda a manter a rede.online no ar.`]
     : e==="analise" ? ["Pagamento em análise", "O Mercado Pago ainda está processando. Quando confirmar, o apoio entra sozinho."]
     : ["Apoio não concluído", "Nada foi cobrado. Se quiser, é só tentar de novo pelo botão Apoie."];
   openSheet(shead(t) + `<div class="sform"><p style="margin:0">${x}</p>${teste}${e==="conferindo" ? "" : `<button class="btn block" type="button" data-act="close" style="margin-top:14px">Fechar</button>`}</div>`, t); }
@@ -6654,7 +6654,7 @@ document.addEventListener("input", e=>{ const i = e.target; if (!i.matches || !i
   if (m) m.dataset.n = a.n; if (h){ h.textContent = a.msg; h.classList.toggle("ok", a.ok); } });
 const ACEITE_VERSAO = "v1-2026-11-10";      /* versão do texto aceito no cadastro; o servidor guarda quando foi aceito */
 const mailBom = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
-const ERROS_AUTH = [[/invalid login/i,"E-mail ou senha incorretos."],[/email not confirmed/i,"Confirme seu e-mail antes de entrar. Procure a mensagem da arede.online na caixa de entrada (e no spam)."],
+const ERROS_AUTH = [[/invalid login/i,"E-mail ou senha incorretos."],[/email not confirmed/i,"Confirme seu e-mail antes de entrar. Procure a mensagem da rede.online na caixa de entrada (e no spam)."],
   [/already registered|already been registered/i,"Não foi possível criar a conta com esses dados. Se você já tem conta, entre ou recupere a senha."],[/rate limit|too many/i,"Muitas tentativas em pouco tempo. Espere alguns minutos e tente de novo."],
   [/limite_comentarios.*hora/i,"Você chegou ao limite de comentários desta hora. Tente de novo mais tarde."],[/limite_comentarios/i,"Você chegou ao limite de comentários de hoje."],[/limite_uteis/i,"Muitas marcações em pouco tempo. Tente de novo mais tarde."],
   [/comentarios_fonte_para_confirmar/i,"Para confirmar ou contestar, informe o endereço da fonte."],[/comentarios_fonte_url_check|fonte_url/i,"O endereço da fonte precisa começar com https://"],
@@ -6949,7 +6949,7 @@ const A = {
   baixadados: async b => { ocupado(b, true); const uid = ME.user.id, q = (t, c, col="user_id") => SB.from(t).select(c).eq(col, uid).then(r=>r.data || []).catch(()=>[]);
     const [perfil, publicacoes, contas, orgs, aceites, verif, comentarios, guardados] = await Promise.all([q("perfis","id,nome,usuario,cidade,bio,criado_em,verificado,verificado_em,colaborador","id"), q("publicacoes","*","autor"), q("contas_externas","*"), q("org_pedidos","*"), q("aceites","*"), q("verificacao_pedidos","*"), q("comentarios","id,noticia_id,publicacao_id,texto,marca,fonte_url,uteis,status,criado_em","autor"), q("conta_dados","chave,valor,atualizada_em")]);
     const local = {}; try{ for (let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if (k.startsWith("arede-")) local[k] = store.get(k.slice(6), null); } }catch(e){}
-    const doc = {arquivo:"Dados da sua conta em arede.online", gerado_em:new Date().toISOString(),
+    const doc = {arquivo:"Dados da sua conta na rede.online", gerado_em:new Date().toISOString(),
       conta:{id:uid, email:ME.user.email, criada_em:ME.user.created_at, email_confirmado_em:ME.user.email_confirmed_at || null, ultimo_acesso:ME.user.last_sign_in_at || null, nivel:nivel()},
       perfil:perfil[0] || null, publicacoes, comentarios, contas_de_outras_redes:contas, pedidos_de_organizacao:orgs, aceites, pedido_de_verificacao:verif[0] || null, curtidas_pastas_e_votos:guardados,
       guardado_so_neste_aparelho:local, nota:"A senha não está aqui: o servidor guarda só uma versão embaralhada, que ninguém consegue ler."};
@@ -7161,10 +7161,10 @@ const A = {
   report: b => sheetReport(b.dataset.uid),
   assinar: () => { S.assinou = !S.assinou; persist("assinou"); const y = window.scrollY; render(); window.scrollTo(0,y); if (S.assinou) toast("Obrigada por assinar o manifesto."); },
   toid: (b, e) => { e.preventDefault(); const el = document.getElementById(b.dataset.id); el && scrollToEl(el); },
-  sobre: () => openSheet(shead("arede.online") + `<div class="list">
+  sobre: () => openSheet(shead("a rede.online") + `<div class="list">
       <button class="setting" type="button" data-nav-to="manifesto"><span class="t"><b>Manifesto</b></span>${ic("back","sm flip")}</button>
-      <button class="setting" type="button" data-nav-to="funciona"><span class="t"><b>Como arede.online funciona</b></span>${ic("back","sm flip")}</button>${painelRow()}</div>
-      <p class="ver" style="margin:4px 0 0">versão ${VERSAO}</p>`, "arede.online"),
+      <button class="setting" type="button" data-nav-to="funciona"><span class="t"><b>Como a rede.online funciona</b></span>${ic("back","sm flip")}</button>${painelRow()}</div>
+      <p class="ver" style="margin:4px 0 0">versão ${VERSAO}</p>`, "a rede.online"),
   pubtab: b => { S.pubTab = b.dataset.tab; S.pubFolder = null; pubShow(); },
   pubfolder: b => { S.pubFolder = b.dataset.f || null; pubShow(); },
   interesses: sheetInteresses,
@@ -7421,7 +7421,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 11/11 21:09";
+const VERSAO = "v1 registrada · 11/11 21:17";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
