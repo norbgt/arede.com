@@ -3905,14 +3905,15 @@ applyTheme();
 const STOPS = [[0,[192,54,44]],[45,[194,122,14]],[70,[110,154,58]],[85,[46,139,87]],[100,[15,107,62]]];
 function tone(sc){ for(let k=1;k<STOPS.length;k++){ const [a,ca]=STOPS[k-1],[b,cb]=STOPS[k]; if(sc<=b){ const t=(sc-a)/(b-a); return "rgb("+ca.map((v,i)=>Math.round(v+(cb[i]-v)*t)).join(",")+")"; } } return "rgb(15,107,62)"; }
 /* CRITÉRIOS DA NOTA (13 nov 2026): faixas do selo e nota de publicação com fonte vêm de Regras e parâmetros, no backoffice.
-   Faixa vermelha abaixo de 50 (decisão #39). Publicação com fonte da base não herda a nota da fonte: 50 + parte do que a fonte passa de 50, com teto. */
-let SELO_ALTA = 90, SELO_CONF = 75, SELO_BAIXA = 50, PUB_FONTE_PARTE = 50, PUB_FONTE_TETO = 74, REP_POUCO = 75, REP_MUITO = 90, SELO_AUTO_REP = 75;
-const notaPubFonte = n => Math.max(0, Math.min(PUB_FONTE_TETO, Math.round(50 + (n - 50) * PUB_FONTE_PARTE / 100)));
+   Faixa vermelha abaixo de 50 (decisão #39). Publicação com fonte da base não herda a nota da fonte: mostra “Cita fonte confiável”, sem número (decisão #40). */
+let SELO_ALTA = 90, SELO_CONF = 75, SELO_BAIXA = 50, REP_POUCO = 75, REP_MUITO = 90, SELO_AUTO_REP = 75;
 function sealOf(it){
   const sc = it.id in SEAL ? SEAL[it.id] : (String(it.uid).startsWith("c") ? null : 80);
   if (it.autoral) return {sc:null, lv:"na", label:"Conteúdo autoral"};
   if (it.fontePub && it.fontePub.situacao==="avaliacao") return {sc:null, lv:"pend", label:"Fonte não verificada"};
   if (it.fontePub && it.fontePub.situacao==="recusada") return {sc:null, lv:"bad", label:"Fonte não confiável", tone:tone(12)};
+  /* decisão #40 (13 nov 2026): quem publica não é a fonte oficial; a publicação não recebe nota, mostra que cita fonte confiável */
+  if (it.fontePub && it.fontePub.situacao==="base") return {sc:null, lv:"ok", label:"Cita fonte confiável", tone:tone(SELO_CONF)};
   if (it.conta && !it.fontePub && sc===null && !it.arte && !["votacao","enquete"].includes(it.tipo)) return {sc:null, lv:"pend", label:"Sem fonte"};
   /* publicação original (conta real ou criada no protótipo) ainda não passa pelo motor: não é "sem fatos", é "ainda sem selo" */
   if (sc===null && !it.arte && (it.conta || String(it.uid).startsWith("c")) && !["votacao","enquete"].includes(it.tipo)) return {sc:null, lv:"pend", label:"Ainda sem selo"};
@@ -3971,7 +3972,7 @@ function sealChecksBase(it){
     const lk = `<a href="${esc(it.fonteUrl)}" target="_blank" rel="noopener nofollow">${esc(fp.dominio)} ↗</a>`;
     if (fp.situacao==="avaliacao") return quem + L("warn", "Fonte não verificada", `${lk} ainda não está na base de fontes da rede. Entrou para avaliação da curadoria; se for confiável, a publicação ganha o selo da fonte.`);
     if (fp.situacao==="recusada") return quem + L("bad", "Fonte não confiável", `A curadoria avaliou ${lk} e não a reconheceu como fonte confiável. Confira em outras fontes antes de compartilhar.`);
-    return quem + L(s.lv, "Fonte citada: " + esc(fp.nome), `${lk} está na base de fontes da rede, com selo ${fp.nota}. Quem publicou não é a fonte, então a publicação não herda essa nota: ganha ${s.sc}, mais do que teria sem fonte.`)
+    return quem + L(s.lv, "Fonte citada: " + esc(fp.nome), `${lk} está na base de fontes da rede, com selo ${fp.nota}. Quem publicou não é a fonte oficial, então a publicação não recebe nota: o selo mostra que ela cita uma fonte confiável.`)
       + L("na", "Texto da publicação", "O que a autora escreveu não é checado automaticamente. Confira se bate com a fonte."); }
   if (s.lv==="pend") return L("ok", o.verificado ? "Perfil verificado" : o.pessoa ? "Conta real" : "Publicado na rede", o.verificado ? `${o.nome}: ${VERIF[o.verificado][0].toLowerCase()}.` : o.pessoa ? `${o.nome} tem conta confirmada por e-mail.` : `Publicado direto na rede por ${o.nome}.`)
     + L("na","Afirmações checadas","Publicação original: a verificação automática de conteúdo original é a próxima etapa do selo. Até lá, não recebe nota.");
@@ -4036,7 +4037,6 @@ function aplicaRegras(g){ if (!g || typeof g !== "object") return false; const n
   poe("feed_pausa", 2, 500, x=>{ PAUSE_EVERY = x; }); poe("feed_anuncio_cada", 2, 500, x=>{ ANUNCIO_CADA = x; }); poe("feed_arte_cada", 2, 500, x=>{ ARTE_CADA = x; });
   poe("interesses_max", 1, 20, x=>{ MAX_INT = x; }); poe("comunidade_min", 1, 10000, x=>{ CMN_MIN = x; });
   poe("selo_alta", 1, 100, x=>{ SELO_ALTA = x; }); poe("selo_confiavel", 1, 100, x=>{ SELO_CONF = x; }); poe("selo_baixa", 1, 100, x=>{ SELO_BAIXA = x; });
-  poe("pub_fonte_parte", 0, 100, x=>{ PUB_FONTE_PARTE = x; }); poe("pub_fonte_teto", 0, 100, x=>{ PUB_FONTE_TETO = x; });
   poe("rep_sobe_pouco", 0, 101, x=>{ REP_POUCO = x; }); poe("rep_sobe_muito", 0, 101, x=>{ REP_MUITO = x; }); poe("selo_auto_rep", 0, 101, x=>{ SELO_AUTO_REP = x; });
   poe("selo_antigo_dias", 1, 3650, x=>{ SELO_ANTIGO_DIAS = x; }); poe("senha_min", 8, 128, x=>{ SENHA_MIN = x; });
   if (Array.isArray(g.apoio_valores) && g.apoio_valores.length && g.apoio_valores.every(x=>Number.isInteger(x) && x > 0)) { APOIO_VALORES = g.apoio_valores.slice(0, 8); mudou = true; }
@@ -4325,7 +4325,7 @@ function footInfo(it){
 /* topo, título e pé do cartão textual: os mesmos no Início (blocos) e no mosaico (Buscar, organizações) */
 /* selo pequeno do cartão; publicação com fonte não verificada ou não confiável mostra isso no lugar da nota */
 const sealTag = (it, s) => s.sc!==null ? `<span class="tseal" aria-hidden="true">${sealIco(s,14)}${s.sc}</span>`
-  : it.fontePub && it.fontePub.situacao!=="base" ? `<span class="tseal tfonte ${s.lv}">${sealIco(s,14)}${it.fontePub.situacao==="recusada" ? "Fonte não confiável" : "Fonte não verificada"}</span>` : "";
+  : it.fontePub ? `<span class="tseal tfonte ${s.lv}">${sealIco(s,14)}${it.fontePub.situacao==="base" ? "Cita fonte confiável" : it.fontePub.situacao==="recusada" ? "Fonte não confiável" : "Fonte não verificada"}</span>` : "";
 function textParts(it){
   const o = ORG[it.org], s = sealOf(it);
   const seal = sealTag(it, s);
@@ -6165,7 +6165,7 @@ function itemDaPublicacao(p){
   if (ex.autoral==="arte" || ex.autoral==="ficcao") it.autoral = ex.autoral;
   else if (ex.fonte && ex.fonte_url){ it.fontePub = ex.fonte; it.fonteUrl = ex.fonte_url; }
   RESUMO[id] = (p.texto || "").split(/\n\s*\n/)[0]; BODY[id] = (p.texto || "").split(/\n\s*\n/).filter(Boolean);
-  SEAL[id] = it.fontePub && it.fontePub.situacao==="base" && it.fontePub.nota != null ? notaPubFonte(+it.fontePub.nota) : null;
+  SEAL[id] = null;
   return it;
 }
 /* HISTÓRICO E PRIORIDADE (10 nov 2026): cada conta tem uma reputação de 0 a 100, calculada no servidor pelo histórico na rede
@@ -7869,7 +7869,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 13/11 17:51";
+const VERSAO = "v1 registrada · 13/11 17:53";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
