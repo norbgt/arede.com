@@ -8,14 +8,16 @@
 // Idiomas: português, inglês e espanhol vão direto para o feed (selo 80+); cada notícia guarda o idioma, e quem lê escolhe as origens.
 // Sem RSS (13 nov 2026, decisão #30): a busca tenta também o mapa de notícias (sitemap de notícias, o que o site oferece ao Google Notícias).
 //   Dele vêm só título, link, data e capa; a chamada fica vazia. Sites que pedem no robots.txt para nenhum robô ler não são lidos.
-//   ?modo=descobrir&so=semfeed refaz a busca só das fontes sem feed.
+//   ?modo=descobrir&so=semfeed refaz a busca só das fontes sem feed. Fontes de referência (feed_tipo "referencia") não são buscadas nem lidas.
+// Chamada (13 nov 2026): quando o feed ou o mapa não trazem chamada, ela vem do resumo que o próprio site oferece para compartilhamento
+//   (og:description), lido na página da matéria; no máximo POR_PAGINA páginas por fonte em cada coleta, inclusive para completar as que já entraram.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { XMLParser } from "npm:fast-xml-parser@4.4.1";
 import { temaDe } from "./temas.ts";
 
 const SB = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 const UA = "Mozilla/5.0 (compatible; arede-coletor/1.0; +https://arede.online/)";
-const LOTES = 10, DIAS = 4, NOTA_DIRETO = 80, IDIOMAS = ["pt", "en", "es"];
+const LOTES = 10, DIAS = 4, NOTA_DIRETO = 80, IDIOMAS = ["pt", "en", "es"], POR_PAGINA = 8;
 
 type Res = { ok: boolean; status: number; url: string; ct: string; txt: string; err?: string };
 async function get(url: string, ms = 12000): Promise<Res> {
@@ -300,6 +302,17 @@ function idiomaDe(t: string, lingua: string): string {
   for (const [k, re] of Object.entries(MARCAS)) { const c = (n.match(re) || []).length; if (c > max){ max = c; melhor = k; } }
   return melhor;
 }
+// chamada pelo resumo de compartilhamento da própria página (og:description, twitter:description ou description)
+async function chamadaDaPagina(url: string): Promise<string | null> {
+  const r = await get(url, 7000); if (!r.ok || !r.txt) return null;
+  const h = r.txt.slice(0, 300000);
+  for (const k of ["og:description", "twitter:description", "description"]) {
+    const tag = h.match(new RegExp("<meta[^>]+(?:property|name)=[\"']" + k + "[\"'][^>]*>", "i")); if (!tag) continue;
+    const c = tag[0].match(/content=["']([^"']*)["']/i) || tag[0].match(/content=([^\s>]+)/i); if (!c) continue;
+    const t = chamada(limpa(c[1])); if (t) return t;
+  }
+  return null;
+}
 const limpaUrl = (u: string) => { try { const x = new URL(u); x.hash = ""; for (const k of [...x.searchParams.keys()]) if (/^(utm_|fbclid|gclid|ref$|cmpid|origin)/i.test(k)) x.searchParams.delete(k); return x.href; } catch { return u; } };
 
 async function coleta(f: any, recentes: any[]) {
@@ -308,8 +321,8 @@ async function coleta(f: any, recentes: any[]) {
   const { lingua, itens } = leFeed(r.txt, r.url);
   const limite = Date.now() - DIAS * 864e5;
   const frescos = itens.filter((i: any) => !i.publicada_em || isNaN(+i.publicada_em) || +i.publicada_em >= limite).map((i: any) => ({ ...i, url: limpaUrl(i.url) }));
-  if (!frescos.length) return { erro: null, novas: 0 };
-  const { data: ja } = await SB.from("noticias").select("url,resumo").in("url", frescos.map((i: any) => i.url));
+  if (!frescos.length) return { erro: null, novas: 0, itens: itens.length, frescos: 0 };
+  const { data: ja } = await SB.from("noticias").select("url,resumo,chamada,titulo").in("url", frescos.map((i: any) => i.url));
   const temUrl = new Set((ja || []).map((x: any) => x.url));
   // resumo nulo = ainda não revisado com o divisor de frases atual; "" = revisado, o feed não tem mais texto
   const semResumo = new Set((ja || []).filter((x: any) => x.resumo === null).map((x: any) => x.url));
@@ -329,8 +342,16 @@ async function coleta(f: any, recentes: any[]) {
       impressao: imp, grupo, tema: temaDe(i.titulo, i.chamada), status: FORA.test(imp) ? "recusada" : f.nota >= NOTA_DIRETO && IDIOMAS.includes(lg) ? "publicada" : "fila" };
     novas.push(n); recentes.push({ id: null, fonte_id: f.id, impressao: imp, grupo, pw, en, et, yt });
   }
+  // sem chamada: busca na página da matéria (novas primeiro, depois as que já entraram sem chamada)
+  const semCh = [...novas.filter((n: any) => !n.chamada), ...(ja || []).filter((x: any) => !x.chamada)].slice(0, POR_PAGINA);
+  let pags = 0;
+  for (let k = 0; k < semCh.length; k += 4) await Promise.all(semCh.slice(k, k + 4).map(async (n: any) => {
+    const ch = await chamadaDaPagina(n.url); if (!ch) return; pags++;
+    if (novas.includes(n)) { n.chamada = ch; n.tema = temaDe(n.titulo, ch); }
+    else await SB.from("noticias").update({ chamada: ch, tema: temaDe(n.titulo, ch) }).eq("url", n.url);
+  }));
   if (novas.length) { const { error } = await SB.from("noticias").upsert(novas, { onConflict: "url", ignoreDuplicates: true }); if (error) return { erro: "Banco: " + error.message, novas: 0 }; }
-  return { erro: null, novas: novas.length };
+  return { erro: null, novas: novas.length, itens: itens.length, frescos: frescos.length, chamadas: pags };
 }
 
 Deno.serve(async (req) => {
@@ -354,7 +375,7 @@ Deno.serve(async (req) => {
   const agora = new Date().toISOString(), rel: any[] = [];
   if (modo === "descobrir") {
     // canais do YouTube já têm o endereço certo do RSS (cadastrado pelo ID do canal): não passam pela busca
-    const busca = fontes.filter((f: any) => f.feed_tipo !== "youtube" && (q.get("so") !== "semfeed" || !f.feed_url));
+    const busca = fontes.filter((f: any) => f.feed_tipo !== "youtube" && f.feed_tipo !== "referencia" && (q.get("so") !== "semfeed" || !f.feed_url || q.get("id") === String(f.id)));
     for (let i = 0; i < busca.length; i += 4) await Promise.all(busca.slice(i, i + 4).map(async (f: any) => {
       const d: any = await descobre(f);
       await SB.from("fontes").update({ feed_url: d.feed_url, feed_tipo: d.feed_tipo, descoberto_em: agora, ultimo_erro: d.erro || null }).eq("id", f.id);
@@ -386,7 +407,7 @@ Deno.serve(async (req) => {
   for (let i = 0; i < comFeed.length; i += 5) await Promise.all(comFeed.slice(i, i + 5).map(async (f: any) => {
     const r = await coleta(f, recentes);
     await SB.from("fontes").update(r.erro ? { ultima_coleta: agora, ultimo_erro: r.erro } : { ultima_coleta: agora, ultimo_ok: agora, ultimo_erro: null, itens_ultima: r.novas }).eq("id", f.id);
-    rel.push({ id: f.id, novas: r.novas, erro: r.erro });
+    rel.push({ id: f.id, ...r });
   }));
   return new Response(JSON.stringify({ modo, lote, fontes: rel }), { headers: { "content-type": "application/json" } });
 });
