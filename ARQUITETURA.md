@@ -94,7 +94,7 @@ Para perceber o que muda de uma aba para outra, cada tipo destaca a informação
 Sinais de cada tipo nos cartões do Início e da Buscar (os mesmos das abas, em versão compacta):
 - **Evento:** folhinha de calendário ao lado do título; hora e local no pé.
 - **Enquete:** fundo neutro; "Lidera: opção · %" no pé.
-- **Votação formal:** fundo branco com moldura escura; barra de participação com a marca do quórum.
+- **Votação** (antes “Votação formal”): fundo branco com moldura escura; barra de participação com a marca do quórum.
 - **Chamado:** "Faltam N" grande, na cor da organização.
 - **Documento:** folha de papel com canto dobrado; tipo e páginas no pé.
 

@@ -12,7 +12,7 @@ Você liga, desliga e ajusta quando quiser. Todo conteúdo mostra por que aparec
 
 ## Qualquer membro pode propor uma votação
 
-A proposta precisa do apoio de 20% dos membros com direito a voto. Com esse apoio, ela vira votação formal automaticamente.
+A proposta precisa do apoio de 20% dos membros com direito a voto. Com esse apoio, ela vira votação automaticamente.
 
 ## Participação em tempo real
 

@@ -570,3 +570,9 @@ Cartões de tipos diferentes na mesma grade: post, evento, enquete, chamado para
 - **Cobertura cruzada → medida.** Só 166 das ~4.900 notícias do dia (15 grupos) aparecem junto da mesma notícia de outra fonte. Próximo: afinar o agrupamento do coletor (sem custo, mas mexe no servidor).
 - **Fontes sem leitura.** Estadão lê o feed mas não traz nenhuma notícia; Gazeta do Povo e UOL Notícias sem feed; Reuters, AP, WSJ, Economist bloqueiam (403/401).
 - **Organizações reais e Autorizado pelo artista.** Seguem na fila: levantamento de organizações para ela escolher; pedido formal ao Design Ativista.
+
+## 13 nov 2026 · Decisões tomadas no backoffice (Produto › Decisões)
+- **Reputação (#38).** Toda conta começa com 50 e sobe ou desce a partir daí. Reputação baixa é abaixo de 50: não cria comunidade e as publicações descem 6 horas no feed. As outras faixas subiram 10 pontos junto, para não mudar quem já se beneficia: 75+ sobe 6 horas e ajusta o selo das notícias sozinho; 90+ sobe 12 horas. O parâmetro “comunidade_min” estava descrito no backoffice como número de pessoas; passou a ser “Reputação mínima para criar comunidade”, 50.
+- **Nomes (#37).** “Enquete rápida” virou “Consulta” e “Votação formal” virou “Votação” no site inteiro.
+- **Anúncio recusado (#36).** Decisão da Amanda: a devolução desconta a tarifa do Mercado Pago, como forma de desestimular compras feitas só para testar a curadoria. O site e os Termos avisam antes do pagamento que a peça pode ser recusada e como fica a devolução.
+- **Medição (#33, #35).** Apagadas as 21 trocas de visualização feitas com conta (todas da equipe e de testes). Trocas feitas em aparelhos da administração não entram mais. Quando um aparelho passa a ser da administração, as visitas anteriores dele também saem da contagem (21 visitantes, não 22).
