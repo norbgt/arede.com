@@ -1711,6 +1711,13 @@ button.setting{width:100%;border:0;text-align:left;font:inherit;color:inherit;cu
   padding:12px 16px;border-radius:14px;background:var(--ink);color:var(--bg);font-size:14px;font-weight:500;box-shadow:var(--shadow)}
 @media (min-width:768px){ .toast{bottom:24px;margin-left:48px} }
 #capbox{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9999}#capbox:empty{display:none}
+.rodape{margin:36px 0 8px;padding:20px 0 0;border-top:1px solid var(--line,rgba(127,127,127,.2));text-align:center;font-size:12.5px;line-height:1.5;color:var(--muted)}
+.rodape p{margin:6px 0}.rodape a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.rlinks{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 16px;margin-bottom:6px}.rlinks a{min-height:36px;display:inline-flex;align-items:center;font-weight:600;text-decoration:none!important;color:var(--ink,inherit)}
+.rodape .rterc{font-size:11.5px;opacity:.85;max-width:46ch;margin-left:auto;margin-right:auto}.rodape .ver{margin:10px 0 0}
+.cfix{display:none}
+@media (min-width:1280px){ .cfix:not([hidden]){display:block;position:fixed;right:24px;bottom:20px;width:210px;z-index:5;font-size:11.5px;line-height:1.45;color:var(--muted)}
+  .cfix nav{display:flex;flex-wrap:wrap;gap:2px 12px}.cfix a{color:inherit;text-decoration:none}.cfix a:hover{text-decoration:underline}.cfix p{margin:4px 0 0} body.envmode .cfix,body.pmode .cfix{display:none!important} }
 </style>
 </head>
 <body>
@@ -1725,6 +1732,7 @@ button.setting{width:100%;border:0;text-align:left;font:inherit;color:inherit;cu
     <a class="navfoot" href="#manifesto">Manifesto</a>
     <a class="navbtn" href="#perfil" data-nav="perfil" aria-label="Perfil"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20.5c.8-4 3.7-6 7.5-6s6.7 2 7.5 6"/></svg><span class="navme" aria-hidden="true" hidden></span><span class="lbl">Entrar</span></a>
   </nav>
+  <footer class="cfix" id="cfix" hidden><nav aria-label="Contato e regras"><a href="mailto:contato@arede.online">Contato</a><a href="#termos">Termos</a><a href="#privacidade">Privacidade</a></nav><p id="cfixdir"></p></footer>
   <main class="main" id="main"></main>
 </div>
 <div id="layer"></div>
@@ -5559,7 +5567,7 @@ function screenConfig(){
       <a class="setting l1" href="#funciona"><span class="t"><b>Como a rede.online funciona</b></span>${ic("back","sm flip")}</a>
       ${painelRow()}
     </div>` : ""}
-    <p class="ver">a rede.online · versão ${VERSAO}</p></div>`;
+    ${rodape()}</div>`;
 }
 /* VISUALIZAR PERFIL — o que as outras pessoas veem, conforme as escolhas de privacidade */
 /* VISUALIZAR PERFIL: o que os outros veem. Mesma estrutura do Perfil: abas + status + grade.
@@ -5880,7 +5888,7 @@ const ENV = {"inaug": ["Tudo o que criamos aqui é bem intencionado. Nosso códi
 const envBar = r => `<header class="ebar"><button class="ebtn" type="button" data-act="envexit" aria-label="Voltar para a rede">${ic("back")}<span class="emark">arede<i class="ldot"></i><span class="com">online</span></span></button>
   <nav class="elinks" aria-label="Sobre a rede.online"><a href="#manifesto" ${r==="manifesto"?'aria-current="page"':""}>Manifesto</a><a href="#funciona" ${r==="funciona"?'aria-current="page"':""}>Como funciona</a></nav></header>`;
 const envFoot = () => `<footer class="efoot"><span class="emark big">arede<i class="ldot"></i><span class="com">online</span></span>
-  <nav aria-label="Rodapé"><a href="#manifesto">Manifesto</a><a href="#funciona">Como a rede.online funciona</a><a href="#inicio">Entrar na rede</a></nav><small>versão ${VERSAO}</small></footer>`;
+  <nav aria-label="Rodapé"><a href="#manifesto">Manifesto</a><a href="#funciona">Como a rede.online funciona</a><a href="#inicio">Entrar na rede</a><a href="mailto:contato@arede.online">Contato</a><a href="#termos">Termos de uso</a><a href="#privacidade">Privacidade</a></nav><small>${DIREITOS()} ${TERCEIROS}</small><small>versão ${VERSAO}</small></footer>`;
 /* parágrafos curtos do Interlude viram "batidas": linhas grandes, como respiros do texto */
 const beat = p => p.length===1 && p[0].replace(/<[^>]+>/g,"").length <= 34;
 /* abertura do manifesto: frase definida pela Amanda (8 nov), a partir do Interlude */
@@ -5966,6 +5974,7 @@ function render(){
   if (!["ate-depois","conta","nova-senha"].includes(r)) store.set("ultima", r);   /* reabre onde parou */
   document.body.classList.toggle("envmode", r==="manifesto" || r==="funciona");
   document.body.classList.toggle("pmode", pr==="painel");
+  { const cf = document.getElementById("cfix"); if (cf){ cf.hidden = r!=="inicio"; const d = document.getElementById("cfixdir"); if (d && !d.textContent) d.textContent = DIREITOS(); } }
   if (lastRoute !== null) SCROLL[lastRoute] = window.scrollY;
   const same = lastRoute === r; lastRoute = r;
   if (NAV[NAV.length-1] !== r){ NAV.push(r); if (NAV.length > 40) NAV.shift(); }
@@ -6838,7 +6847,7 @@ function screenConta(){
     <p class="ferr" role="alert" hidden></p>
     <button class="btn primary block" type="button" data-act="entrar">Entrar</button>
     <button class="linkbtn" type="button" data-act="esqueci">Esqueci a senha</button>`}
-    ${ME.pend ? `<div class="note okn pend">${ic(/ntit">Para publicar/.test(ME.pend) ? "info" : "mail")}<span>${ME.pend}</span></div>` : ""}</div>`;
+    ${ME.pend ? `<div class="note okn pend">${ic(/ntit">Para publicar/.test(ME.pend) ? "info" : "mail")}<span>${ME.pend}</span></div>` : ""}${rodape()}</div>`;
 }
 /* CADASTRO EM 3 PASSOS (10 nov 2026): seus dados → confirme o e-mail → conta ativa. Simples, e dizendo o que acontece com os dados. */
 const passosConta = n => `<ol class="csteps" aria-label="Passos do cadastro">${["Seus dados","Confirme o e-mail","Conta ativa"].map((t,i)=>`<li class="${i+1<n ? "feito" : i+1===n ? "on" : ""}"${i+1===n ? ' aria-current="step"' : ""}><span class="nb">${i+1<n ? ic("check","sm") : i+1}</span>${t}</li>`).join("")}</ol>`;
@@ -6957,11 +6966,17 @@ const DOCS = {
   ["Limites", ["A rede.online não garante que o site fique sempre no ar nem que todo conteúdo de terceiros esteja correto. Confira sempre a fonte original."]],
   ["Contato", ["contato@arede.online"]],
   ["Mudanças nestes Termos", ["Quando estes Termos mudarem, a data no alto muda, e mudanças importantes são avisadas no site."]]]}};
+/* RODAPÉ (13 nov 2026): contato e direitos reservados sempre à mão — no fim das telas de conta, ajustes e documentos,
+   e num canto fixo no feed em telas largas. Notícias e imagens de terceiros continuam dos seus veículos e autores. */
+const DIREITOS = () => `© ${new Date().getFullYear()} a rede.online. Todos os direitos reservados.`;
+const TERCEIROS = "Notícias, imagens e vídeos de terceiros pertencem aos seus veículos e autores, sempre com link para a fonte original.";
+const rodapeLinks = () => `<nav class="rlinks" aria-label="Contato e regras"><a href="mailto:contato@arede.online">Contato</a><a href="#termos">Termos de uso</a><a href="#privacidade">Privacidade</a>${SOBRE_ON ? '<a href="#manifesto">Manifesto</a>' : ""}</nav>`;
+const rodape = () => `<footer class="rodape">${rodapeLinks()}<p class="rcontato">Fale com a rede: <a href="mailto:contato@arede.online">contato@arede.online</a></p><p>${DIREITOS()}</p><p class="rterc">${TERCEIROS}</p><p class="ver">versão ${VERSAO}</p></footer>`;
 function screenDoc(k){ const d = DOCS[k], outro = k==="termos" ? ["privacidade","Privacidade"] : ["termos","Termos de uso"];
   return header(`<div class="toprow"><button class="iconbtn" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button><h1 class="pagehead" style="font-size:19px">${d.t}</h1><div class="spacer"></div></div>`)
   + `<div class="container"><article class="docleg"><p class="docdata">Versão de ${DOCS_VERSAO}</p><p class="docintro">${d.intro}</p>
     ${d.s.map(([h, ps])=>`<h2>${h}</h2>${ps.length > 1 ? `<ul>${ps.map(p=>`<li>${p}</li>`).join("")}</ul>` : `<p>${ps[0]}</p>`}`).join("")}
-    <p class="docfim">Leia também: <a href="#${outro[0]}">${outro[1]}</a>. Dúvidas: <a href="mailto:contato@arede.online">contato@arede.online</a></p></article></div>`; }
+    <p class="docfim">Leia também: <a href="#${outro[0]}">${outro[1]}</a>. Dúvidas: <a href="mailto:contato@arede.online">contato@arede.online</a></p></article>${rodape()}</div>`; }
 function contaSeguranca(){ const u = ME.user, ult = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString("pt-BR", {day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"}) : "";
   const chev = ic("back","sm flip");
   return `<section class="acard" aria-labelledby="hseg"><h2 id="hseg">Segurança da conta</h2><div class="list">
@@ -7806,7 +7821,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 12/11 20:22";
+const VERSAO = "v1 registrada · 13/11 06:55";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
