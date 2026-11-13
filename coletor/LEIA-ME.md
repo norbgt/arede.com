@@ -8,3 +8,6 @@ Função do servidor (Supabase Edge Function `coletor`, projeto "arede") escrita
 - Selo 80 ou mais e em português: entra direto no feed. Demais: fila de revisão (Curadoria do coletor, só administradoras).
 - Esporte, entretenimento e sorteios ficam fora do feed.
 - Roda a cada 15 minutos (pg_cron). A busca por feeds novos roda toda segunda às 4h (Brasília).
+- Sem RSS (13 nov 2026): a busca tenta o mapa de notícias do site (sitemap de notícias). Dele vêm título, link, data e capa; a chamada fica vazia. Quem pede no robots.txt para nenhum robô ler não é lido.
+- `?modo=descobrir&so=semfeed` refaz a busca só das fontes sem feed (no banco: `select privado.coletor_dispara('descobrir&so=semfeed')`).
+- A versão publicada lê `temas.ts` deste repositório fixado num commit (o arquivo `temas.ts` da função só reexporta). Ao mudar os temas, publique o coletor de novo apontando para o commit novo.
