@@ -3904,6 +3904,10 @@ applyTheme();
    ===================================================================== */
 const STOPS = [[0,[192,54,44]],[45,[194,122,14]],[70,[110,154,58]],[85,[46,139,87]],[100,[15,107,62]]];
 function tone(sc){ for(let k=1;k<STOPS.length;k++){ const [a,ca]=STOPS[k-1],[b,cb]=STOPS[k]; if(sc<=b){ const t=(sc-a)/(b-a); return "rgb("+ca.map((v,i)=>Math.round(v+(cb[i]-v)*t)).join(",")+")"; } } return "rgb(15,107,62)"; }
+/* CRITÉRIOS DA NOTA (13 nov 2026): faixas do selo e nota de publicação com fonte vêm de Regras e parâmetros, no backoffice.
+   Faixa vermelha abaixo de 50 (decisão #39). Publicação com fonte da base não herda a nota da fonte: 50 + parte do que a fonte passa de 50, com teto. */
+let SELO_ALTA = 90, SELO_CONF = 75, SELO_BAIXA = 50, PUB_FONTE_PARTE = 50, PUB_FONTE_TETO = 74, REP_POUCO = 75, REP_MUITO = 90, SELO_AUTO_REP = 75;
+const notaPubFonte = n => Math.max(0, Math.min(PUB_FONTE_TETO, Math.round(50 + (n - 50) * PUB_FONTE_PARTE / 100)));
 function sealOf(it){
   const sc = it.id in SEAL ? SEAL[it.id] : (String(it.uid).startsWith("c") ? null : 80);
   if (it.autoral) return {sc:null, lv:"na", label:"Conteúdo autoral"};
@@ -3913,8 +3917,8 @@ function sealOf(it){
   /* publicação original (conta real ou criada no protótipo) ainda não passa pelo motor: não é "sem fatos", é "ainda sem selo" */
   if (sc===null && !it.arte && (it.conta || String(it.uid).startsWith("c")) && !["votacao","enquete"].includes(it.tipo)) return {sc:null, lv:"pend", label:"Ainda sem selo"};
   if (sc===null) return {sc:null, lv:"na", label:"Sem fatos a checar"};
-  const lv = sc>=75 ? "ok" : sc>=45 ? "warn" : "bad";
-  const label = sc>=90 ? "Alta confiança" : sc>=75 ? "Confiável" : sc>=45 ? "Confiança moderada" : "Baixa confiança";
+  const lv = sc>=SELO_CONF ? "ok" : sc>=SELO_BAIXA ? "warn" : "bad";
+  const label = sc>=SELO_ALTA ? "Alta confiança" : sc>=SELO_CONF ? "Confiável" : sc>=SELO_BAIXA ? "Confiança moderada" : "Baixa confiança";
   return {sc, lv, label, tone: tone(sc)};
 }
 const SEAL_PATH = "M12.00 1.80 L14.25 3.60 L17.10 3.17 L18.15 5.85 L20.83 6.90 L20.40 9.75 L22.20 12.00 L20.40 14.25 L20.83 17.10 L18.15 18.15 L17.10 20.83 L14.25 20.40 L12.00 22.20 L9.75 20.40 L6.90 20.83 L5.85 18.15 L3.17 17.10 L3.60 14.25 L1.80 12.00 L3.60 9.75 L3.17 6.90 L5.85 5.85 L6.90 3.17 L9.75 3.60Z";
@@ -3967,7 +3971,7 @@ function sealChecksBase(it){
     const lk = `<a href="${esc(it.fonteUrl)}" target="_blank" rel="noopener nofollow">${esc(fp.dominio)} ↗</a>`;
     if (fp.situacao==="avaliacao") return quem + L("warn", "Fonte não verificada", `${lk} ainda não está na base de fontes da rede. Entrou para avaliação da curadoria; se for confiável, a publicação ganha o selo da fonte.`);
     if (fp.situacao==="recusada") return quem + L("bad", "Fonte não confiável", `A curadoria avaliou ${lk} e não a reconheceu como fonte confiável. Confira em outras fontes antes de compartilhar.`);
-    return quem + L(s.lv, "Fonte citada: " + esc(fp.nome), `${lk} está na base de fontes da rede, com selo ${fp.nota}. A nota é a da fonte.`)
+    return quem + L(s.lv, "Fonte citada: " + esc(fp.nome), `${lk} está na base de fontes da rede, com selo ${fp.nota}. Quem publicou não é a fonte, então a publicação não herda essa nota: ganha ${s.sc}, mais do que teria sem fonte.`)
       + L("na", "Texto da publicação", "O que a autora escreveu não é checado automaticamente. Confira se bate com a fonte."); }
   if (s.lv==="pend") return L("ok", o.verificado ? "Perfil verificado" : o.pessoa ? "Conta real" : "Publicado na rede", o.verificado ? `${o.nome}: ${VERIF[o.verificado][0].toLowerCase()}.` : o.pessoa ? `${o.nome} tem conta confirmada por e-mail.` : `Publicado direto na rede por ${o.nome}.`)
     + L("na","Afirmações checadas","Publicação original: a verificação automática de conteúdo original é a próxima etapa do selo. Até lá, não recebe nota.");
@@ -3976,7 +3980,7 @@ function sealChecksBase(it){
   else if (note) r += L(s.lv, note[0], note[1]);
   else r += L("ok","Afirmações checadas","As afirmações conferem com fontes públicas.");
   if (it.tipo==="imagem" && !(note && note[0]==="Imagem original")) r += L("ok","Imagem original","Sem sinais de montagem ou de uso fora de contexto.");
-  if (s.sc!==null) r += L(s.sc>=75?"ok":s.sc>=45?"warn":"bad","Fontes citadas", s.sc>=75?"Links para documentos ou registros oficiais.": s.sc>=45?"Fontes parciais.":"Nenhuma fonte citada.");
+  if (s.sc!==null) r += L(s.sc>=SELO_CONF?"ok":s.sc>=SELO_BAIXA?"warn":"bad","Fontes citadas", s.sc>=SELO_CONF?"Links para documentos ou registros oficiais.": s.sc>=SELO_BAIXA?"Fontes parciais.":"Nenhuma fonte citada.");
   r += L(verified?"ok":"bad","Histórico da organização", verified ? "Publica correções quando erra." : "2 conteúdos com baixa confiança nos últimos 30 dias.");
   return r;
 }
@@ -4031,6 +4035,9 @@ function aplicaRegras(g){ if (!g || typeof g !== "object") return false; const n
   poe("conta_videos_12h", 0, 1000, x=>{ ACESSO.cadastrado.videos = x; });
   poe("feed_pausa", 2, 500, x=>{ PAUSE_EVERY = x; }); poe("feed_anuncio_cada", 2, 500, x=>{ ANUNCIO_CADA = x; }); poe("feed_arte_cada", 2, 500, x=>{ ARTE_CADA = x; });
   poe("interesses_max", 1, 20, x=>{ MAX_INT = x; }); poe("comunidade_min", 1, 10000, x=>{ CMN_MIN = x; });
+  poe("selo_alta", 1, 100, x=>{ SELO_ALTA = x; }); poe("selo_confiavel", 1, 100, x=>{ SELO_CONF = x; }); poe("selo_baixa", 1, 100, x=>{ SELO_BAIXA = x; });
+  poe("pub_fonte_parte", 0, 100, x=>{ PUB_FONTE_PARTE = x; }); poe("pub_fonte_teto", 0, 100, x=>{ PUB_FONTE_TETO = x; });
+  poe("rep_sobe_pouco", 0, 101, x=>{ REP_POUCO = x; }); poe("rep_sobe_muito", 0, 101, x=>{ REP_MUITO = x; }); poe("selo_auto_rep", 0, 101, x=>{ SELO_AUTO_REP = x; });
   poe("selo_antigo_dias", 1, 3650, x=>{ SELO_ANTIGO_DIAS = x; }); poe("senha_min", 8, 128, x=>{ SENHA_MIN = x; });
   if (Array.isArray(g.apoio_valores) && g.apoio_valores.length && g.apoio_valores.every(x=>Number.isInteger(x) && x > 0)) { APOIO_VALORES = g.apoio_valores.slice(0, 8); mudou = true; }
   return mudou; }
@@ -5487,7 +5494,7 @@ function screenProfile(){
 }
 /* SEU ALGORITMO, COM TRANSPARÊNCIA: o que o alimenta, do que é feito o seu feed, o tamanho da bolha
    e a confiabilidade do que chega até você. Gráficos simples, sempre com rótulo e número (nunca só cor). */
-const FAIXAS = [["Alta confiança",s=>s!==null&&s>=90,95],["Confiável",s=>s!==null&&s>=75&&s<90,82],["Confiança moderada",s=>s!==null&&s>=45&&s<75,60],["Baixa confiança",s=>s!==null&&s<45,20],["Sem fatos a checar",s=>s===null,null]];
+const FAIXAS = [["Alta confiança",s=>s!==null&&s>=SELO_ALTA,95],["Confiável",s=>s!==null&&s>=SELO_CONF&&s<SELO_ALTA,82],["Confiança moderada",s=>s!==null&&s>=SELO_BAIXA&&s<SELO_CONF,60],["Baixa confiança",s=>s!==null&&s<SELO_BAIXA,20],["Sem fatos a checar",s=>s===null,null]];
 function algoPanel(){
   const feed = POOL.filter(inProfile), n = feed.length, pct = k => Math.round(k/n*100);
   const scOf = it => sealOf(withUid(it)).sc;
@@ -5500,11 +5507,11 @@ function algoPanel(){
   const meter = (label, a, b) => `<div class="arow" title="${label}: ${a} de ${b}"><span class="al">${label}</span><span class="ab"><i style="width:${Math.round(a/b*100)}%"></i></span><span class="av2">${a} de ${b}</span></div>`;
   /* 3. confiabilidade do que chega ao feed */
   const conf = FAIXAS.map(([l,f,sc])=>[l, feed.filter(i=>f(scOf(i))).length, sc]);
-  const ruins = feed.filter(i=>{ const sc = scOf(i); return sc!==null && sc<45; });
-  const moder = feed.filter(i=>{ const sc = scOf(i); return sc!==null && sc>=45 && sc<75; });
+  const ruins = feed.filter(i=>{ const sc = scOf(i); return sc!==null && sc<SELO_BAIXA; });
+  const moder = feed.filter(i=>{ const sc = scOf(i); return sc!==null && sc>=SELO_BAIXA && sc<SELO_CONF; });
   /* 4. suas interações (curtidas, compartilhadas, salvas) */
   const inter = [...new Set([...S.liked, ...S.shared, ...S.saved])].map(u=>findItem(u) || (POOL.find(p=>String(p.id)===idDeUid(u)) ? withUid(POOL.find(p=>String(p.id)===idDeUid(u))) : null)).filter(Boolean);
-  const interBad = inter.filter(i=>{ const sc = sealOf(i).sc; return sc!==null && sc<45; });
+  const interBad = inter.filter(i=>{ const sc = sealOf(i).sc; return sc!==null && sc<SELO_BAIXA; });
   const risk = ruins.length ? `<div class="note warnnote">${ic("info")}<span><b>Sinal de desinformação:</b> ${ruins.length} ${ruins.length===1?"conteúdo de baixa confiança chega":"conteúdos de baixa confiança chegam"} ao seu feed (${[...new Set(ruins.map(i=>ORG[i.org].nome+", "+i.tema))].join("; ")}). ${ruins.length===1?"Ele aparece desfocado":"Eles aparecem desfocados"} e com o motivo no selo. <button class="linkbtn" type="button" data-act="adjust" style="padding:0;min-height:0">Ajustar o algoritmo</button></span></div>`
     : `<div class="note">${ic("check")}<span>Nenhum conteúdo de baixa confiança no seu feed.</span></div>`;
   const mixO = S.usarOrgs ? S.mix : 0;
@@ -6158,7 +6165,7 @@ function itemDaPublicacao(p){
   if (ex.autoral==="arte" || ex.autoral==="ficcao") it.autoral = ex.autoral;
   else if (ex.fonte && ex.fonte_url){ it.fontePub = ex.fonte; it.fonteUrl = ex.fonte_url; }
   RESUMO[id] = (p.texto || "").split(/\n\s*\n/)[0]; BODY[id] = (p.texto || "").split(/\n\s*\n/).filter(Boolean);
-  SEAL[id] = it.fontePub && it.fontePub.situacao==="base" && it.fontePub.nota != null ? +it.fontePub.nota : null;
+  SEAL[id] = it.fontePub && it.fontePub.situacao==="base" && it.fontePub.nota != null ? notaPubFonte(+it.fontePub.nota) : null;
   return it;
 }
 /* HISTÓRICO E PRIORIDADE (10 nov 2026): cada conta tem uma reputação de 0 a 100, calculada no servidor pelo histórico na rede
@@ -7027,10 +7034,10 @@ function contaSeguranca(){ const u = ME.user, ult = u.last_sign_in_at ? new Date
 /* o seu histórico na rede: o número (0 a 100) e o que ajuda a subir. Só você vê. */
 async function historicoPreenche(){ const box = $("#histbox"); if (!box || box.dataset.ok || !SB || !ME.user) return; box.dataset.ok = "1";
   let h = null; try{ const r = await SB.rpc("minha_reputacao"); if (!r.error) h = r.data; }catch(e){} if (!h || !box.isConnected) return;
-  const faixa = h.nota >= 90 ? "Muito bom" : h.nota >= 75 ? "Bom" : h.nota >= 50 ? "Em formação" : "Baixo", efeito = h.nota >= 90 ? "As suas publicações sobem bastante no feed." : h.nota >= 75 ? "As suas publicações sobem um pouco no feed." : h.nota >= 50 ? "As suas publicações seguem a ordem normal do feed." : "As suas publicações descem um pouco no feed.";
+  const faixa = h.nota >= REP_MUITO ? "Muito bom" : h.nota >= REP_POUCO ? "Bom" : h.nota >= CMN_MIN ? "Em formação" : "Baixo", efeito = h.nota >= REP_MUITO ? "As suas publicações sobem bastante no feed." : h.nota >= REP_POUCO ? "As suas publicações sobem um pouco no feed." : h.nota >= CMN_MIN ? "As suas publicações seguem a ordem normal do feed." : "As suas publicações descem um pouco no feed.";
   const li = (t, d) => `<li><b>${t}</b><small>${d}</small></li>`;
   box.innerHTML = `<section class="acard" aria-labelledby="hhist"><h2 id="hhist">Seu histórico na rede</h2>
-    <div class="hist"><span class="hnum" aria-label="${h.nota} de 100"><b>${h.nota}</b><small>de 100</small></span><span class="htx"><b>${faixa}</b><small>${efeito}${h.nota >= 75 ? " Seus comentários com fonte ajudam a ajustar o selo de confiança das notícias." : ""}</small></span></div>
+    <div class="hist"><span class="hnum" aria-label="${h.nota} de 100"><b>${h.nota}</b><small>de 100</small></span><span class="htx"><b>${faixa}</b><small>${efeito}${h.nota >= SELO_AUTO_REP ? " Seus comentários com fonte ajudam a ajustar o selo de confiança das notícias." : ""}</small></span></div>
     <div class="hbar" aria-hidden="true"><i style="width:${h.nota}%"></i></div>
     <ul class="hlist">${li(h.pessoas + (h.pessoas===1 ? " pessoa marcou" : " pessoas marcaram"), "comentários seus como úteis (o que mais pesa)")}${li(h.com_fonte + " com fonte", "comentários que trazem o endereço de onde veio a informação")}${li(h.dias + (h.dias===1 ? " dia" : " dias"), "de conta")}${h.removidos ? li(h.removidos + (h.removidos===1 ? " removido" : " removidos"), "comentários tirados do ar pela moderação, nos últimos 90 dias") : ""}</ul>
     <p class="inota">${ic("lock","sm")}<span>Só você vê o seu número. Para as outras pessoas aparece apenas o selo Colaborador, quando a rede o confirma.</span></p></section>`; }
@@ -7862,7 +7869,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 13/11 17:44";
+const VERSAO = "v1 registrada · 13/11 17:51";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
