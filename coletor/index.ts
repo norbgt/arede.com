@@ -20,12 +20,24 @@ const UA = "Mozilla/5.0 (compatible; arede-coletor/1.0; +https://arede.online/)"
 const LOTES = 10, DIAS = 4, NOTA_DIRETO = 80, IDIOMAS = ["pt", "en", "es"], POR_PAGINA = 4;
 
 type Res = { ok: boolean; status: number; url: string; ct: string; txt: string; err?: string };
-async function get(url: string, ms = 12000): Promise<Res> {
+// baixa em partes e para no limite (páginas e mapas grandes não estouram a memória da função)
+async function get(url: string, ms = 12000, max = 2_500_000, ate = ""): Promise<Res> {
   const c = new AbortController(); const t = setTimeout(() => c.abort(), ms);
   try {
     const r = await fetch(url, { signal: c.signal, redirect: "follow", headers: { "user-agent": UA, accept: "application/rss+xml, application/atom+xml, application/xml;q=0.9, text/xml;q=0.9, text/html;q=0.8, */*;q=0.5" } });
+    const partes: Uint8Array[] = []; let n = 0;
+    if (r.body) {
+      const rd = r.body.getReader();
+      while (n < max) {
+        const { done, value } = await rd.read(); if (done || !value) break;
+        partes.push(value); n += value.length;
+        if (ate && new TextDecoder("latin1").decode(value).includes(ate)) break;
+      }
+      try { await rd.cancel(); } catch { /* já terminou */ }
+    }
+    const buf = new Uint8Array(Math.min(n, max)); let o = 0;
+    for (const p of partes) { if (o >= buf.length) break; buf.set(p.subarray(0, buf.length - o), o); o += p.length; }
     // respeita a codificação do feed (alguns, como a Folha, ainda usam ISO-8859-1)
-    const buf = new Uint8Array(await r.arrayBuffer()).slice(0, 2_500_000);
     const ini = new TextDecoder("latin1").decode(buf.slice(0, 400));
     const cs = ((r.headers.get("content-type") || "").match(/charset=["']?([\w-]+)/i)?.[1] || ini.match(/encoding=["']([\w-]+)["']/i)?.[1] || "utf-8").toLowerCase();
     let txt: string; try { txt = new TextDecoder(cs).decode(buf); } catch { txt = new TextDecoder().decode(buf); }
@@ -231,19 +243,19 @@ function link(it: any): string {
 const YT_LIXO = /^(quer ajudar|contribua|doe |doação|faça parte|torne-se|pix|inscreva|siga|assine|acesse|baixe|ative|seja membro|apoie|curta|compartilhe|leia|veja|assista|ouça|conheça nosso|nossas redes|redes sociais|facebook|instagram|twitter|x:|tiktok|whatsapp|telegram|threads|bluesky|site|podcast|spotify|#|\*|»|►|▶|👉|📲|📺|🔔)/i;
 const limpaYT = (t: string) => t.split(/\n/).map((l) => l.trim()).filter((l) => l && !YT_LIXO.test(l) && !/https?:\/\/|www\./i.test(l)).join("\n").replace(/\n{3,}/g, "\n\n").trim();
 function leFeed(xml: string, base: string) {
-  let o: any; try { o = parser.parse(xml); } catch { return { lingua: "", itens: [] as any[] }; }
-  // mapa de notícias: título, link, data e capa (a chamada fica vazia; o texto está no site da fonte)
-  if (o?.urlset) {
-    const us = lista(o.urlset.url).filter((u: any) => u && u["news:news"]).slice(0, 1000);
-    const itens = us.map((u: any) => {
-      const n = u["news:news"], img = lista(u["image:image"])[0], d = texto(n["news:publication_date"]), il = img ? texto(img["image:loc"]) : "";
-      return { titulo: limpa(texto(n["news:title"])), url: absoluto(texto(u.loc).trim(), base), chamada: null, resumo: null,
+  // mapa de notícias: lido por partes (sem montar o XML inteiro na memória). Título, link, data e capa; a chamada vem depois, da página.
+  if (ehMapaNoticias(xml)) {
+    const tag = (bl: string, k: string) => { const m = bl.match(new RegExp("<" + k + "[^>]*>\\s*(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?\\s*</" + k + ">", "i")); return m ? m[1].trim() : ""; };
+    const blocos = [...xml.matchAll(/<url>([\s\S]*?)<\/url>/gi)].slice(0, 400).map((m) => m[1]);
+    const itens = blocos.filter((bl) => /<news:title/i.test(bl)).map((bl) => {
+      const d = tag(bl, "news:publication_date"), il = tag(bl, "image:loc").replace(/&amp;/g, "&");
+      return { titulo: limpa(tag(bl, "news:title")), url: absoluto(tag(bl, "loc"), base), chamada: null, resumo: null,
         imagem_url: il.startsWith("https://") ? il : null, publicada_em: d ? new Date(d) : null };
     }).filter((i: any) => i.titulo && i.url.startsWith("http"))
       .sort((a: any, b: any) => (+b.publicada_em || 0) - (+a.publicada_em || 0)).slice(0, 60);
-    const pub = lista(us[0]?.["news:news"]?.["news:publication"])[0];
-    return { lingua: pub ? texto(pub["news:language"]).toLowerCase() : "", itens };
+    return { lingua: (tag(blocos[0] || "", "news:language") || "").toLowerCase(), itens };
   }
+  let o: any; try { o = parser.parse(xml); } catch { return { lingua: "", itens: [] as any[] }; }
   const ch = o?.rss?.channel || o?.["rdf:RDF"]?.channel || {};
   const brutos = o?.rss ? lista(o.rss.channel?.item) : o?.["rdf:RDF"] ? lista(o["rdf:RDF"].item) : o?.feed ? lista(o.feed.entry) : [];
   const lingua = (texto(ch.language) || texto(ch["dc:language"]) || (o?.feed?.["@_xml:lang"] ?? "")).toLowerCase();
@@ -304,8 +316,8 @@ function idiomaDe(t: string, lingua: string): string {
 }
 // chamada pelo resumo de compartilhamento da própria página (og:description, twitter:description ou description)
 async function chamadaDaPagina(url: string): Promise<string | null> {
-  const r = await get(url, 7000); if (!r.ok || !r.txt) return null;
-  const h = r.txt.slice(0, 300000);
+  const r = await get(url, 7000, 250_000, "</head>"); if (!r.ok || !r.txt) return null;
+  const h = r.txt;
   for (const k of ["og:description", "twitter:description", "description"]) {
     const tag = h.match(new RegExp("<meta[^>]+(?:property|name)=[\"']" + k + "[\"'][^>]*>", "i")); if (!tag) continue;
     const c = tag[0].match(/content=["']([^"']*)["']/i) || tag[0].match(/content=([^\s>]+)/i); if (!c) continue;
