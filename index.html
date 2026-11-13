@@ -4045,6 +4045,7 @@ function aplicaRegras(g){ if (!g || typeof g !== "object") return false; const n
   poe("selo_alta", 1, 100, x=>{ SELO_ALTA = x; }); poe("selo_confiavel", 1, 100, x=>{ SELO_CONF = x; }); poe("selo_baixa", 1, 100, x=>{ SELO_BAIXA = x; });
   poe("rep_sobe_pouco", 0, 101, x=>{ REP_POUCO = x; }); poe("rep_sobe_muito", 0, 101, x=>{ REP_MUITO = x; }); poe("selo_auto_rep", 0, 101, x=>{ SELO_AUTO_REP = x; });
   poe("selo_antigo_dias", 1, 3650, x=>{ SELO_ANTIGO_DIAS = x; }); poe("senha_min", 8, 128, x=>{ SENHA_MIN = x; });
+  if (typeof g.identidade_exigida === "boolean") { IDENT_EXIGE = g.identidade_exigida; mudou = true; }
   if (Array.isArray(g.apoio_valores) && g.apoio_valores.length && g.apoio_valores.every(x=>Number.isInteger(x) && x > 0)) { APOIO_VALORES = g.apoio_valores.slice(0, 8); mudou = true; }
   return mudou; }
 async function regrasCarrega(){ if (!SB) return; try{ const r = await SB.rpc("parametros_publicos"); if (!r.error && aplicaRegras(r.data)) render(); }catch(e){} }
@@ -6924,11 +6925,13 @@ function acessoCard(){ const nv = nivel(), a = ME.acesso || {}, ped = a.pedido, 
 /* IDENTIDADE VERIFICADA (13 nov 2026, P0): uma pessoa, uma conta verificada. Pessoa informa o CPF junto com o documento;
    o servidor guarda só um código embaralhado do CPF (impossível de desfazer) e recusa o mesmo CPF em outra conta.
    Conta verificada é exigida para votar, propor votação, apoiar proposta, assinar abaixo-assinado e pedir organização (escolhas da Amanda). */
+/* GUARDADO (13 nov 2026): no período de testes a Amanda manteve tudo aberto. A regra identidade_exigida (Regras e parâmetros) liga o pacote. */
+let IDENT_EXIGE = false;
 const cpfDig = v => String(v || "").replace(/\D/g, "");
 function cpfOk(v){ const d = cpfDig(v); if (d.length !== 11 || /^(\d)\1{10}$/.test(d)) return false;
   const dv = n => { let s = 0; for (let i = 0; i < n; i++) s += +d[i] * (n + 1 - i); const r = (s * 10) % 11; return r === 10 ? 0 : r; };
   return dv(9) === +d[9] && dv(10) === +d[10]; }
-function precisaVerif(acao){ const nv = nivel(); if (nv === "verificado" || nv === "admin") return false;
+function precisaVerif(acao){ if (!IDENT_EXIGE) return false; const nv = nivel(); if (nv === "verificado" || nv === "admin") return false;
   openSheet(shead("Conta verificada") + `<p style="margin:0 0 12px">Para ${esc(acao)}, a rede precisa saber que cada conta é uma pessoa: uma pessoa, um voto.</p>
     <ul class="aplista"><li>${ic("check","sm")}<span>Você envia um documento com foto e informa o CPF.</span></li>
       <li>${ic("lock","sm")}<span>A rede não guarda o CPF: só um código embaralhado, que serve para a mesma pessoa não verificar duas contas.</span></li>
@@ -6938,8 +6941,8 @@ function precisaVerif(acao){ const nv = nivel(); if (nv === "verificado" || nv =
 function verifForm(){ return `<div class="vform"><fieldset class="vtipo"><legend>Quem pede</legend>
     <label><input type="radio" name="vtipo" value="pessoa" checked> <span><b>Pessoa</b><small>RG, CNH ou passaporte, com foto e nome legíveis</small></span></label>
     <label><input type="radio" name="vtipo" value="instituicao"> <span><b>Instituição</b><small>Cartão CNPJ ou documento que mostre que você responde por ela</small></span></label></fieldset>
-  <div class="field vcpf"><label for="vcpf">CPF de quem pede (pessoa)</label><input id="vcpf" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00">
-    <small class="muted">Serve para garantir uma pessoa, uma conta verificada. A rede não guarda o número: guarda só um código embaralhado, que não dá para desfazer. Enquanto o pedido está em análise, a curadoria vê só os 5 últimos dígitos, para conferir com o documento.</small></div>
+  ${IDENT_EXIGE ? "" : "<!--"}<div class="field vcpf"><label for="vcpf">CPF de quem pede (pessoa)</label><input id="vcpf" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00">
+    <small class="muted">Serve para garantir uma pessoa, uma conta verificada. A rede não guarda o número: guarda só um código embaralhado, que não dá para desfazer. Enquanto o pedido está em análise, a curadoria vê só os 5 últimos dígitos, para conferir com o documento.</small></div>${IDENT_EXIGE ? "" : "-->"}
   <label class="vfile"><span>Foto ou PDF do documento (até 5 MB)</span><input id="vdoc" type="file" accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"></label>
   <p class="inota">${ic("lock","sm")}<span>Só a curadoria vê o arquivo. Ele nunca aparece no seu perfil e é apagado assim que o pedido é decidido.</span></p>
   <p class="ferr" role="alert" hidden></p><button class="btn block" type="button" data-act="enviaverif">${ic("vfy","sm")} Enviar para verificação</button></div>`; }
@@ -7010,7 +7013,7 @@ const DOCS = {
  privacidade:{t:"Privacidade", intro:"A rede.online guarda o mínimo para a sua conta funcionar. Seu e-mail não aparece para ninguém. Você pode baixar o que guardamos sobre você e apagar a sua conta quando quiser, direto na conta.", s:[
   ["Para quem é", ["A rede.online é para pessoas com 18 anos ou mais. Não criamos contas para menores de idade."]],
   ["O que guardamos da sua conta", ["E-mail e senha. A senha fica embaralhada: ninguém da rede consegue ler.", "Perfil: o nome que você escolheu, a cidade e o texto sobre você, se você preencher.", "O que você publica, seus comentários, os comentários que marcou como úteis e as denúncias que fez.", "Curtidas, itens salvos, pastas, votos, apoios a propostas e presenças em eventos, para você encontrar tudo em qualquer aparelho.", "Contas de outras redes que você ligar ao perfil: só o nome de usuário público.", "O aceite dos Termos e desta página, com a data.", "A forma de ver o feed que você escolheu.", "O histórico de leitura dos últimos 7 dias, só para contar o limite de conteúdos novos por hora. Depois disso é apagado."]],
-  ["Documento e CPF da verificação", ["Só existem se você pedir a verificação da conta. Você envia uma foto ou PDF de um documento, e só a curadoria vê.", "O arquivo é apagado assim que o pedido é aprovado ou recusado, ou se você desistir. Fica guardado apenas o resultado.", "Pessoas também informam o CPF. A rede não guarda o número: guarda só um código embaralhado, que não dá para desfazer, para que a mesma pessoa não verifique duas contas (uma pessoa, um voto). Enquanto o pedido está em análise, a curadoria vê só os 5 últimos dígitos, para conferir com o documento. Se você apagar a conta, o código é apagado junto."]],
+  ["Documento de verificação", ["Só existe se você pedir a verificação da conta. Você envia uma foto ou PDF de um documento, e só a curadoria vê.", "O arquivo é apagado assim que o pedido é aprovado ou recusado, ou se você desistir. Fica guardado apenas o resultado."]],
   ["Medição de uso, sem identificar você", ["O site registra como as pessoas navegam: telas abertas, toques, erros e tipo de aparelho. Usa um código aleatório do aparelho, sem nome nem e-mail. Esses registros são apagados em 90 dias.", "Depois de um minuto de navegação, o site pode pedir uma nota de satisfação. A resposta é opcional, não leva o seu nome e é apagada em 180 dias.", "Quando alguém troca a forma de ver o feed, o servidor conta a troca, sem guardar quem trocou.", "Quando alguém abre um link para fora da rede (por exemplo, a matéria no site da fonte), o servidor soma 1 para aquele site naquele dia. Não guarda quem abriu nem qual página."]],
   ["Pagamentos", ["Anúncios: guardamos o pedido ligado à conta de quem anuncia (a peça, o valor e a situação).", "Apoios: guardamos o valor, a data, a situação e o número do pagamento. Não guardamos quem apoiou.", "Dados de cartão e de banco ficam só no Mercado Pago. A rede.online não vê nem guarda esses dados."]],
   ["O que fica só no seu aparelho", ["Preferências, temas do algoritmo, a sua cidade e os lugares do seu interesse. Somem se você limpar os dados do navegador."]],
@@ -7025,7 +7028,6 @@ const DOCS = {
  termos:{t:"Termos de uso", intro:"Estas são as regras para usar a rede.online. O site está em fase de teste: pode mudar, ter falhas ou sair do ar.", s:[
   ["Quem pode usar", ["Qualquer pessoa pode ler. Para criar conta, é preciso ter 18 anos ou mais e aceitar estes Termos e a Privacidade."]],
   ["A sua conta", ["Você responde pelo que é feito com a sua conta. Use um e-mail seu e uma senha que só você conheça.", "Você pode apagar a conta quando quiser, em Conta › Seus dados."]],
-  ["Conta verificada", ["Cada pessoa pode ter uma única conta verificada. A verificação usa um documento com foto e o CPF, conferidos pela curadoria.", "Votar, propor votação, apoiar proposta, assinar abaixo-assinado e pedir uma organização exigem conta verificada: uma pessoa, um voto.", "Usar documento de outra pessoa ou tentar verificar mais de uma conta leva à recusa e pode levar à suspensão."]],
   ["O que você publica", ["O que você publica continua sendo seu. Ao publicar, você autoriza a rede.online a mostrar esse conteúdo no site.", "Você responde pelo que publica e comenta. Publique só o que você tem o direito de publicar."]],
   ["O que não pode", ["Ataque ou discriminação contra pessoa ou grupo.", "Ameaça ou incitação à violência.", "Exposição de dados pessoais de outras pessoas.", "Informação que você sabe que é falsa.", "Conteúdo que envolva crianças ou adolescentes de forma imprópria.", "Uso de obra de outra pessoa sem autorização.", "Qualquer conteúdo ilegal, spam ou tentativa de enganar o sistema.", "Propaganda eleitoral paga, de candidato ou de partido."]],
   ["Denúncias e moderação", ["Qualquer pessoa pode denunciar um conteúdo pelo botão Denunciar ou por contato@arede.online. A denúncia é registrada com data e analisada pela curadoria.", "O conteúdo continua visível até a decisão, salvo casos graves. A curadoria pode ocultar ou remover o que fere estes Termos e pode suspender contas que insistem.", "Quem teve um conteúdo removido pode pedir revisão pelo mesmo contato. Ordens da Justiça são sempre cumpridas."]],
@@ -7356,14 +7358,14 @@ const A = {
   enviaverif: async b => { const box = b.closest(".vform"), err = box.querySelector(".ferr"), f = ($("#vdoc").files || [])[0], tipo = (box.querySelector('input[name="vtipo"]:checked') || {}).value || "pessoa";
     const erro = t => { err.textContent = t; err.hidden = false; };
     err.hidden = true; const cpf = cpfDig(($("#vcpf") || {}).value);
-    if (tipo === "pessoa" && !cpfOk(cpf)) return erro("Confira o CPF: são 11 números, e os dois últimos não batem com os outros.");
+    if (IDENT_EXIGE && tipo === "pessoa" && !cpfOk(cpf)) return erro("Confira o CPF: são 11 números, e os dois últimos não batem com os outros.");
     if (!f) return erro("Escolha a foto ou o PDF do documento."); if (f.size > 5*1024*1024) return erro("O arquivo passa de 5 MB. Tente uma foto menor.");
     const ext = (f.name.split(".").pop() || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 5) || (f.type==="application/pdf" ? "pdf" : "jpg");
     if (!/^(jpe?g|png|webp|heic|pdf)$/.test(ext)) return erro("Use foto (JPG, PNG, WEBP, HEIC) ou PDF.");
     ocupado(b, true, "Enviando…"); const caminho = `${ME.user.id}/${Date.now()}.${ext}`, B = SB.storage.from("verificacao-docs");
     const up = await B.upload(caminho, f, {contentType:f.type || undefined, upsert:false});
     if (up.error){ ocupado(b, false); return erro("Não deu para enviar o arquivo. " + erroAuth(up.error)); }
-    const r = await SB.rpc("verificacao_envia", {p_tipo:tipo, p_doc_tipo:tipo==="instituicao" ? "documento da instituição" : "documento com foto", p_path:caminho, p_cpf:tipo === "pessoa" ? cpf : null});
+    const r = await SB.rpc("verificacao_envia", {p_tipo:tipo, p_doc_tipo:tipo==="instituicao" ? "documento da instituição" : "documento com foto", p_path:caminho, p_cpf:IDENT_EXIGE && tipo === "pessoa" ? cpf : null});
     if (r.error){ await B.remove([caminho]); ocupado(b, false); return erro(erroAuth(r.error)); }
     if (r.data) B.remove([r.data]).catch(()=>{});   /* o arquivo de um envio anterior */
     ocupado(b, false); await perfilCarrega(); toast("Documento enviado. A curadoria vai analisar."); render(); },
@@ -7895,7 +7897,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 13/11 18:33";
+const VERSAO = "v1 registrada · 13/11 18:45";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
