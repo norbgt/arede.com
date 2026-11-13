@@ -6,6 +6,9 @@
 // Lotes: ?lote=0..9 (as fontes se dividem em 10).
 // Canais do YouTube: feed_tipo "youtube", lidos pelo RSS público do canal (só vídeos longos, sem Shorts nem lives).
 // Idiomas: português, inglês e espanhol vão direto para o feed (selo 80+); cada notícia guarda o idioma, e quem lê escolhe as origens.
+// Sem RSS (13 nov 2026, decisão #30): a busca tenta também o mapa de notícias (sitemap de notícias, o que o site oferece ao Google Notícias).
+//   Dele vêm só título, link, data e capa; a chamada fica vazia. Sites que pedem no robots.txt para nenhum robô ler não são lidos.
+//   ?modo=descobrir&so=semfeed refaz a busca só das fontes sem feed.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { XMLParser } from "npm:fast-xml-parser@4.4.1";
 import { temaDe } from "./temas.ts";
@@ -28,7 +31,8 @@ async function get(url: string, ms = 12000): Promise<Res> {
   } catch (e) { return { ok: false, status: 0, url, ct: "", txt: "", err: String(e).slice(0, 160) }; }
   finally { clearTimeout(t); }
 }
-const pareceFeed = (t: string) => /<rss[\s>]|<feed[\s>]|<rdf:RDF/i.test(t.slice(0, 4000));
+const ehMapaNoticias = (t: string) => /<urlset[^>]*xmlns:news/i.test(t.slice(0, 4000)) && /<news:title/i.test(t);
+const pareceFeed = (t: string) => /<rss[\s>]|<feed[\s>]|<rdf:RDF/i.test(t.slice(0, 4000)) || ehMapaNoticias(t);
 
 // endereços conhecidos (testados antes da busca automática; a busca confirma se funcionam)
 const CONHECIDOS: Record<string, string[]> = {
@@ -91,6 +95,21 @@ const CONHECIDOS: Record<string, string[]> = {
   "ciperchile.cl": ["https://www.ciperchile.cl/feed/"],
   "newtral.es": ["https://www.newtral.es/feed/"],
   "elsaltodiario.com": ["https://www.elsaltodiario.com/general/feed"],
+  // fontes que estavam sem feed (13 nov 2026): endereços públicos conhecidos; a busca confirma antes de usar
+  "noticias.uol.com.br": ["https://rss.uol.com.br/feed/noticias.xml", "https://rss.uol.com.br/feed/ultimas-noticias.xml"],
+  "estadao.com.br": ["https://www.estadao.com.br/arc/outboundfeeds/feeds/rss/sections/politica/", "https://www.estadao.com.br/arc/outboundfeeds/rss/?outputType=xml"],
+  "gazetadopovo.com.br": ["https://www.gazetadopovo.com.br/feed/rss/republica.xml", "https://www.gazetadopovo.com.br/feed/rss/ultimas-noticias.xml"],
+  "ibge.gov.br": ["https://agenciadenoticias.ibge.gov.br/agencia-noticias.html?format=feed&type=rss", "https://agenciadenoticias.ibge.gov.br/?format=feed&type=rss"],
+  "boe.es": ["https://www.boe.es/rss/boe.php?s=1"],
+  "federalregister.gov": ["https://www.federalregister.gov/api/v1/documents.rss?conditions%5Btype%5D%5B%5D=PRESDOCU"],
+  "ons.gov.uk": ["https://www.ons.gov.uk/releasecalendar?rss"],
+  "efe.com": ["https://efe.com/feed/"],
+  "maldita.es": ["https://maldita.es/feed/"],
+  "theglobeandmail.com": ["https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/world/"],
+  "eltiempo.com": ["https://www.eltiempo.com/rss/colombia.xml"],
+  "eluniversal.com.mx": ["https://www.eluniversal.com.mx/arc/outboundfeeds/rss/?outputType=xml"],
+  "emol.com": ["https://www.emol.com/rss/rss.asp"],
+  "documents.un.org": ["https://news.un.org/feed/subscribe/pt/news/all/rss.xml"],
 };
 const absoluto = (h: string, base: string) => { try { return new URL(h.replace(/&amp;/g, "&"), base).href; } catch { return ""; } };
 function linksDeFeed(html: string, base: string): string[] {
@@ -103,13 +122,49 @@ function linksDeFeed(html: string, base: string): string[] {
   }
   return out;
 }
+// robots.txt: endereços de mapas do site e se o site pede para nenhum robô ler (a rede respeita)
+async function robots(root: string) {
+  const r = await get(root + "robots.txt", 8000), t = r.ok ? r.txt : "";
+  const mapas = [...t.matchAll(/^\s*sitemap:\s*(\S+)/gim)].map((m) => m[1]);
+  let bloqueia = false, grupo = false, viuRegra = false;
+  for (const l of t.split(/\r?\n/)) {
+    const m = l.replace(/#.*$/, "").match(/^\s*([a-z-]+)\s*:\s*(.*)$/i); if (!m) continue;
+    const k = m[1].toLowerCase(), v = m[2].trim();
+    if (k === "user-agent") { if (viuRegra) { grupo = false; viuRegra = false; } grupo = grupo || v === "*" || /arede/i.test(v); }
+    else if (k === "disallow" || k === "allow") { viuRegra = true; if (grupo && k === "disallow" && v === "/") bloqueia = true; }
+  }
+  return { mapas, bloqueia };
+}
+// mapa de notícias: primeiro os do robots.txt com "news" no nome, depois os endereços de costume; índices são abertos um nível
+async function mapaDeNoticias(root: string, mapas: string[]): Promise<string | null> {
+  const cand = [...mapas.filter((u) => /news|noticia/i.test(u)),
+    ...["news-sitemap.xml", "sitemap-news.xml", "sitemap_news.xml", "news_sitemap.xml", "sitemaps/news.xml", "sitemap/news.xml", "googlenews.xml"].map((p) => root + p),
+    ...mapas.filter((u) => !/news|noticia/i.test(u)).slice(0, 2)];
+  const vistos = new Set<string>(); let n = 0;
+  for (const u of cand) {
+    if (vistos.has(u) || /\.gz(\?|$)/i.test(u) || n >= 12) continue; vistos.add(u); n++;
+    const r = await get(u, 9000); if (!r.ok) continue;
+    if (ehMapaNoticias(r.txt)) { if (leFeed(r.txt, r.url).itens.length) return r.url; continue; }
+    if (/<sitemapindex/i.test(r.txt.slice(0, 3000))) {
+      const filhos = [...r.txt.matchAll(/<loc>\s*(?:<!\[CDATA\[)?\s*([^<\s\]]+)/gi)].map((m) => m[1].replace(/&amp;/g, "&"))
+        .filter((x) => /news|noticia/i.test(x) && !/\.gz(\?|$)/i.test(x)).slice(0, 3);
+      for (const fu of filhos) {
+        if (vistos.has(fu)) continue; vistos.add(fu); n++;
+        const rf = await get(fu, 9000); if (rf.ok && ehMapaNoticias(rf.txt) && leFeed(rf.txt, rf.url).itens.length) return rf.url;
+      }
+    }
+  }
+  return null;
+}
 async function descobre(f: any) {
   const base = "https://" + f.dominio.replace(/\/+$/, "") + "/", root = "https://" + f.dominio.split("/")[0] + "/";
+  const rb = await robots(root);
+  if (rb.bloqueia) return { feed_url: null, feed_tipo: "nenhum", erro: "O site pede, no robots.txt, que robôs não leiam o site. A rede respeita." };
   const cand: string[] = [...(CONHECIDOS[f.dominio] || [])];
   const home = await get(base, 10000);
   if (home.txt && pareceFeed(home.txt)) cand.unshift(home.url);
   else if (home.txt) cand.push(...linksDeFeed(home.txt, home.url));
-  for (const p of ["feed/", "rss/", "rss.xml", "feed.xml", "index.xml", "atom.xml", "?feed=rss2"]) cand.push(base + p);
+  for (const p of ["feed/", "rss/", "rss.xml", "feed.xml", "index.xml", "atom.xml", "?feed=rss2", "feed/rss/", "feeds/", "arc/outboundfeeds/rss/?outputType=xml"]) cand.push(base + p);
   if (root !== base) for (const p of ["feed/", "rss.xml"]) cand.push(root + p);
   const vistos = new Set<string>();
   for (const u of cand) {
@@ -117,9 +172,11 @@ async function descobre(f: any) {
     const r = await get(u, 9000);
     if (r.ok && pareceFeed(r.txt)) {
       const itens = leFeed(r.txt, r.url).itens;
-      if (itens.length) return { feed_url: r.url, feed_tipo: /<feed[\s>]/i.test(r.txt.slice(0, 4000)) ? "atom" : "rss" };
+      if (itens.length) return { feed_url: r.url, feed_tipo: ehMapaNoticias(r.txt) ? "sitemap" : /<feed[\s>]/i.test(r.txt.slice(0, 4000)) ? "atom" : "rss" };
     }
   }
+  const mapa = await mapaDeNoticias(root, rb.mapas);
+  if (mapa) return { feed_url: mapa, feed_tipo: "sitemap" };
   return { feed_url: null, feed_tipo: "nenhum", erro: home.ok ? "Nenhum feed encontrado" : "Site não respondeu (" + (home.status || home.err) + ")" };
 }
 
@@ -173,6 +230,18 @@ const YT_LIXO = /^(quer ajudar|contribua|doe |doação|faça parte|torne-se|pix|
 const limpaYT = (t: string) => t.split(/\n/).map((l) => l.trim()).filter((l) => l && !YT_LIXO.test(l) && !/https?:\/\/|www\./i.test(l)).join("\n").replace(/\n{3,}/g, "\n\n").trim();
 function leFeed(xml: string, base: string) {
   let o: any; try { o = parser.parse(xml); } catch { return { lingua: "", itens: [] as any[] }; }
+  // mapa de notícias: título, link, data e capa (a chamada fica vazia; o texto está no site da fonte)
+  if (o?.urlset) {
+    const us = lista(o.urlset.url).filter((u: any) => u && u["news:news"]).slice(0, 1000);
+    const itens = us.map((u: any) => {
+      const n = u["news:news"], img = lista(u["image:image"])[0], d = texto(n["news:publication_date"]), il = img ? texto(img["image:loc"]) : "";
+      return { titulo: limpa(texto(n["news:title"])), url: absoluto(texto(u.loc).trim(), base), chamada: null, resumo: null,
+        imagem_url: il.startsWith("https://") ? il : null, publicada_em: d ? new Date(d) : null };
+    }).filter((i: any) => i.titulo && i.url.startsWith("http"))
+      .sort((a: any, b: any) => (+b.publicada_em || 0) - (+a.publicada_em || 0)).slice(0, 60);
+    const pub = lista(us[0]?.["news:news"]?.["news:publication"])[0];
+    return { lingua: pub ? texto(pub["news:language"]).toLowerCase() : "", itens };
+  }
   const ch = o?.rss?.channel || o?.["rdf:RDF"]?.channel || {};
   const brutos = o?.rss ? lista(o.rss.channel?.item) : o?.["rdf:RDF"] ? lista(o["rdf:RDF"].item) : o?.feed ? lista(o.feed.entry) : [];
   const lingua = (texto(ch.language) || texto(ch["dc:language"]) || (o?.feed?.["@_xml:lang"] ?? "")).toLowerCase();
@@ -285,7 +354,7 @@ Deno.serve(async (req) => {
   const agora = new Date().toISOString(), rel: any[] = [];
   if (modo === "descobrir") {
     // canais do YouTube já têm o endereço certo do RSS (cadastrado pelo ID do canal): não passam pela busca
-    const busca = fontes.filter((f: any) => f.feed_tipo !== "youtube");
+    const busca = fontes.filter((f: any) => f.feed_tipo !== "youtube" && (q.get("so") !== "semfeed" || !f.feed_url));
     for (let i = 0; i < busca.length; i += 4) await Promise.all(busca.slice(i, i + 4).map(async (f: any) => {
       const d: any = await descobre(f);
       await SB.from("fontes").update({ feed_url: d.feed_url, feed_tipo: d.feed_tipo, descoberto_em: agora, ultimo_erro: d.erro || null }).eq("id", f.id);
