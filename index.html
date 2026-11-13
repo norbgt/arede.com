@@ -3958,7 +3958,7 @@ function sealChecks(it){
    sem IA e sem custo. Conteúdo antigo: publicado há mais de SELO_ANTIGO_DIAS (3 meses, decisão de 11/11). Dado oficial: a fonte é governo e diário oficial,
    dados públicos ou justiça e eleições. Checado por agência: a fonte é uma agência de checagem, ou uma delas cobriu a mesma notícia
    (com link). Não há veredito escrito: isso pediria leitura automática do texto da checagem. */
-const SELO_ANTIGO_DIAS = 92, OFICIAL_RE = /governo e diário oficial|dados públicos|justiça e eleições/i, CHECA_RE = /checagem de fatos/i;
+let SELO_ANTIGO_DIAS = 92, OFICIAL_RE = /governo e diário oficial|dados públicos|justiça e eleições/i, CHECA_RE = /checagem de fatos/i;
 /* ARQUITETURA DO SELO (11 nov 2026, 17:45): o selo e tudo o que qualifica a fonte ficam num bloco só.
    Linha 1: ícone, confiança e nota, e "Detalhes". Linha 2: as marcas (antigo, dado oficial, checagem, idioma, reforço
    internacional, linha editorial, ajuste da comunidade), alinhadas ao texto do selo. Os detalhes explicam cada marca.
@@ -3996,6 +3996,19 @@ async function capToken(){ if (!CFG.turnstile) return undefined; try{ await capS
   return new Promise(ok=>{ let feito = false, id = null; const fim = t=>{ if (feito) return; feito = true; try{ if (id !== null) turnstile.remove(id); }catch(e){} ok(t); };
     try{ id = turnstile.render(box, {sitekey:CFG.turnstile, appearance:"interaction-only", language:"pt-br", callback:fim, "error-callback":()=>fim(undefined), "timeout-callback":()=>fim(undefined)}); }catch(e){ fim(undefined); }
     setTimeout(()=>fim(undefined), 90000); }); }
+/* regras do backoffice (parametros_publicos): números que valem para todo o site; sem resposta, ficam os valores do código */
+function aplicaRegras(g){ if (!g || typeof g !== "object") return false; const n = (k, a, b)=>{ const v = g[k]; return Number.isInteger(v) && v >= a && v <= b ? v : null; }; let v, mudou = false;
+  const poe = (k, a, b, f)=>{ if ((v = n(k, a, b)) !== null) { f(v); mudou = true; } };
+  poe("visitante_por_aba", 1, 1000, x=>{ ACESSO.visitante.porAba = x; ACESSO.cadastrado.porAba = x; });
+  poe("visitante_videos", 0, 1000, x=>{ ACESSO.visitante.videos = x; });
+  poe("conta_novas_hora", 1, 5000, x=>{ ACESSO.cadastrado.total = x; });
+  poe("conta_videos_12h", 0, 1000, x=>{ ACESSO.cadastrado.videos = x; });
+  poe("feed_pausa", 2, 500, x=>{ PAUSE_EVERY = x; }); poe("feed_anuncio_cada", 2, 500, x=>{ ANUNCIO_CADA = x; }); poe("feed_arte_cada", 2, 500, x=>{ ARTE_CADA = x; });
+  poe("interesses_max", 1, 20, x=>{ MAX_INT = x; }); poe("comunidade_min", 1, 10000, x=>{ CMN_MIN = x; });
+  poe("selo_antigo_dias", 1, 3650, x=>{ SELO_ANTIGO_DIAS = x; }); poe("senha_min", 8, 128, x=>{ SENHA_MIN = x; });
+  if (Array.isArray(g.apoio_valores) && g.apoio_valores.length && g.apoio_valores.every(x=>Number.isInteger(x) && x > 0)) { APOIO_VALORES = g.apoio_valores.slice(0, 8); mudou = true; }
+  return mudou; }
+async function regrasCarrega(){ if (!SB) return; try{ const r = await SB.rpc("parametros_publicos"); if (!r.error && aplicaRegras(r.data)) render(); }catch(e){} }
 async function cfgCarrega(){ if (!SB) return; try{ const r = await SB.rpc("config_publica"); if (r.error || !r.data) return; const antes = CFG.selo_donos; CFG = Object.assign({}, CFG, r.data);
   if (antes !== CFG.selo_donos) render(); }catch(e){} }
 function donoDe(it){ if (!CFG.selo_donos) return null; const o = ORG[it.org] || {}; if (!o.fonte) return null; const d = DONOS_FONTE.find(x=>x.nome.test(o.nome || "")); if (!d) return null;
@@ -4450,7 +4463,7 @@ function playX(x, uid){ const v = x && x.querySelector("video.pinvid"); const st
 /* =====================================================================
    8. Motor do feed (rolagem contínua com pausas)
    ===================================================================== */
-const PAUSE_EVERY = 18;
+let PAUSE_EVERY = 18;
 const F = {items:[], cursor:0, vistos:0, gate:null, paused:false, ended:false, key:"", grid:null, obs:null};
 const tabTypes = () => (FTABS.find(t=>t[0]===S.tab)||FTABS[0])[2];
 const feedMode = () => S.algo ? "algo" : "amplo";
@@ -4500,7 +4513,7 @@ const generica = it => (it.tipo==="imagem" && !it.foto) || (it.tipo==="video" &&
    (o que aparece antes = mais caro): tabela em Painel › Análise › Receita. Aqui só o formato quadradinho, 1 a cada 8 cartões,
    nunca no primeiro bloco nem dois juntos, só em Tudo e Publicações. Por contexto, igual para todo mundo: nunca pelo perfil,
    pelas organizações ou por posição política. Anunciantes do protótipo são fictícios e marcados como exemplo. */
-const ANUNCIO_CADA = 8;
+let ANUNCIO_CADA = 8;
 const ANUNCIANTES = [
   {id:"ad-nimbo", anim:"brilho", nome:"Nimbo", curta:"Fibra 500 mega.", seg:"Internet fibra", frase:"Fibra de 500 mega, sem fidelidade.", cor:"#6D28D9", cor2:"#A78BFA",
    logo:'<path d="M7 17h10.5a3.5 3.5 0 0 0 .4-7A5 5 0 0 0 8.3 9 4 4 0 0 0 7 17z" fill="currentColor"/>'},
@@ -5409,7 +5422,7 @@ const fromUids = (set, tag) => [...set].reverse().map(u=>{ const c = S.created.f
 const idDeUid = u => String(u).replace(/-[^-]*$/,"");
 /* INTERESSES PÚBLICOS: até 5, escolhidos pela pessoa para expor no perfil.
    São separados dos temas do algoritmo (que são privados e só servem ao seu feed). */
-const MAX_INT = 5;
+let MAX_INT = 5;
 const intChips = (edit, center) => `<div class="chips tags pints"${center?' style="justify-content:center"':""}>${S.interesses.map(t=>`<span class="chip static">${t}</span>`).join("")}${edit?`<button class="linkbtn" type="button" data-act="interesses">${S.interesses.length?"Editar interesses":"Adicionar interesses"}</button>`:""}</div>${redeLinks(center)}`;
 function sheetInteresses(){ S.intDraft = S.interesses.slice(); openSheet(intBody(), "Interesses públicos"); }
 function intBody(){ const d = S.intDraft, full = d.length >= MAX_INT;
@@ -6067,7 +6080,7 @@ async function contaInicia(){
     if (erroUrl) toast("O link do e-mail expirou ou já foi usado. Entre com e-mail e senha ou peça outro link.");
     else if (ME.user) toast("E-mail confirmado. Sua conta está ativa.");
   }
-  cfgCarrega(); adPrecosCarrega(); adNoArCarrega(); setInterval(()=>{ if (document.visibilityState==="visible") adNoArCarrega(); }, 15 * 60000); usoInicia(); await perfilCarrega(); ME.pronto = true; adVolta(); apoioVolta(); if (route()==="anunciar") adPedidosCarrega(); await publicacoesCarrega(); await noticiasCarrega(); contaAtualiza(); logoInicio(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
+  cfgCarrega(); regrasCarrega(); adPrecosCarrega(); adNoArCarrega(); setInterval(()=>{ if (document.visibilityState==="visible") adNoArCarrega(); }, 15 * 60000); usoInicia(); await perfilCarrega(); ME.pronto = true; adVolta(); apoioVolta(); if (route()==="anunciar") adPedidosCarrega(); await publicacoesCarrega(); await noticiasCarrega(); contaAtualiza(); logoInicio(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
   setInterval(()=>{ if (document.visibilityState==="visible") noticiasCarrega(); }, 15 * 60000);
 }
 /* a escolha guardada na conta vale em qualquer aparelho; se a conta ainda não tem, guarda a deste aparelho (quando a pessoa já escolheu) */
@@ -6368,7 +6381,7 @@ async function orgsAprovadasCarrega(){ if (!SB) return;
    passam pela curadoria e aparecem na aba Arte, sempre com crédito a quem criou. Pessoas e organizações também
    podem marcar uma imagem que publicam como arte.
    ===================================================================== */
-const ARTE_CADA = 5;   /* no feed geral: 1 arte a cada 5 conteúdos de outros tipos */
+let ARTE_CADA = 5;   /* no feed geral: 1 arte a cada 5 conteúdos de outros tipos */
 const CAT_ARTE = {cartaz:"Cartaz", story:"Story", lambe:"Lambe", adesivo:"Adesivo", outros:"Arte"};
 /* DOCUMENTAÇÃO CIDADÃ (9 nov 2026; nome de 10 nov): leis e textos que toda pessoa deveria conhecer, indexados aqui e baixados
    direto da fonte oficial (Planalto; a Declaração Universal, pelo UNICEF Brasil). Ficam no topo da aba Documentos, por assunto,
@@ -6459,7 +6472,7 @@ function vivoFecha(){ if (!LV_ON) return; LV_ON = null; aoVivoPinta(); }
    a propriedade e as integrantes votam em quem assume (a curadoria cuida enquanto isso); o que se publica aparece na comunidade e no feed
    de quem participa. NESTA ETAPA (só HTML): criar, mural, discussões e regras funcionam neste aparelho; integrantes, aprovação de entrada,
    feed de quem participa, perda de propriedade e votação dependem do servidor e ainda não existem. */
-const CMN_MIN = 30;
+let CMN_MIN = 30;
 /* regras gerais: PROPOSTA de texto, aguardando aprovação da Amanda */
 const CMN_GERAIS = ["Vale para toda comunidade o que vale na rede: sem ódio, sem assédio, sem desinformação e sem propaganda eleitoral paga.",
   "Meme, conversa leve e debate são bem-vindos. Ataque a pessoas não é.",
@@ -6906,7 +6919,7 @@ async function sugFonteEnvia(b){ const url = ($("#sfurl").value || "").trim(); i
   catch(e){ ocupado(b, false); formErro(erroAuth(e)); } }
 /* APOIE (11 nov 2026): doação para manter a arede.online, sem produto, serviço ou vantagem em troca.
    Não precisa de conta; a rede não guarda quem apoiou. Pagamento no Mercado Pago (função apoio-cobra), conferido pela função apoio-aviso. */
-const APOIO_VALORES = [10, 25, 50, 100];
+let APOIO_VALORES = [10, 25, 50, 100];
 let APOIO_V = 25;
 function sheetApoie(){
   openSheet(shead("Apoie") + `<div class="sform">
@@ -7005,7 +7018,7 @@ function screenNovaSenha(){
 const formErro = t => { const e = $("#layer .ferr") || $("#main .ferr"); if (e){ e.textContent = t; e.hidden = !t; } };
 /* SENHA (10 nov 2026): o comprimento vale mais que símbolos. Mínimo de 10 caracteres, com letras e números ou símbolos;
    recusa as senhas mais comuns e as que repetem o nome ou o e-mail. A senha nunca é guardada no aparelho. */
-const SENHA_MIN = 10;
+let SENHA_MIN = 10;
 const SENHAS_COMUNS = /^(?:1234567890?1?2?|0987654321|senha\d{0,8}|password\d{0,6}|qwerty\w{0,6}|abc123\w{0,6}|brasil\d{0,6}|1q2w3e4r5t6?y?|iloveyou\d{0,4}|admin\d{0,8}|mudar\d{0,8}|(?:flamengo|corinthians|palmeiras|saopaulo|gremio)\d{0,6}|a?rede(?:online)?\d{0,6})$/i;
 function senhaAvalia(v, extras=[]){ const low = v.toLowerCase();
   if (!v.length) return {ok:false, n:0, msg:`No mínimo ${SENHA_MIN} caracteres, com letras e números ou símbolos.`};
@@ -7821,7 +7834,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 13/11 06:55";
+const VERSAO = "v1 registrada · 13/11 11:27";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
