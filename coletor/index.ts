@@ -17,7 +17,7 @@ import { temaDe } from "./temas.ts";
 
 const SB = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 const UA = "Mozilla/5.0 (compatible; arede-coletor/1.0; +https://arede.online/)";
-const LOTES = 10, DIAS = 4, NOTA_DIRETO = 80, IDIOMAS = ["pt", "en", "es"], POR_PAGINA = 8;
+const LOTES = 10, DIAS = 4, NOTA_DIRETO = 80, IDIOMAS = ["pt", "en", "es"], POR_PAGINA = 4;
 
 type Res = { ok: boolean; status: number; url: string; ct: string; txt: string; err?: string };
 async function get(url: string, ms = 12000): Promise<Res> {
