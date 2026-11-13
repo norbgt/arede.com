@@ -972,6 +972,7 @@ a.setting{color:var(--ink);text-decoration:none}
 .live{display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:#E0245E;vertical-align:1px;animation:pulse 1.6s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 .reptag{flex:none;margin-left:auto;padding:1px 7px;border-radius:99px;background:color-mix(in srgb,var(--warn-dot) 24%,transparent);color:var(--ink);font-size:10.5px;font-weight:600;white-space:nowrap}
+.reptag+.reptag{margin-left:4px}.reptag.mk.bad{background:color-mix(in srgb,#DC2626 22%,transparent)}.chkacao{margin:10px 0 0;font-size:13.5px}
 .linkbtn.rep{display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:6px 0;font-size:12.5px}
 .linkbtn.rep .icon{width:14px;height:14px}
 .repbox{display:flex;gap:8px;align-items:flex-start;margin-top:8px;padding:8px 10px;border-radius:var(--r-sm);background:color-mix(in srgb,var(--warn-dot) 16%,transparent);font-size:12.5px;line-height:1.4;color:var(--ink)}
@@ -3923,7 +3924,32 @@ function sealIco(s, z=18){
   const glyph = s.lv==="bad" ? '<path d="M12 7.5v5.5M12 16.3v.01" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>' : '<path d="m8 12.3 2.8 2.8L16.3 9.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
   return `<svg class="sealico" width="${z}" height="${z}" viewBox="0 0 24 24" aria-hidden="true"><path d="${SEAL_PATH}" fill="${s.tone}" stroke="${s.tone}" stroke-width="1" stroke-linejoin="round"/>${glyph}</svg>`;
 }
-function sealChecks(it){
+/* SELOS NOVOS (13 nov 2026, decisões #3, #8, #9 e #10): marcas públicas que a curadoria põe e a Moderação decide.
+   Autorizado (arte), Corrigido pela fonte (notícia), Imagem gerada ou alterada (notícia e publicação), Em contestação e Nota revista (notícia).
+   Quem lê pode contestar a nota de uma notícia: vira um item na Moderação; a curadoria abre a revisão, mantém ou ajusta, sempre com motivo público. */
+let SELO_MARCAS = {};
+async function marcasCarrega(){ if (!SB) return;
+  try{ const r = await SB.from("marcas").select("alvo_id,tipo,texto,criada_em").eq("ativa", true).limit(2000);
+    if (!r.error && r.data){ const m = {}; r.data.forEach(x=>{ (m[x.alvo_id] = m[x.alvo_id] || []).push(x); }); SELO_MARCAS = m; } }catch(e){} }
+const marcasDe = it => { const a = alvoDe(it), id = (a && a.id) || it.artUuid; return (id && SELO_MARCAS[id]) || []; };
+const MARCA_SITE = {autorizada:["ok","Uso autorizado"], corrigida:["warn","Corrigido pela fonte"], imagem:["bad","Imagem gerada ou alterada"], contestada:["warn","Em contestação"], revista:["ok","Nota revista"]};
+function marcaTag(it){ const ms = marcasDe(it).filter(m=>m.tipo!=="revista" && m.tipo!=="autorizada"); if (!ms.length) return "";
+  return ms.map(m=>`<span class="reptag mk ${MARCA_SITE[m.tipo][0]}">${MARCA_SITE[m.tipo][1]}</span>`).join(""); }
+function marcasChecks(it){
+  const L = (st, t, d) => `<div class="chk"><span class="st ${st}" aria-hidden="true">${{ok:"✓",warn:"!",bad:"✕",na:"–"}[st]}</span><span><b>${t}</b><small>${d}</small></span></div>`;
+  const ms = marcasDe(it); let q = ms.map(m=>L(MARCA_SITE[m.tipo][0], MARCA_SITE[m.tipo][1], esc(m.texto))).join("");
+  const a = alvoDe(it);
+  if (a && a.col==="noticia_id" && !ms.some(m=>m.tipo==="contestada"))
+    q += `<p class="chkacao"><button class="linkbtn" type="button" data-act="contestar" data-uid="${it.uid}">Contestar esta nota</button></p>`;
+  return q; }
+function sheetContesta(uid){
+  openSheet(shead("Contestar a nota") + `<p style="color:var(--muted);font-size:14px">Se você acha que a nota de confiança desta notícia está errada, conte o que viu. Uma pessoa da curadoria confere; se ela abrir a revisão, a notícia passa a mostrar “Em contestação” até a decisão, que fica registrada no selo.</p>
+    <div class="field"><label for="repdet">O que está errado na nota? Se puder, cole o link de outra fonte.</label><textarea id="repdet" rows="3" maxlength="1000"></textarea></div>
+    ${ME.user ? "" : `<div class="field"><label for="repcon">Seu e-mail, se quiser saber o resultado (opcional)</label><input id="repcon" type="email" maxlength="200" autocapitalize="none"></div>`}
+    <p class="ferr" role="alert" hidden></p>
+    <button class="btn ink block" type="button" data-act="repsend" data-uid="${uid}" data-m="nota">Enviar contestação</button>`, "Contestar a nota"); }
+function sealChecks(it){ return sealChecksBase(it) + marcasChecks(it); }
+function sealChecksBase(it){
   const s = sealOf(it), o = ORG[it.org], note = SEAL_NOTE[it.id], verified = it.org!=="cidade-alerta";
   const L = (st, t, d) => `<div class="chk"><span class="st ${st}" aria-hidden="true">${{ok:"✓",warn:"!",bad:"✕",na:"–"}[st]}</span><span><b>${t}</b><small>${d}</small></span></div>`;
   if (it.arte) return sealChecksArte(it, L);
@@ -4298,7 +4324,7 @@ function textParts(it){
   const seal = sealTag(it, s);
   const kind = it.tipo==="documento" && it.doc ? it.doc : kindOf(it);
   /* o tema saiu do topo (10 nov 2026): virou etiqueta no pé do cartão, junto dos interesses de quem lê */
-  const head = `<span class="thead">${seal}<span class="fkind pinkind" style="--k:${it.tipo==="votacao"||it.tipo==="documento"?"var(--ink)":o.cor}">${kind}</span>${repTag(it)}</span>`;
+  const head = `<span class="thead">${seal}<span class="fkind pinkind" style="--k:${it.tipo==="votacao"||it.tipo==="documento"?"var(--ink)":o.cor}">${kind}</span>${repTag(it)}${marcaTag(it)}</span>`;
   const title = it.tipo==="evento" ? `<span class="evrow">${evChip(it)}<span class="ftitle">${esc(it.titulo)}</span></span>` : `<span class="ftitle">${esc(it.titulo)}</span>`;
   const bg = it.tipo==="documento" || it.tipo==="votacao" ? "" : it.tipo==="enquete" ? "background:var(--surface-2)" : `background:color-mix(in srgb,${o.cor} 14%,var(--surface))`;
   return {head, title, foot:footCtx(it) + footInfo(it), bg};
@@ -5791,7 +5817,7 @@ function detailHTML(it, uid, mode, inline){
 }
 /* DENÚNCIA (refeita em 12 nov 2026): a denúncia é registrada no servidor, com data e protocolo, e a curadoria decide.
    O conteúdo continua visível até a decisão. Saiu a "revisão automática" simulada, que não existia de verdade. */
-const MOTIVOS = [["ataque","Ataque ou discriminação contra pessoa ou grupo"],["ameaca","Ameaça ou incitação à violência"],["dados","Exposição de dados pessoais"],["falsa","Informação falsa"],["menor","Envolve criança ou adolescente de forma imprópria"],["direitos","Usa obra ou imagem sem autorização"],["outro","Outro motivo"]];
+const MOTIVOS = [["ataque","Ataque ou discriminação contra pessoa ou grupo"],["ameaca","Ameaça ou incitação à violência"],["dados","Exposição de dados pessoais"],["falsa","Informação falsa"],["menor","Envolve criança ou adolescente de forma imprópria"],["direitos","Usa obra ou imagem sem autorização"],["imagem","Imagem gerada ou alterada"],["outro","Outro motivo"]];
 function reportBox(it){ const r = S.reports[it.uid];
   if (!r) return `<button class="linkbtn muted rep" type="button" data-act="report" data-uid="${it.uid}">${ic("flag","sm")} Denunciar</button>`;
   const m = (MOTIVOS.find(x=>x[0]===r.m)||MOTIVOS[0])[1];
@@ -6080,7 +6106,7 @@ async function contaInicia(){
     if (erroUrl) toast("O link do e-mail expirou ou já foi usado. Entre com e-mail e senha ou peça outro link.");
     else if (ME.user) toast("E-mail confirmado. Sua conta está ativa.");
   }
-  cfgCarrega(); regrasCarrega(); adPrecosCarrega(); adNoArCarrega(); setInterval(()=>{ if (document.visibilityState==="visible") adNoArCarrega(); }, 15 * 60000); usoInicia(); await perfilCarrega(); ME.pronto = true; adVolta(); apoioVolta(); if (route()==="anunciar") adPedidosCarrega(); await publicacoesCarrega(); await noticiasCarrega(); contaAtualiza(); logoInicio(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
+  cfgCarrega(); regrasCarrega(); adPrecosCarrega(); adNoArCarrega(); setInterval(()=>{ if (document.visibilityState==="visible") adNoArCarrega(); }, 15 * 60000); usoInicia(); await perfilCarrega(); ME.pronto = true; adVolta(); apoioVolta(); if (route()==="anunciar") adPedidosCarrega(); const _mk = marcasCarrega(); await publicacoesCarrega(); await _mk; await noticiasCarrega(); contaAtualiza(); logoInicio(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
   setInterval(()=>{ if (document.visibilityState==="visible") noticiasCarrega(); }, 15 * 60000);
 }
 /* a escolha guardada na conta vale em qualquer aparelho; se a conta ainda não tem, guarda a deste aparelho (quando a pessoa já escolheu) */
@@ -6558,7 +6584,7 @@ async function artesCarrega(){
     if (r.error || (!r.data.length && ARTES_COPIA)){ artesDaCopia(); F.key = null; if (route()==="inicio" || route()==="") render(); pinPronto(true); return; }
     for (let i = POOL.length - 1; i >= 0; i--) if (POOL[i].daArte) POOL.splice(i, 1);
     r.data.forEach((a,k)=>{ const id = "art" + a.id.slice(0, 8), dt = Date.parse(a.criada_na_fonte || a.revisada_em || Date.now());
-      const it = {id, tipo:"imagem", arte:true, daArte:true, org:"designativista", tema:"Cultura", titulo:a.titulo, texto:"", cidade:"", lingua:"pt",
+      const it = {id, artUuid:a.id, tipo:"imagem", arte:true, daArte:true, org:"designativista", tema:"Cultura", titulo:a.titulo, texto:"", cidade:"", lingua:"pt",
         foto:a.imagem_url, ar:a.largura && a.altura ? a.altura / a.largura : 1.41, ph:Math.min(1.6, a.largura && a.altura ? a.altura / a.largura : 1.41), artista:a.artista || "", artistaIg:a.artista_instagram || "", catArte:a.categoria || "outros", campanha:a.campanha || "",
         min:Math.max(1, Math.round((Date.now() - dt) / 60000)), ext:{url:a.url, dom:"designativista.pages.dev", data:isoDia(dt), verif:[], motivo:"", obs:""}};
       SEAL[id] = null; RESUMO[id] = ""; BODY[id] = []; POOL.push(it); });
@@ -7569,6 +7595,7 @@ const A = {
   ordset: b => { S.ord = b.dataset.v; closeSheet(); applyFeedChange(); toast("Ordenado por: " + ORDS.find(x=>x[0]===S.ord)[1].toLowerCase() + "."); },
   apoiar: b => { const u = b.dataset.uid; S.support[u] = !S.support[u]; persist("support"); refresh(u); if (S.support[u]) toast("Apoio registrado. Com 20% de apoio, a proposta vai a voto."); },
   report: b => sheetReport(b.dataset.uid),
+  contestar: b => sheetContesta(b.dataset.uid),
   assinar: () => { S.assinou = !S.assinou; persist("assinou"); const y = window.scrollY; render(); window.scrollTo(0,y); if (S.assinou) toast("Obrigada por assinar o manifesto."); },
   toid: (b, e) => { e.preventDefault(); const el = document.getElementById(b.dataset.id); el && scrollToEl(el); },
   sobre: () => openSheet(shead("a rede.online") + `<div class="list">
@@ -7588,6 +7615,7 @@ const A = {
     ocupado(b, true, "Enviando…");
     const {data, error} = await SB.rpc("denuncia_envia", {p_alvo:u, p_titulo:it.titulo || "", p_url:(it.ext && it.ext.url) || (SITE + "#pin-" + u), p_motivo:m, p_detalhe:det, p_contato:con});
     if (error){ ocupado(b, false); if (err){ err.textContent = erroAuth(error); err.hidden = false; } return; }
+    if (m==="nota"){ closeSheet(); uso("denuncia", m); return toast("Contestação registrada" + (data ? " · protocolo " + data : "") + ". A curadoria vai conferir a nota."); }
     S.reports[u] = {m, cod:data}; closeSheet(); refresh(u); uso("denuncia", m); toast("Denúncia registrada. A curadoria vai analisar."); },
   dencont: async b => { ocupado(b, true); const {error} = await SB.rpc("denuncia_decide", {p_id:b.dataset.id, p_status:b.dataset.s}); if (error){ ocupado(b, false); return toast(erroAuth(error)); }
     toast(b.dataset.s==="removido" ? "Registrado como procedente. Retire o conteúdo na fila dele." : "Registrado como não procedente."); curDen(); },
@@ -7834,7 +7862,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 13/11 17:00";
+const VERSAO = "v1 registrada · 13/11 17:44";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
