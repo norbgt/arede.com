@@ -3937,7 +3937,15 @@ function sealIco(s, z=18){
 function saidaConta(e){ const t = e.target, lk = t && t.closest && t.closest("a[href]"); if (!lk || !SB) return; let u; try{ u = new URL(lk.href); }catch(err){ return; }
   if (!/^https?:$/.test(u.protocol) || /(^|\.)arede\.online$/.test(u.hostname) || u.hostname === location.hostname) return;
   SB.rpc("saida_registra", {p_url:u.origin + "/", p_adm:!!store.get("usoAdm", 0)}).then(()=>{}, ()=>{}); }
-document.addEventListener("click", saidaConta, true); document.addEventListener("auxclick", e=>{ if (e.button === 1) saidaConta(e); }, true);
+document.addEventListener("click", saidaConta, true);
+/* ABERTURAS (14 nov 2026): quando alguém abre um conteúdo, o servidor soma 1 para o tema e a fonte daquela notícia naquele dia.
+   Não vai quem abriu e não fica guardado qual notícia. Contagem permanente, separada da medição de uso. A administração não conta. */
+function aberturaConta(e){ const b = e.target && e.target.closest && e.target.closest('[data-act="open"],[data-act="topen"]'); if (!b || !b.dataset.uid || !SB) return;
+  const it = findItem(b.dataset.uid); if (!it || it.anuncio) return; let nid = null, tipo = "noticia";
+  if (it.coletada && /^n[0-9a-f]{32}$/.test(it.id || "")){ const h = it.id.slice(1); nid = `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`; }
+  else if (it.daArte) tipo = "arte"; else if (it.conta) tipo = "publicacao"; else return;
+  SB.rpc("abertura_registra", {p_noticia:nid, p_tipo:tipo, p_adm:!!store.get("usoAdm", 0)}).then(()=>{}, ()=>{}); }
+document.addEventListener("click", aberturaConta, true); document.addEventListener("auxclick", e=>{ if (e.button === 1) saidaConta(e); }, true);
 let SELO_MARCAS = {};
 async function marcasCarrega(){ if (!SB) return;
   try{ const r = await SB.from("marcas").select("alvo_id,tipo,texto,criada_em").eq("ativa", true).limit(2000);
@@ -4722,7 +4730,7 @@ function sheetAdSemPagamento(){ const v = adPreco(adDraft());
    A visita leva dois códigos aleatórios (visitante e sessão) e, se veio por link de convite, o código do convite.
    Só roda em arede.online, para sozinha no fim do teste, respeita o pedido de não rastrear do navegador e marca o uso da administração.
    ===================================================================== */
-const USO_FIM = Date.parse("2026-11-16T02:59:59Z");   /* domingo, 15 nov 2026, 23:59 em Brasília */
+const USO_FIM = Date.parse("2026-11-23T02:59:59Z");   /* domingo, 22 nov 2026, 23:59 em Brasília (prorrogada por uma semana em 14 nov, decisão #44) */
 const USO_ATRIB = [["navegacao","Facilidade de navegar"],["conteudo","Relevância do conteúdo"],["confianca","Confiança nas informações"],["aparencia","Aparência e leitura"]];
 const USO = {on:false, fila:[], n:0, max:600, t0:Date.now(), ativo:0, tela:null, telaT:0, rol:0, cliques:[], mortos:0, csatVisto:false, csat:null, s:"", v:"", c:""};
 const usoId = () => (crypto.randomUUID ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx".replace(/x/g, ()=>(Math.random()*16|0).toString(16)));
@@ -6987,7 +6995,7 @@ function sheetApoie(){
     <ul class="aplista">
       <li>${ic("check","sm")}<span>Promovemos conteúdos responsáveis</span></li>
       <li>${ic("check","sm")}<span>O pagamento é feito no Mercado Pago</span></li>
-      <li>${ic("lock","sm")}<span>Não guardamos seus dados financeiros</span></li></ul>
+      <li>${ic("lock","sm")}<span>Não guardamos dados de cartão nem de banco</span></li></ul>
     <button class="btn primary block" type="button" data-act="apoiepagar" style="margin-top:14px">${ic("raio","sm")} <span id="aptxt">Apoiar com R$ ${APOIO_V}</span></button></div>`, "Apoie"); }
 function apoioValor(){ const o = $("#apoutro"), n = o && o.value ? Math.round(+o.value) : APOIO_V; return n; }
 function apoioVolta(){ let q; try{ q = new URLSearchParams(location.search); }catch(e){ return; } const id = q.get("apoio"); if (!id || !/^[0-9a-f-]{36}$/i.test(id)) return;
@@ -7008,14 +7016,14 @@ function apoioSituacao(e, r){ const v = r && r.valor ? adBRL(+r.valor) : "", tes
 
 /* TERMOS DE USO E PRIVACIDADE (12 nov 2026): textos em linguagem simples, descrevem o que o site faz hoje.
    Versão inicial, escrita pelo Claude a pedido da Amanda; ainda sem revisão de advogado. O aceite do cadastro guarda DOCS_VERSAO. */
-const DOCS_VERSAO = "13 de novembro de 2026";
+const DOCS_VERSAO = "14 de novembro de 2026";
 const DOCS = {
  privacidade:{t:"Privacidade", intro:"A rede.online guarda o mínimo para a sua conta funcionar. Seu e-mail não aparece para ninguém. Você pode baixar o que guardamos sobre você e apagar a sua conta quando quiser, direto na conta.", s:[
   ["Para quem é", ["A rede.online é para pessoas com 18 anos ou mais. Não criamos contas para menores de idade."]],
   ["O que guardamos da sua conta", ["E-mail e senha. A senha fica embaralhada: ninguém da rede consegue ler.", "Perfil: o nome que você escolheu, a cidade e o texto sobre você, se você preencher.", "O que você publica, seus comentários, os comentários que marcou como úteis e as denúncias que fez.", "Curtidas, itens salvos, pastas, votos, apoios a propostas e presenças em eventos, para você encontrar tudo em qualquer aparelho.", "Contas de outras redes que você ligar ao perfil: só o nome de usuário público.", "O aceite dos Termos e desta página, com a data.", "A forma de ver o feed que você escolheu.", "O histórico de leitura dos últimos 7 dias, só para contar o limite de conteúdos novos por hora. Depois disso é apagado."]],
   ["Documento de verificação", ["Só existe se você pedir a verificação da conta. Você envia uma foto ou PDF de um documento, e só a curadoria vê.", "O arquivo é apagado assim que o pedido é aprovado ou recusado, ou se você desistir. Fica guardado apenas o resultado."]],
-  ["Medição de uso, sem identificar você", ["O site registra como as pessoas navegam: telas abertas, toques, erros e tipo de aparelho. Usa um código aleatório do aparelho, sem nome nem e-mail. Esses registros são apagados em 90 dias.", "Depois de um minuto de navegação, o site pode pedir uma nota de satisfação. A resposta é opcional, não leva o seu nome e é apagada em 180 dias.", "Quando alguém troca a forma de ver o feed, o servidor conta a troca, sem guardar quem trocou.", "Quando alguém abre um link para fora da rede (por exemplo, a matéria no site da fonte), o servidor soma 1 para aquele site naquele dia. Não guarda quem abriu nem qual página."]],
-  ["Pagamentos", ["Anúncios: guardamos o pedido ligado à conta de quem anuncia (a peça, o valor e a situação).", "Apoios: guardamos o valor, a data, a situação e o número do pagamento. Não guardamos quem apoiou.", "Dados de cartão e de banco ficam só no Mercado Pago. A rede.online não vê nem guarda esses dados."]],
+  ["Medição de uso, sem identificar você", ["O site registra como as pessoas navegam: telas abertas, toques, erros e tipo de aparelho. Usa um código aleatório do aparelho, sem nome nem e-mail. Esses registros são apagados em 90 dias.", "Depois de um minuto de navegação, o site pode pedir uma nota de satisfação. A resposta é opcional, não leva o seu nome e é apagada em 180 dias.", "Quando alguém troca a forma de ver o feed, o servidor conta a troca, sem guardar quem trocou.", "Quando alguém abre um link para fora da rede (por exemplo, a matéria no site da fonte), o servidor soma 1 para aquele site naquele dia. Não guarda quem abriu nem qual página.", "Quando alguém abre uma notícia, o servidor soma 1 para o tema e para a fonte daquela notícia naquele dia. Não guarda quem abriu nem qual notícia. Essa contagem é permanente."]],
+  ["Pagamentos", ["Anúncios: guardamos o pedido ligado à conta de quem anuncia (a peça, o valor e a situação) e o registro do pagamento: a data, a forma (Pix, cartão ou saldo, sem número), a taxa e o número do pagamento.", "Apoios: guardamos o valor, a data, a situação, a forma de pagamento (Pix, cartão ou saldo, sem número), a taxa e o número do pagamento. Não guardamos quem apoiou.", "Dados de cartão e de banco ficam só no Mercado Pago. A rede.online não vê nem guarda esses dados."]],
   ["O que fica só no seu aparelho", ["Preferências, temas do algoritmo, a sua cidade e os lugares do seu interesse. Somem se você limpar os dados do navegador."]],
   ["O que não guardamos", ["A sua posição. Com a sua permissão, ela é usada só para descobrir a cidade e é descartada.", "O seu endereço de rede (IP). Para limitar abusos, usamos um código embaralhado dele, que muda a cada dia e é apagado em 2 dias."]],
   ["Notas escritas por inteligência artificial", ["Algumas notícias trazem o bloco “Para entender”. Quando a nota é escrita por IA, o bloco avisa. Para escrever, o servidor envia a um serviço de IA o título e o resumo da notícia e o texto de até 12 comentários, sem o nome de quem escreveu."]],
@@ -7897,7 +7905,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 13/11 18:45";
+const VERSAO = "v1 registrada · 14/11 06:33";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
