@@ -3698,7 +3698,7 @@ REAL.itens.forEach(r=>{
 /* SELO DE PERFIL VERIFICADO (9 nov 2026): diz QUEM publica, não se o conteúdo é verdadeiro.
    documento = pessoa com identidade confirmada por documento · oficial = conta comprovadamente de uma fonte oficial.
    Só a curadoria concede (o servidor impede que a própria conta se marque). */
-const VERIF = {documento:["Identidade verificada","A pessoa confirmou a identidade com documento."], oficial:["Conta oficial verificada","A rede.online comprovou que a conta pertence à instituição ou fonte oficial que ela diz ser."]};
+const VERIF = {documento:["Identidade verificada","A pessoa confirmou a identidade com documento."], curadoria:["Verificada pela curadoria","A curadoria da rede.online conferiu esta conta diretamente, sem documento."], oficial:["Conta oficial verificada","A rede.online comprovou que a conta pertence à instituição ou fonte oficial que ela diz ser."]};
 const verifIco = (v, cls="") => v && VERIF[v] ? `<span class="vfy ${cls}" title="${VERIF[v][0]}" role="img" aria-label="${VERIF[v][0]}">${ic("vfy")}</span>` : "";
 const verifBtn = v => v && VERIF[v] ? `<button class="vfy vbtn3" type="button" data-act="verifinfo" data-v="${v}" aria-label="${VERIF[v][0]}: o que significa">${ic("vfy")}</button>` : "";
 function sheetVerif(v){ const [t, d] = VERIF[v] || VERIF.oficial;
@@ -7905,7 +7905,7 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 14/11 06:33";
+const VERSAO = "v1 registrada · 14/11 08:20";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
