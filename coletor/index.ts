@@ -331,6 +331,8 @@ async function previaDaPagina(url: string): Promise<{ ch: string | null; img: st
 }
 const limpaUrl = (u: string) => { try { const x = new URL(u); x.hash = ""; for (const k of [...x.searchParams.keys()]) if (/^(utm_|fbclid|gclid|ref$|cmpid|origin)/i.test(k)) x.searchParams.delete(k); return x.href; } catch { return u; } };
 
+// texto que não é chamada: aviso de assinante, linha de publicação, descrição do próprio site
+const GENERICA = /exclusiv[ao] para assinantes|published online:|search, browse and learn/i;
 const ehYt = (x: any) => /youtube\.com\/watch/.test(x.url || "");
 async function coleta(f: any, recentes: any[]) {
   const r = await get(f.feed_url, 12000);
@@ -370,13 +372,19 @@ async function coleta(f: any, recentes: any[]) {
   await Promise.all(semPv.map(async (n: any) => { const pv = await previaDaPagina(n.url); achadas.push({ n, pv }); }));
   // imagem igual em mais de uma matéria da mesma leva é imagem genérica do site (logo, capa padrão): não serve
   const vezes = new Map<string, number>(); for (const a of achadas) if (a.pv.img) vezes.set(a.pv.img, (vezes.get(a.pv.img) || 0) + 1);
+  const vezesCh = new Map<string, number>(); for (const a of achadas) if (a.pv.ch) vezesCh.set(a.pv.ch, (vezesCh.get(a.pv.ch) || 0) + 1);
   const agoraPv = new Date().toISOString();
   await Promise.all(achadas.map(async ({ n, pv }) => {
-    const ch = n.chamada || pv.ch, img = n.imagem_url || (pv.img && vezes.get(pv.img) === 1 ? pv.img : null);
+    const pch = pv.ch && !GENERICA.test(pv.ch) && vezesCh.get(pv.ch) === 1 ? pv.ch : null;
+    const ch = n.chamada || pch, img = n.imagem_url || (pv.img && vezes.get(pv.img) === 1 ? pv.img : null);
     if (ch !== (n.chamada || null) || img !== (n.imagem_url || null)) pags++;
     if (novas.includes(n)) { if (ch && !n.chamada) n.tema = temaDe(n.titulo, ch); n.chamada = ch; n.imagem_url = img; n.previa_em = agoraPv; }
     else await SB.from("noticias").update({ chamada: ch, imagem_url: img, previa_em: agoraPv, ...(ch && !n.chamada ? { tema: temaDe(n.titulo, ch) } : {}) }).eq("url", n.url);
   }));
+  // chamada igual em várias matérias da mesma fonte é texto genérico: nesses casos o cartão fica só com o título
+  const vistas = new Map<string, number>(); for (const x of recentes) if (x.fonte_id === f.id && x.chamada) vistas.set(x.chamada, (vistas.get(x.chamada) || 0) + 1);
+  for (const n of novas) if (n.chamada) vistas.set(n.chamada, (vistas.get(n.chamada) || 0) + 1);
+  for (const n of novas) if (n.chamada && (GENERICA.test(n.chamada) || (vistas.get(n.chamada) || 0) >= 3)) n.chamada = null;
   if (novas.length) { const { error } = await SB.from("noticias").upsert(novas, { onConflict: "url", ignoreDuplicates: true }); if (error) return { erro: "Banco: " + error.message, novas: 0 }; }
   return { erro: null, novas: novas.length, itens: itens.length, frescos: frescos.length, chamadas: pags };
 }
