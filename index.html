@@ -3735,7 +3735,7 @@ function sheetVerif(v){ const [t, d] = VERIF[v] || VERIF.oficial;
       <div class="setting static"><span class="t"><b>Pessoas</b><small>Verificadas com documento de identidade. O documento não fica público nem aparece no perfil.</small></span></div>
       <div class="setting static"><span class="t"><b>Fontes oficiais</b><small>Órgãos públicos, instituições e veículos que comprovam ser donos da conta, por domínio oficial ou documento da instituição.</small></span></div></div>
     <div class="note">${ic("info")}<span>O selo do perfil diz quem publica. Ele não garante que cada conteúdo é verdadeiro: isso continua com o selo de confiabilidade de cada publicação. Só a curadoria concede o selo de perfil.</span></div>`, "Perfil verificado"); }
-const orgMeta = o => o.pagina ? (o.paginaTipo === "empresa" ? "Página · comercial" : "Página · criador de conteúdo") : o.rede ? "Fonte individual · " + REDES[o.rede].nome : o.pessoa ? (o.verificado ? VERIF[o.verificado][0] : "Conta na rede") : o.fonte ? `Fonte verificada · ${o.natureza}` : o.real ? `${capFirst(o.natureza || "organização")} · canais públicos` : `${o.membros.toLocaleString("pt-BR")} membros`;
+const orgMeta = o => o.pagina ? (o.paginaTipo === "empresa" ? "Página · comercial" : "Página · conteúdo") : o.rede ? "Fonte individual · " + REDES[o.rede].nome : o.pessoa ? (o.verificado ? VERIF[o.verificado][0] : "Conta na rede") : o.fonte ? `Fonte verificada · ${o.natureza}` : o.real ? `${capFirst(o.natureza || "organização")} · canais públicos` : `${o.membros.toLocaleString("pt-BR")} membros`;
 const isOrg = o => !o.fonte && !o.pessoa;   /* fontes de notícia publicam, mas não aparecem como organizações */
 const ficTag = o => o && o.ficticia ? `<span class="fic" title="Organização fictícia, de exemplo">exemplo</span>` : "";
 const NUCLEOS = [["Núcleo Centro",48,"toda segunda"],["Núcleo Jardim",36,"quinzenal"],["Comissão de comunicação",12,"às quintas"],["Comissão de finanças",7,"mensal"]];
@@ -5435,14 +5435,14 @@ const HUB_VO = 3;
 /* chamados: colunas que fecham sem buraco (3 itens em 2 colunas deixariam um vão) */
 const hubChCols = n => { const w = ($("#hubch") || $("#main .container") || document.body).clientWidth || innerWidth, c = w >= 900 ? 3 : 2; return n % c === 0 || n > c * 2 ? c : n < c ? Math.max(1, n) : (n % 2 === 0 ? 2 : (c >= 3 ? 3 : 1)); };   /* no começo, as 3 votações mais urgentes; o resto abre no botão */
 /* PÁGINAS (14 nov 2026): a segunda forma da aba Comunidades. Página de empresa (fim lucrativo: vitrine de serviços e produtos,
-   a compra acontece fora da rede) ou de criador de conteúdo. Só contas verificadas criam; a pessoa declara responsabilidade
+   a compra acontece fora da rede) ou pessoal (CPF), para publicar separado do perfil pessoal. Só contas verificadas criam; a pessoa declara responsabilidade
    pelo que a página publica, e o nome dela aparece na página como responsável. Sem candidatos, partidos ou campanhas.
    Por enquanto toda página passa pela curadoria (regra paginas_curadoria, liga e desliga no backoffice). */
 const PAGS = {lista:[], itens:{}, num:{}, carregou:false};
-const DECL_PAGINA = "Declaro que sou a pessoa responsável por esta página e por tudo o que ela publica. As informações, ofertas e conteúdos publicados são verdadeiros e de minha responsabilidade, sigo os Termos de uso da rede.online e a lei, e respondo pessoalmente, com a minha conta verificada, pelo que for publicado em nome da página. (Declaração v1 · 14/11/2026)";
+const DECL_PAGINA = "Declaro que sou a pessoa responsável por esta página e por tudo o que ela publica, assim como pelo que publico em qualquer espaço da rede.online. As informações, ofertas e conteúdos publicados são verdadeiros e de minha responsabilidade, sigo os Termos de uso da rede.online e a lei, e respondo pessoalmente, com a minha conta verificada, pelo que for publicado em nome da página. (Declaração v2 · 14/11/2026)";
 function orgDaPagina(p){ const id = "pg-" + p.id;
   ORG[id] = Object.assign(ORG[id] || {}, {id, nome:limpo(p.nome) || "Página", sigla:siglaDe(limpo(p.nome)), cidade:limpo(p.cidade) || "", tema:limpo(p.tema) || "", membros:0, real:true, pagina:true,
-    paginaTipo:p.tipo, natureza:p.tipo === "empresa" ? "página de empresa" : "página de criador de conteúdo", cor:CORES_CONTA[(p.cor || 0) % CORES_CONTA.length], sobre:limpo(p.descricao) || "",
+    paginaTipo:p.tipo, natureza:p.tipo === "empresa" ? "página de empresa" : "página de conteúdo", cor:CORES_CONTA[(p.cor || 0) % CORES_CONTA.length], sobre:limpo(p.descricao) || "",
     site:/^https:\/\//.test(p.site || "") ? p.site : "", contato:limpo(p.contato) || "", dono:p.dono, status:p.status, motivo:limpo(p.motivo) || ""});
   return id; }
 async function paginasCarrega(){ if (!SB) return;
@@ -5452,14 +5452,14 @@ async function paginasCarrega(){ if (!SB) return;
 const minhasPaginas = (so) => ME.user ? PAGS.lista.filter(p=>p.dono === ME.user.id && (!so || p.status === so)) : [];
 const PG_SIT = {pendente:["esperando a curadoria","warn"], aprovada:["no ar","ok"], recusada:["não aprovada","bad"], suspensa:["suspensa","bad"]};
 function pgCard(p){ const id = "pg-" + p.id, o = ORG[id] || {}, f = S.follow.has(id), meu = ME.user && p.dono === ME.user.id;
-  return `<article class="pgcard"><a class="pgtop" href="#${id}" style="color:inherit;text-decoration:none">${avatar(o)}<span class="t"><span class="pgtag">${p.tipo === "empresa" ? "Página · comercial" : "Página · criador"}</span><b>${esc(o.nome)}</b><small>${esc([o.cidade, o.tema].filter(Boolean).join(" · "))}</small></span></a>
+  return `<article class="pgcard"><a class="pgtop" href="#${id}" style="color:inherit;text-decoration:none">${avatar(o)}<span class="t"><span class="pgtag">${p.tipo === "empresa" ? "Página · comercial" : "Página · conteúdo"}</span><b>${esc(o.nome)}</b><small>${esc([o.cidade, o.tema].filter(Boolean).join(" · "))}</small></span></a>
     ${o.sobre ? `<p>${esc(o.sobre)}</p>` : ""}
     <div class="pgacoes">${meu ? `<span class="pgsit ${PG_SIT[p.status][1]}">${PG_SIT[p.status][0]}</span>` : p.status === "aprovada" ? `<button class="btn sm ${f ? "ghost" : "primary"}" type="button" data-act="follow" data-org="${id}">${f ? ic("check","sm") + " Seguindo" : "Seguir"}</button>` : ""}<a class="btn sm ghost" href="#${id}">Ver página</a></div></article>`; }
 function paginasCorpo(){ const f = S.pgFiltro || "todas", ok = PAGS.lista.filter(p=>p.status === "aprovada" && (f === "todas" || p.tipo === f) && !(ME.user && p.dono === ME.user.id)), minhas = minhasPaginas();
   const chip = (k, n, c) => `<button class="chip" type="button" data-act="pgfiltro" data-f="${k}" aria-pressed="${f===k}">${n} <span class="n">${c}</span></button>`, ap = PAGS.lista.filter(p=>p.status === "aprovada");
-  return `<div class="note">${ic("info")}<span><b>Páginas</b> são de empresas, com vitrine do que oferecem, ou de quem publica conteúdo com frequência. Toda página tem uma pessoa com conta verificada que responde pelo que ela publica. Páginas de candidato, partido ou campanha não são permitidas.</span></div>
+  return `<div class="note">${ic("info")}<span><b>Páginas</b> são espaços para publicar separado do perfil pessoal: de uma empresa, com vitrine do que oferece, ou de uma pessoa, para um projeto, uma coluna, um hobby ou as fotos da família. Toda página tem uma pessoa com conta verificada registrada como responsável pelo que ela publica. Páginas de candidato, partido ou campanha não são permitidas.</span></div>
     ${minhas.length ? `<h2 class="sectitle">Suas páginas</h2><div class="pglist">${minhas.map(pgCard).join("")}</div>` : ""}
-    <div class="partchips" role="group" aria-label="Tipo de página" style="margin-top:6px">${chip("todas","Todas",ap.length)}${chip("empresa","Empresas",ap.filter(p=>p.tipo==="empresa").length)}${chip("criador","Criadores",ap.filter(p=>p.tipo==="criador").length)}</div>
+    <div class="partchips" role="group" aria-label="Tipo de página" style="margin-top:6px">${chip("todas","Todas",ap.length)}${chip("empresa","Empresas",ap.filter(p=>p.tipo==="empresa").length)}${chip("criador","Pessoais",ap.filter(p=>p.tipo==="criador").length)}</div>
     ${ok.length ? `<div class="pglist">${ok.map(pgCard).join("")}</div>` : `<p class="empty">${PAGS.carregou ? "Ainda não há páginas aqui. Que tal criar a primeira?" : "Carregando…"}</p>`}`; }
 function screenPagina(pid){ const id = "pg-" + pid, o = ORG[id], p = PAGS.lista.find(x=>x.id === pid);
   if (!o || !p) return header(`<div class="toprow"><button class="iconbtn" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button><h1 class="pagehead">Página</h1></div>`) + `<div class="container"><p class="empty">${PAGS.carregou ? "Esta página não existe ou não está no ar." : "Carregando…"}</p></div>`;
@@ -5467,7 +5467,7 @@ function screenPagina(pid){ const id = "pg-" + pid, o = ORG[id], p = PAGS.lista.
   const tabs = [["pubs","Publicações"], emp ? ["vitrine","Vitrine"] : null, ["sobre","Sobre"]].filter(Boolean);
   const aviso = p.status === "aprovada" ? "" : `<div class="note warnnote" style="margin:10px 0">${ic("info")}<span>${p.status === "pendente" ? "<b>Esperando a curadoria.</b> Só você vê esta página até ela ser aprovada." : `<b>Página ${PG_SIT[p.status][0]}.</b> ${esc(o.motivo || "")}`}</span></div>`;
   return `<div class="orghero">${art({id:pid.length*5 + (p.cor||0), art:"arcs"}, .6, false)}<button class="iconbtn solid" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button></div>
-    <div class="container"><div class="orghead">${avatar(o)}<span class="pgtag">${emp ? "Página · comercial" : "Página · criador de conteúdo"}</span><h1>${esc(o.nome)}</h1>
+    <div class="container"><div class="orghead">${avatar(o)}<span class="pgtag">${emp ? "Página · comercial" : "Página · conteúdo"}</span><h1>${esc(o.nome)}</h1>
       <p class="pgmeta">${esc([o.cidade, o.tema].filter(Boolean).join(" · "))}</p>${o.sobre ? `<p style="max-width:65ch">${esc(o.sobre)}</p>` : ""}${aviso}
       <p class="segnum" id="pgnum" hidden></p>
       <div class="pgresp" id="pgresp">${ic("check","sm")}<span>Uma pessoa com conta verificada responde por tudo o que esta página publica.</span></div>
@@ -5501,11 +5501,11 @@ function sheetPaginaNova(){
   if (!(ME.perfil && ME.perfil.verificado)) return openSheet(shead("Criar página") + `<div class="note">${ic("lock")}<span><b>Só contas verificadas criam páginas.</b> Quem cria uma página responde pessoalmente pelo que ela publica, por isso a rede precisa saber quem é você.</span></div>
     <a class="btn primary block" href="#conta" data-act="close" style="margin-top:12px">Verificar minha conta</a>`, "Criar página");
   const temas = TEMAS_LISTA.map(t=>`<option>${esc(t)}</option>`).join("");
-  openSheet(shead("Criar página") + `<p class="lnote osub">Uma página publica em nome de uma empresa ou de um projeto de conteúdo. Ela fica ligada à sua conta verificada: o seu nome aparece como responsável.</p>
-    <fieldset class="rorig"><legend>Tipo de página</legend><div class="seg" role="radiogroup" aria-label="Tipo de página"><label><input type="radio" name="pgtipo" value="empresa" checked><span>Empresa</span></label><label><input type="radio" name="pgtipo" value="criador"><span>Criador de conteúdo</span></label></div>
+  openSheet(shead("Criar página") + `<p class="lnote osub">Uma página é um espaço para publicar separado do seu perfil pessoal, de uma empresa (CNPJ) ou seu (CPF). Ela fica registrada na sua conta verificada: você responde pelo que ela publica, como em qualquer espaço da rede.</p>
+    <fieldset class="rorig"><legend>Tipo de página</legend><div class="seg" role="radiogroup" aria-label="Tipo de página"><label><input type="radio" name="pgtipo" value="empresa" checked><span>Empresa</span></label><label><input type="radio" name="pgtipo" value="criador"><span>Pessoal (CPF)</span></label></div>
       <small class="hint" id="pgtipohint">Para vender serviços ou produtos: a página tem uma vitrine, e a compra é combinada direto com você, fora da rede.</small></fieldset>
     <div class="field"><label for="pgnome">Nome da página</label><input id="pgnome" maxlength="80"></div>
-    <div class="field"><label for="pgdesc">Sobre a página</label><textarea id="pgdesc" maxlength="600" rows="3" placeholder="O que a página oferece ou publica"></textarea></div>
+    <div class="field"><label for="pgdesc">Sobre a página</label><textarea id="pgdesc" maxlength="600" rows="3" placeholder="O que a página oferece ou sobre o que ela fala"></textarea></div>
     <div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="pgcid">Cidade</label><input id="pgcid" maxlength="80"></div><div class="field" style="flex:1"><label for="pgtema">Tema</label><select id="pgtema"><option value="">Escolha</option>${temas}</select></div></div>
     <div class="field"><label for="pgsite">Site (opcional)</label><input id="pgsite" type="url" inputmode="url" maxlength="300" placeholder="https://" autocapitalize="none" spellcheck="false"></div>
     <div class="field"><label for="pgcont">Contato (opcional)</label><input id="pgcont" maxlength="300" placeholder="WhatsApp, e-mail ou outro canal"></div>
@@ -5517,7 +5517,7 @@ function sheetPaginaNova(){
     <button class="btn primary block" type="button" data-act="paginacria">Enviar para a curadoria</button>
     <p class="lnote" style="margin-top:8px">A curadoria confere antes de a página ir ao ar e avisa você no sino.</p>`, "Criar página");
   const sync = () => { const emp = ($('input[name="pgtipo"]:checked') || {}).value === "empresa"; $("#pgcnpjbox").hidden = !emp;
-    $("#pgtipohint").textContent = emp ? "Para vender serviços ou produtos: a página tem uma vitrine, e a compra é combinada direto com você, fora da rede." : "Para quem publica conteúdo com frequência: notícias, análises, vídeos, colunas."; };
+    $("#pgtipohint").textContent = emp ? "Para vender serviços ou produtos: a página tem uma vitrine, e a compra é combinada direto com você, fora da rede." : "Para publicar separado do seu perfil pessoal: um projeto, uma coluna, um hobby, as fotos da família. Sem CNPJ e sem vitrine."; };
   $$('input[name="pgtipo"]').forEach(r=>r.addEventListener("change", sync)); sync(); }
 function sheetPaginaEdita(pid){ const p = PAGS.lista.find(x=>x.id === pid); if (!p) return; const o = ORG["pg-" + pid], v = x => esc(x || "");
   const temas = TEMAS_LISTA.map(t=>`<option${t === p.tema ? " selected" : ""}>${esc(t)}</option>`).join("");
@@ -8173,7 +8173,7 @@ if (PREVIA){ addEventListener("message", e => { if (!PREVIA_ORIGEM.test(e.origin
     if (d.abrir === "marca") setTimeout(()=>A.sobre(), 80);
     else if (d.alvo) setTimeout(()=>{ const el = document.getElementById(d.alvo); el && el.scrollIntoView({block:"start"}); }, 120); });
   parent.postMessage({tipo:"arede-previa-pronta"}, "*"); }
-const VERSAO = "v1 registrada · 14/11 09:21";
+const VERSAO = "v1 registrada · 14/11 09:27";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
