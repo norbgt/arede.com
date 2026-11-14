@@ -183,6 +183,23 @@ img,svg{max-width:100%}
 .nitem .ntx{display:flex;flex-direction:column;gap:2px;min-width:0}.nitem .ntx b{font-weight:600}.nitem.nova .ntx b{font-weight:700}
 .nitem .ntx small{color:var(--muted);font-size:12.5px}.nitem .ntx span{font-size:14px;color:var(--muted);overflow-wrap:anywhere}
 .nvazio{color:var(--muted);text-align:center;padding:40px 0}
+.cmnseg{display:flex;gap:6px;margin:4px 0 14px}.cmnseg .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.pglist{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));margin:8px 0 20px}
+.pgcard{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:16px;background:var(--surface,rgba(127,127,127,.06));text-align:left;color:inherit}
+.pgcard .pgtop{display:flex;gap:10px;align-items:center}.pgcard .pgtop .t{display:flex;flex-direction:column;min-width:0}.pgcard .pgtop b{font-size:15.5px}
+.pgcard small,.pgmeta{color:var(--muted);font-size:12.5px}.pgcard p{margin:0;font-size:14px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pgtag{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+.pgresp{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:14px;border:1px solid var(--line,rgba(127,127,127,.25));margin:10px 0 12px;font-size:13.5px;line-height:1.45}
+.vitrine{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.vitem{display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:14px;background:var(--surface,rgba(127,127,127,.06))}
+.vitem b{font-size:15px}.vitem .vpreco{font-weight:700;font-size:15px}.vitem p{margin:0;font-size:13.5px;color:var(--muted)}
+.decl{padding:12px 14px;border-radius:12px;background:var(--surface,rgba(127,127,127,.06));font-size:13.5px;line-height:1.5;margin:4px 0 8px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;margin:8px 0}.chk input{margin-top:3px;flex:none}
+.pgcnpj[hidden]{display:none}
+.pgcard .av{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:16px;flex:none}
+.pgacoes{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pgacoes .btn{flex:1;min-width:110px}
+.pgsit{display:inline-flex;align-items:center;min-height:26px;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;background:var(--surface-2,rgba(127,127,127,.14))}
+.pgsit.warn{background:#FBEFD5;color:#8A5300}.pgsit.ok{background:#DDF1E4;color:#1F6B3F}.pgsit.bad{background:#F8DEDA;color:#9B2C1F}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 16px;border:0;border-radius:var(--r-sm);
   background:var(--surface-2);font-weight:500;font-size:14px;text-decoration:none;color:var(--ink);text-align:center}
 .btn.primary{background:var(--fill);color:var(--on-fill)}
@@ -3718,7 +3735,7 @@ function sheetVerif(v){ const [t, d] = VERIF[v] || VERIF.oficial;
       <div class="setting static"><span class="t"><b>Pessoas</b><small>Verificadas com documento de identidade. O documento não fica público nem aparece no perfil.</small></span></div>
       <div class="setting static"><span class="t"><b>Fontes oficiais</b><small>Órgãos públicos, instituições e veículos que comprovam ser donos da conta, por domínio oficial ou documento da instituição.</small></span></div></div>
     <div class="note">${ic("info")}<span>O selo do perfil diz quem publica. Ele não garante que cada conteúdo é verdadeiro: isso continua com o selo de confiabilidade de cada publicação. Só a curadoria concede o selo de perfil.</span></div>`, "Perfil verificado"); }
-const orgMeta = o => o.rede ? "Fonte individual · " + REDES[o.rede].nome : o.pessoa ? (o.verificado ? VERIF[o.verificado][0] : "Conta na rede") : o.fonte ? `Fonte verificada · ${o.natureza}` : o.real ? `${capFirst(o.natureza || "organização")} · canais públicos` : `${o.membros.toLocaleString("pt-BR")} membros`;
+const orgMeta = o => o.pagina ? (o.paginaTipo === "empresa" ? "Página · comercial" : "Página · criador de conteúdo") : o.rede ? "Fonte individual · " + REDES[o.rede].nome : o.pessoa ? (o.verificado ? VERIF[o.verificado][0] : "Conta na rede") : o.fonte ? `Fonte verificada · ${o.natureza}` : o.real ? `${capFirst(o.natureza || "organização")} · canais públicos` : `${o.membros.toLocaleString("pt-BR")} membros`;
 const isOrg = o => !o.fonte && !o.pessoa;   /* fontes de notícia publicam, mas não aparecem como organizações */
 const ficTag = o => o && o.ficticia ? `<span class="fic" title="Organização fictícia, de exemplo">exemplo</span>` : "";
 const NUCLEOS = [["Núcleo Centro",48,"toda segunda"],["Núcleo Jardim",36,"quinzenal"],["Comissão de comunicação",12,"às quintas"],["Comissão de finanças",7,"mensal"]];
@@ -5417,12 +5434,112 @@ const prazoDias = it => { const t = String(it.prazo || it.fecha || ""); if (/hoj
 const HUB_VO = 3;
 /* chamados: colunas que fecham sem buraco (3 itens em 2 colunas deixariam um vão) */
 const hubChCols = n => { const w = ($("#hubch") || $("#main .container") || document.body).clientWidth || innerWidth, c = w >= 900 ? 3 : 2; return n % c === 0 || n > c * 2 ? c : n < c ? Math.max(1, n) : (n % 2 === 0 ? 2 : (c >= 3 ? 3 : 1)); };   /* no começo, as 3 votações mais urgentes; o resto abre no botão */
+/* PÁGINAS (14 nov 2026): a segunda forma da aba Comunidades. Página de empresa (fim lucrativo: vitrine de serviços e produtos,
+   a compra acontece fora da rede) ou de criador de conteúdo. Só contas verificadas criam; a pessoa declara responsabilidade
+   pelo que a página publica, e o nome dela aparece na página como responsável. Sem candidatos, partidos ou campanhas.
+   Por enquanto toda página passa pela curadoria (regra paginas_curadoria, liga e desliga no backoffice). */
+const PAGS = {lista:[], itens:{}, num:{}, carregou:false};
+const DECL_PAGINA = "Declaro que sou a pessoa responsável por esta página e por tudo o que ela publica. As informações, ofertas e conteúdos publicados são verdadeiros e de minha responsabilidade, sigo os Termos de uso da rede.online e a lei, e respondo pessoalmente, com a minha conta verificada, pelo que for publicado em nome da página. (Declaração v1 · 14/11/2026)";
+function orgDaPagina(p){ const id = "pg-" + p.id;
+  ORG[id] = Object.assign(ORG[id] || {}, {id, nome:limpo(p.nome) || "Página", sigla:siglaDe(limpo(p.nome)), cidade:limpo(p.cidade) || "", tema:limpo(p.tema) || "", membros:0, real:true, pagina:true,
+    paginaTipo:p.tipo, natureza:p.tipo === "empresa" ? "página de empresa" : "página de criador de conteúdo", cor:CORES_CONTA[(p.cor || 0) % CORES_CONTA.length], sobre:limpo(p.descricao) || "",
+    site:/^https:\/\//.test(p.site || "") ? p.site : "", contato:limpo(p.contato) || "", dono:p.dono, status:p.status, motivo:limpo(p.motivo) || ""});
+  return id; }
+async function paginasCarrega(){ if (!SB) return;
+  try{ const {data} = await SB.from("paginas").select("id,tipo,nome,descricao,cidade,tema,site,contato,cor,status,motivo,dono,criada_em").order("criada_em", {ascending:false}).limit(300);
+    PAGS.lista = data || []; PAGS.lista.forEach(orgDaPagina); PAGS.carregou = true;
+    const r = route(); if (r === "organizacoes" && S.cmnModo === "paginas" || r.startsWith("pg-")) render(); }catch(e){} }
+const minhasPaginas = (so) => ME.user ? PAGS.lista.filter(p=>p.dono === ME.user.id && (!so || p.status === so)) : [];
+const PG_SIT = {pendente:["esperando a curadoria","warn"], aprovada:["no ar","ok"], recusada:["não aprovada","bad"], suspensa:["suspensa","bad"]};
+function pgCard(p){ const id = "pg-" + p.id, o = ORG[id] || {}, f = S.follow.has(id), meu = ME.user && p.dono === ME.user.id;
+  return `<article class="pgcard"><a class="pgtop" href="#${id}" style="color:inherit;text-decoration:none">${avatar(o)}<span class="t"><span class="pgtag">${p.tipo === "empresa" ? "Página · comercial" : "Página · criador"}</span><b>${esc(o.nome)}</b><small>${esc([o.cidade, o.tema].filter(Boolean).join(" · "))}</small></span></a>
+    ${o.sobre ? `<p>${esc(o.sobre)}</p>` : ""}
+    <div class="pgacoes">${meu ? `<span class="pgsit ${PG_SIT[p.status][1]}">${PG_SIT[p.status][0]}</span>` : p.status === "aprovada" ? `<button class="btn sm ${f ? "ghost" : "primary"}" type="button" data-act="follow" data-org="${id}">${f ? ic("check","sm") + " Seguindo" : "Seguir"}</button>` : ""}<a class="btn sm ghost" href="#${id}">Ver página</a></div></article>`; }
+function paginasCorpo(){ const f = S.pgFiltro || "todas", ok = PAGS.lista.filter(p=>p.status === "aprovada" && (f === "todas" || p.tipo === f) && !(ME.user && p.dono === ME.user.id)), minhas = minhasPaginas();
+  const chip = (k, n, c) => `<button class="chip" type="button" data-act="pgfiltro" data-f="${k}" aria-pressed="${f===k}">${n} <span class="n">${c}</span></button>`, ap = PAGS.lista.filter(p=>p.status === "aprovada");
+  return `<div class="note">${ic("info")}<span><b>Páginas</b> são de empresas, com vitrine do que oferecem, ou de quem publica conteúdo com frequência. Toda página tem uma pessoa com conta verificada que responde pelo que ela publica. Páginas de candidato, partido ou campanha não são permitidas.</span></div>
+    ${minhas.length ? `<h2 class="sectitle">Suas páginas</h2><div class="pglist">${minhas.map(pgCard).join("")}</div>` : ""}
+    <div class="partchips" role="group" aria-label="Tipo de página" style="margin-top:6px">${chip("todas","Todas",ap.length)}${chip("empresa","Empresas",ap.filter(p=>p.tipo==="empresa").length)}${chip("criador","Criadores",ap.filter(p=>p.tipo==="criador").length)}</div>
+    ${ok.length ? `<div class="pglist">${ok.map(pgCard).join("")}</div>` : `<p class="empty">${PAGS.carregou ? "Ainda não há páginas aqui. Que tal criar a primeira?" : "Carregando…"}</p>`}`; }
+function screenPagina(pid){ const id = "pg-" + pid, o = ORG[id], p = PAGS.lista.find(x=>x.id === pid);
+  if (!o || !p) return header(`<div class="toprow"><button class="iconbtn" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button><h1 class="pagehead">Página</h1></div>`) + `<div class="container"><p class="empty">${PAGS.carregou ? "Esta página não existe ou não está no ar." : "Carregando…"}</p></div>`;
+  const meu = ME.user && p.dono === ME.user.id, f = S.follow.has(id), t = S.pgTab || "pubs", emp = p.tipo === "empresa";
+  const tabs = [["pubs","Publicações"], emp ? ["vitrine","Vitrine"] : null, ["sobre","Sobre"]].filter(Boolean);
+  const aviso = p.status === "aprovada" ? "" : `<div class="note warnnote" style="margin:10px 0">${ic("info")}<span>${p.status === "pendente" ? "<b>Esperando a curadoria.</b> Só você vê esta página até ela ser aprovada." : `<b>Página ${PG_SIT[p.status][0]}.</b> ${esc(o.motivo || "")}`}</span></div>`;
+  return `<div class="orghero">${art({id:pid.length*5 + (p.cor||0), art:"arcs"}, .6, false)}<button class="iconbtn solid" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button></div>
+    <div class="container"><div class="orghead">${avatar(o)}<span class="pgtag">${emp ? "Página · comercial" : "Página · criador de conteúdo"}</span><h1>${esc(o.nome)}</h1>
+      <p class="pgmeta">${esc([o.cidade, o.tema].filter(Boolean).join(" · "))}</p>${o.sobre ? `<p style="max-width:65ch">${esc(o.sobre)}</p>` : ""}${aviso}
+      <p class="segnum" id="pgnum" hidden></p>
+      <div class="pgresp" id="pgresp">${ic("check","sm")}<span>Uma pessoa com conta verificada responde por tudo o que esta página publica.</span></div>
+      <div class="row" style="max-width:520px;gap:8px">${meu ? `${p.status === "aprovada" ? `<button class="btn primary" type="button" data-act="ctypereal" data-k="texto">${ic("plus","sm")} Publicar como página</button>` : ""}<button class="btn ghost" type="button" data-act="paginaedita" data-id="${pid}">Editar página</button>`
+        : p.status === "aprovada" ? `<button class="btn ${f ? "ghost" : "primary"}" type="button" data-act="follow" data-org="${id}">${f ? ic("check","sm") + " Seguindo" : "Seguir"}</button>` : ""}
+        <button class="btn ghost" type="button" data-act="share" data-perfil="pg-${pid}">${ic("share","sm")} Compartilhar</button></div>
+      <div class="tabs" role="tablist" aria-label="Seções da página" style="margin-top:8px">${tabs.map(([k,n])=>`<button class="tab" type="button" role="tab" data-act="pgtab" data-tab="${k}" aria-selected="${t===k}">${n}</button>`).join("")}</div></div>
+      <div id="pgbody" style="padding-top:var(--gap)">${paginaCorpoTab(o, p, t)}</div></div>`; }
+function paginaCorpoTab(o, p, t){
+  if (t === "vitrine"){ const l = PAGS.itens[p.id], meu = ME.user && p.dono === ME.user.id;
+    return `<div class="note" style="margin-bottom:12px">${ic("info")}<span>A compra é combinada direto com ${esc(o.nome)}, fora da rede.online. A rede não intermedia pagamento nem entrega.</span></div>
+      ${!l ? `<p class="empty">Carregando…</p>` : l.length ? `<div class="vitrine">${l.map(i=>`<div class="vitem"><b>${esc(i.nome)}</b>${i.preco ? `<span class="vpreco">${esc(i.preco)}</span>` : ""}${i.descricao ? `<p>${esc(i.descricao)}</p>` : ""}
+          <div class="row" style="gap:6px;margin-top:4px">${i.link || o.site ? `<a class="btn sm primary" href="${esc(i.link || o.site)}" target="_blank" rel="noopener nofollow">Quero ${ic("ext","sm")}</a>` : ""}${meu ? `<button class="btn sm ghost" type="button" data-act="vitira" data-id="${i.id}" data-p="${p.id}">Tirar</button>` : ""}</div></div>`).join("")}</div>`
+        : `<p class="empty">${meu ? "Sua vitrine ainda está vazia." : "Nada na vitrine ainda."}</p>`}
+      ${meu ? `<button class="btn ghost" type="button" data-act="vitnovo" data-p="${p.id}" style="margin-top:12px">${ic("plus","sm")} Adicionar à vitrine</button>` : ""}`; }
+  if (t === "sobre") return `<div class="list">${o.sobre ? `<div class="setting l1"><span class="t"><b>Sobre</b><small>${esc(o.sobre)}</small></span></div>` : ""}
+    ${o.site ? `<a class="setting l1" href="${esc(o.site)}" target="_blank" rel="noopener nofollow"><span class="t"><b>Site</b><small>${esc(o.site.replace(/^https:\/\//, ""))}</small></span>${ic("ext","sm")}</a>` : ""}
+    ${o.contato ? `<div class="setting l1"><span class="t"><b>Contato</b><small>${esc(o.contato)}</small></span></div>` : ""}
+    <div class="setting l1"><span class="t"><b>Responsabilidade declarada</b><small>${esc(DECL_PAGINA)}</small></span></div></div>`;
+  S.orgTab = "mural"; return orgTabBody(o); }
+async function paginaPreenche(pid){ if (!PAGS.carregou) return; const p = PAGS.lista.find(x=>x.id === pid); if (!p) return;
+  if ((S.pgTab || "pubs") === "pubs") fillOrg();
+  if (SB){ try{ const {data} = await SB.rpc("pagina_numeros", {p_id:pid}); if (data){ PAGS.num[pid] = data; const n = $("#pgnum"), r = $("#pgresp");
+      if (n){ n.innerHTML = `<b>${data.seguidores}</b> ${data.seguidores === 1 ? "seguidor" : "seguidores"} · <b>${data.publicacoes}</b> ${data.publicacoes === 1 ? "publicação" : "publicações"}`; n.hidden = false; }
+      if (r && data.responsavel) r.innerHTML = `${ic("check","sm")}<span><b>Responsável: <a href="#org-u-${esc(data.responsavel.id)}">${esc(limpo(data.responsavel.nome) || "Conta da rede")}</a></b>, conta verificada. Responde pessoalmente por tudo o que esta página publica: conteúdo, informações e ofertas.</span>`; } }catch(e){} }
+  if (p.tipo === "empresa" && !PAGS.itens[pid] && SB){ try{ const {data} = await SB.from("pagina_itens").select("id,nome,descricao,preco,link,ordem").eq("pagina_id", pid).order("ordem").order("criado_em");
+      PAGS.itens[pid] = (data || []).map(i=>Object.assign(i, {nome:limpo(i.nome), descricao:limpo(i.descricao), preco:limpo(i.preco), link:/^(https:\/\/|mailto:|tel:)/.test(i.link || "") ? i.link : ""}));
+      if (S.pgTab === "vitrine" && route() === "pg-" + pid){ const b = $("#pgbody"); if (b) b.innerHTML = paginaCorpoTab(ORG["pg-" + pid], p, "vitrine"); } }catch(e){} } }
+function sheetPaginaNova(){
+  if (!ME.user || !SB) return A.acessar();
+  if (!(ME.perfil && ME.perfil.verificado)) return openSheet(shead("Criar página") + `<div class="note">${ic("lock")}<span><b>Só contas verificadas criam páginas.</b> Quem cria uma página responde pessoalmente pelo que ela publica, por isso a rede precisa saber quem é você.</span></div>
+    <a class="btn primary block" href="#conta" data-act="close" style="margin-top:12px">Verificar minha conta</a>`, "Criar página");
+  const temas = TEMAS_LISTA.map(t=>`<option>${esc(t)}</option>`).join("");
+  openSheet(shead("Criar página") + `<p class="lnote osub">Uma página publica em nome de uma empresa ou de um projeto de conteúdo. Ela fica ligada à sua conta verificada: o seu nome aparece como responsável.</p>
+    <fieldset class="rorig"><legend>Tipo de página</legend><div class="seg" role="radiogroup" aria-label="Tipo de página"><label><input type="radio" name="pgtipo" value="empresa" checked><span>Empresa</span></label><label><input type="radio" name="pgtipo" value="criador"><span>Criador de conteúdo</span></label></div>
+      <small class="hint" id="pgtipohint">Para vender serviços ou produtos: a página tem uma vitrine, e a compra é combinada direto com você, fora da rede.</small></fieldset>
+    <div class="field"><label for="pgnome">Nome da página</label><input id="pgnome" maxlength="80"></div>
+    <div class="field"><label for="pgdesc">Sobre a página</label><textarea id="pgdesc" maxlength="600" rows="3" placeholder="O que a página oferece ou publica"></textarea></div>
+    <div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="pgcid">Cidade</label><input id="pgcid" maxlength="80"></div><div class="field" style="flex:1"><label for="pgtema">Tema</label><select id="pgtema"><option value="">Escolha</option>${temas}</select></div></div>
+    <div class="field"><label for="pgsite">Site (opcional)</label><input id="pgsite" type="url" inputmode="url" maxlength="300" placeholder="https://" autocapitalize="none" spellcheck="false"></div>
+    <div class="field"><label for="pgcont">Contato (opcional)</label><input id="pgcont" maxlength="300" placeholder="WhatsApp, e-mail ou outro canal"></div>
+    <div class="field pgcnpj" id="pgcnpjbox"><label for="pgcnpj">CNPJ da empresa</label><input id="pgcnpj" inputmode="numeric" maxlength="18" placeholder="00.000.000/0000-00"><small class="hint">Só a curadoria vê. Serve para conferir que a empresa existe.</small></div>
+    <label class="chk"><input type="checkbox" id="pgnaoel"><span>Esta página <b>não</b> é de candidato, partido ou campanha eleitoral.</span></label>
+    <div class="decl"><b>Declaração de responsabilidade</b><br>${esc(DECL_PAGINA)}</div>
+    <label class="chk"><input type="checkbox" id="pgdecl"><span>Li e aceito a declaração. Meu nome aparece na página como responsável.</span></label>
+    <p class="ferr" role="alert" hidden></p>
+    <button class="btn primary block" type="button" data-act="paginacria">Enviar para a curadoria</button>
+    <p class="lnote" style="margin-top:8px">A curadoria confere antes de a página ir ao ar e avisa você no sino.</p>`, "Criar página");
+  const sync = () => { const emp = ($('input[name="pgtipo"]:checked') || {}).value === "empresa"; $("#pgcnpjbox").hidden = !emp;
+    $("#pgtipohint").textContent = emp ? "Para vender serviços ou produtos: a página tem uma vitrine, e a compra é combinada direto com você, fora da rede." : "Para quem publica conteúdo com frequência: notícias, análises, vídeos, colunas."; };
+  $$('input[name="pgtipo"]').forEach(r=>r.addEventListener("change", sync)); sync(); }
+function sheetPaginaEdita(pid){ const p = PAGS.lista.find(x=>x.id === pid); if (!p) return; const o = ORG["pg-" + pid], v = x => esc(x || "");
+  const temas = TEMAS_LISTA.map(t=>`<option${t === p.tema ? " selected" : ""}>${esc(t)}</option>`).join("");
+  openSheet(shead("Editar página") + `<p class="lnote osub">O nome e o tipo não mudam. Para trocar, fale com a curadoria em contato@arede.online.</p>
+    <div class="field"><label for="pgdesc">Sobre a página</label><textarea id="pgdesc" maxlength="600" rows="3">${v(p.descricao)}</textarea></div>
+    <div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="pgcid">Cidade</label><input id="pgcid" maxlength="80" value="${v(p.cidade)}"></div><div class="field" style="flex:1"><label for="pgtema">Tema</label><select id="pgtema"><option value="">Escolha</option>${temas}</select></div></div>
+    <div class="field"><label for="pgsite">Site</label><input id="pgsite" type="url" maxlength="300" value="${v(p.site)}" placeholder="https://"></div>
+    <div class="field"><label for="pgcont">Contato</label><input id="pgcont" maxlength="300" value="${v(p.contato)}"></div>
+    <p class="ferr" role="alert" hidden></p><button class="btn primary block" type="button" data-act="paginasalva" data-id="${pid}">Salvar</button>`, "Editar página"); }
+function sheetVitrineNovo(pid){ openSheet(shead("Adicionar à vitrine") + `
+    <div class="field"><label for="vinome">Serviço ou produto</label><input id="vinome" maxlength="120"></div>
+    <div class="field"><label for="videsc">Descrição (opcional)</label><textarea id="videsc" maxlength="500" rows="3"></textarea></div>
+    <div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="vipreco">Preço (opcional)</label><input id="vipreco" maxlength="40" placeholder="Ex.: R$ 80 ou a combinar"></div></div>
+    <div class="field"><label for="vilink">Link para comprar ou pedir (opcional)</label><input id="vilink" maxlength="300" placeholder="https://, mailto: ou tel:" autocapitalize="none" spellcheck="false"><small class="hint">Sem link, o botão leva ao site da página.</small></div>
+    <p class="ferr" role="alert" hidden></p><button class="btn primary block" type="button" data-act="vitsalva" data-p="${pid}">Adicionar</button>`, "Adicionar à vitrine"); }
 function screenOrgs(){
   const mine = ORGS.filter(o=>isOrg(o) && S.follow.has(o.id)), others = ORGS.filter(o=>isOrg(o) && !S.follow.has(o.id)), H = hubItens();
   const nEv = H.semana.length, sub = nEv ? `${nEv} ${nEv===1?"evento":"eventos"} até ${dLabel(isoDia(new Date(+HOJE + 7*864e5)))}` : "Nenhum evento nos próximos 7 dias";
-  return header(`<div class="toprow"><h1 class="pagehead">Comunidades</h1><div class="spacer"></div><button class="btn primary" type="button" data-act="cmnnova">${ic("plus","sm")} Criar</button></div>`)
-    + `<div class="container">
-       ${cmnGeral(mine, others)}</div>`;
+  const pg = S.cmnModo === "paginas";
+  return header(`<div class="toprow"><h1 class="pagehead">Comunidades</h1><div class="spacer"></div><button class="btn primary" type="button" data-act="${pg ? "paginova" : "cmnnova"}">${ic("plus","sm")} ${pg ? "Criar página" : "Criar"}</button></div>`)
+    + `<div class="container"><div class="cmnseg" role="group" aria-label="Comunidades ou páginas"><button class="chip" type="button" data-act="cmnmodo" data-m="comunidades" aria-pressed="${!pg}">Comunidades</button><button class="chip" type="button" data-act="cmnmodo" data-m="paginas" aria-pressed="${pg}">Páginas</button></div>
+       ${pg ? paginasCorpo() : cmnGeral(mine, others)}</div>`;
 }
 function carrNav(){ const c = $("#hubcarr"); if (!c) return; const [a, b] = $$('[data-act="carr"]'), fim = c.scrollWidth - c.clientWidth;
   if (a) a.disabled = c.scrollLeft <= 2; if (b) b.disabled = c.scrollLeft >= fim - 2;
@@ -6060,7 +6177,7 @@ function render(){ setTimeout(()=>$$("[data-segnum]").forEach(el=>segNumeros(el.
   if (lastRoute !== null) SCROLL[lastRoute] = window.scrollY;
   const same = lastRoute === r; lastRoute = r;
   if (NAV[NAV.length-1] !== r){ NAV.push(r); if (NAV.length > 40) NAV.shift(); }
-  $$(".navbtn[data-nav]").forEach(a=>{ const on = r===a.dataset.nav || ((r.startsWith("org-")||r==="comunidades-todas"||r==="participar")&&a.dataset.nav==="organizacoes") || (r.startsWith("pin-")&&a.dataset.nav==="inicio") || ((r==="config"||r==="conta"||r==="perfil-ver")&&a.dataset.nav==="perfil");
+  $$(".navbtn[data-nav]").forEach(a=>{ const on = r===a.dataset.nav || ((r.startsWith("org-")||r.startsWith("pg-")||r==="comunidades-todas"||r==="participar")&&a.dataset.nav==="organizacoes") || (r.startsWith("pin-")&&a.dataset.nav==="inicio") || ((r==="config"||r==="conta"||r==="perfil-ver")&&a.dataset.nav==="perfil");
     on ? a.setAttribute("aria-current","page") : a.removeAttribute("aria-current"); });
   if (F.obs){ F.obs.disconnect(); F.obs = null; }
   let restore = 0;
@@ -6075,6 +6192,7 @@ function render(){ setTimeout(()=>$$("[data-segnum]").forEach(el=>segNumeros(el.
   else if (r==="termos" || r==="privacidade") main.innerHTML = screenDoc(r);
   else if (r==="perfil-ver"){ main.innerHTML = screenPublic(); fillPublic(); }
   else if (r.startsWith("org-")){ main.innerHTML = screenOrg(r.slice(4)); fillOrg(); }
+  else if (r.startsWith("pg-")){ main.innerHTML = screenPagina(r.slice(3)); paginaPreenche(r.slice(3)); }
   else if (r.startsWith("pin-")){ main.innerHTML = screenPin(r.slice(4)); fillPin(r.slice(4)); }
   else if (r==="ate-depois") main.innerHTML = screenBye();
   else if (r==="conta") main.innerHTML = screenConta();
@@ -6150,7 +6268,7 @@ async function contaInicia(){
     if (erroUrl) toast("O link do e-mail expirou ou já foi usado. Entre com e-mail e senha ou peça outro link.");
     else if (ME.user) toast("E-mail confirmado. Sua conta está ativa.");
   }
-  textosCarrega(); cfgCarrega(); regrasCarrega(); adPrecosCarrega(); adNoArCarrega(); setInterval(()=>{ if (document.visibilityState==="visible") adNoArCarrega(); }, 15 * 60000); usoInicia(); await perfilCarrega(); ME.pronto = true; adVolta(); apoioVolta(); if (route()==="anunciar") adPedidosCarrega(); const _mk = marcasCarrega(); await publicacoesCarrega(); await _mk; await noticiasCarrega(); contaAtualiza(); logoInicio(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
+  textosCarrega(); cfgCarrega(); regrasCarrega(); adPrecosCarrega(); adNoArCarrega(); setInterval(()=>{ if (document.visibilityState==="visible") adNoArCarrega(); }, 15 * 60000); usoInicia(); await perfilCarrega(); ME.pronto = true; adVolta(); apoioVolta(); if (route()==="anunciar") adPedidosCarrega(); const _mk = marcasCarrega(); await paginasCarrega(); await publicacoesCarrega(); await _mk; await noticiasCarrega(); contaAtualiza(); logoInicio(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
   setInterval(()=>{ if (document.visibilityState==="visible") noticiasCarrega(); }, 15 * 60000);
 }
 /* a escolha guardada na conta vale em qualquer aparelho; se a conta ainda não tem, guarda a deste aparelho (quando a pessoa já escolheu) */
@@ -6164,13 +6282,16 @@ async function seguindoCarrega(){ if (!SB || !ME.user) return;
   try{ const {data} = await SB.from("seguidores").select("seguido"); if (!data) return; let mudou = false;
     for (const r of data){ const id = "u-" + r.seguido; if (!S.follow.has(id)){ S.follow.add(id); mudou = true; } }
     for (const id of [...S.follow]) if (ehPessoaReal(id) && !data.some(r=>"u-" + r.seguido === id)){ S.follow.delete(id); mudou = true; }
+    try{ const pr = await SB.from("pagina_seguidores").select("pagina_id"); if (pr.data){
+      for (const r of pr.data){ const id = "pg-" + r.pagina_id; if (!S.follow.has(id)){ S.follow.add(id); mudou = true; } }
+      for (const id of [...S.follow]) if (/^pg-/.test(id) && !pr.data.some(r=>"pg-" + r.pagina_id === id)){ S.follow.delete(id); mudou = true; } } }catch(e){}
     if (mudou){ persist("follow"); } }catch(e){} }
 const segTexto = n => n.seguidores + (n.seguidores === 1 ? " seguidor" : " seguidores") + " · segue " + n.seguindo;
 async function segNumeros(uuid, el){ if (!SB || !el || !uuid) return; try{ const {data} = await SB.rpc("perfil_seguidores", {p_id:uuid}); if (data && el.isConnected){
   el.innerHTML = `<b>${data.seguidores}</b> ${data.seguidores === 1 ? "seguidor" : "seguidores"} · segue <b>${data.seguindo}</b>`; el.hidden = false; } }catch(e){} }
 async function perfilCarrega(){ if (!SB || !ME.user){ ME.perfil = null; return; }
   const {data} = await SB.from("perfis").select("id,nome,usuario,cidade,bio,criado_em,verificado,verificado_em,vista").eq("id", ME.user.id).maybeSingle(); ME.perfil = data || null;
-  vistaDaConta(); seguindoCarrega(); notifVigia();
+  vistaDaConta(); seguindoCarrega(); notifVigia(); paginasCarrega();
   /* papel e nível vêm do servidor, por uma função que só responde sobre a própria conta (o papel saiu da leitura pública) */
   try{ const a = await SB.rpc("meu_acesso"); if (!a.error && a.data){ ME.acesso = a.data; if (ME.perfil) ME.perfil.papel = a.data.papel || "membro"; } }catch(e){}
   contaDadosCarrega(); }
@@ -6230,7 +6351,7 @@ function orgDaPessoa(pf){ const id = "u-" + pf.id; pf = Object.assign({}, pf, {n
 function itemDaPublicacao(p){
   const id = "u" + p.id.replace(/-/g,""), ex = limpoObj(p.extra), criada = new Date(p.criada_em);
   const orig = p; p = Object.assign({}, p, {titulo:limpo(p.titulo), texto:limpo(p.texto), cidade:limpo(p.cidade)});
-  const it = {id, tipo:p.tipo==="abaixo" ? "chamado" : p.tipo, org:orgDaPessoa(p.perfis || {id:p.autor, nome:"Conta da rede"}), tema:temaNovo(p.tema || ""), titulo:p.titulo, texto:p.texto || "",
+  const it = {id, tipo:p.tipo==="abaixo" ? "chamado" : p.tipo, org:p.pagina_id && p.paginas ? orgDaPagina(p.paginas) : orgDaPessoa(p.perfis || {id:p.autor, nome:"Conta da rede"}), tema:temaNovo(p.tema || ""), titulo:p.titulo, texto:p.texto || "",
     cidade:p.cidade || "", min:Math.max(1, Math.round((Date.now() - criada) / 60000)), conta:true, autorId:p.autor, uuid:p.id, publicada:p.publicada, criadaEm:p.criada_em, raw:orig,
     editada:!!(p.editada_em && new Date(p.editada_em) - criada > 60000)};
   if (p.imagem_url){ it.foto = p.imagem_url; it.credito = ""; }
@@ -6254,7 +6375,7 @@ const prioDe = it => it.conta && it.autorId ? (PRIO[it.autorId] || 0) : 0;
 async function prioridadesCarrega(ids){ const falta = [...new Set(ids)].filter(Boolean); if (!SB || !falta.length) return;
   try{ const r = await SB.rpc("prioridades", {p_autores:falta}); if (!r.error && r.data){ falta.forEach(id=>{ PRIO[id] = r.data[id] || 0; }); } }catch(e){} }
 async function publicacoesCarrega(){ if (!SB) return;
-  const {data, error} = await SB.from("publicacoes").select("*, perfis(id, nome, cidade, bio, verificado)").order("criada_em", {ascending:false}).limit(200);
+  const {data, error} = await SB.from("publicacoes").select("*, perfis(id, nome, cidade, bio, verificado), paginas(id, tipo, nome, descricao, cidade, tema, site, contato, cor, status, dono)").order("criada_em", {ascending:false}).limit(200);
   if (error || !data) return;
   for (let i = POOL.length - 1; i >= 0; i--) if (POOL[i].conta) POOL.splice(i, 1);
   data.slice().reverse().forEach(p=>POOL.unshift(itemDaPublicacao(p)));
@@ -7212,7 +7333,8 @@ const TIPOS_REAIS = {texto:"Publicação", evento:"Evento", chamado:"Chamado", a
 const horaInput = h => { const m = String(h||"").match(/^(\d{1,2})h(\d{2})?$/); return m ? m[1].padStart(2,"0") + ":" + (m[2] || "00") : ""; };
 function sheetCriarReal(k, ed){ const nome = TIPOS_REAIS[k], pf = ME.perfil || {}, ex = (ed && ed.extra) || {}, v = x => esc(x == null ? "" : String(x));
   openSheet(shead(ed ? "Editar " + nome.toLowerCase() : nome) + (ed ? `<div class="note">${ic("lapis")}<span>Quem já viu a publicação passa a ver a versão nova, marcada como <b>editada</b>.</span></div>` : `
-    <div class="note">${avatar({cor:"#141615", sigla:siglaDe(pf.nome)})}<span>Publicando como <b>${esc(pf.nome || ME.user.email)}</b> · conta real. Fica visível para quem acessa a rede.</span></div>`) + `
+    <div class="note">${avatar({cor:"#141615", sigla:siglaDe(pf.nome)})}<span>Publicando como <b>${esc(pf.nome || ME.user.email)}</b> · conta real. Fica visível para quem acessa a rede.</span></div>
+    ${minhasPaginas("aprovada").length ? `<div class="field"><label for="rcomo">Publicar como</label><select id="rcomo"><option value="">Você (${esc(pf.nome || "sua conta")})</option>${minhasPaginas("aprovada").map(p=>`<option value="${p.id}"${route() === "pg-" + p.id ? " selected" : ""}>Página: ${esc(limpo(p.nome))}</option>`).join("")}</select><small class="hint">Pela página, seu nome aparece como responsável pelo que for publicado.</small></div>` : ""}`) + `
     <div class="field"><label for="rtit">Título</label><input id="rtit" type="text" maxlength="140" value="${ed ? v(ed.titulo) : ""}"></div>
     ${k==="evento" ? `<div class="row" style="gap:10px"><div class="field" style="flex:1"><label for="rdata">Data</label><input id="rdata" type="date" min="${ed && ex.data && ex.data < new Date().toISOString().slice(0,10) ? ex.data : new Date().toISOString().slice(0,10)}" value="${v(ex.data)}"></div><div class="field" style="flex:1"><label for="rhora">Hora</label><input id="rhora" type="time" value="${horaInput(ex.hora)}"></div></div>
       <div class="field"><label for="rlocal">Local</label><input id="rlocal" type="text" maxlength="120" placeholder="Ex.: Praça da Sé" value="${v(ex.local)}"></div>` : ""}
@@ -7576,7 +7698,7 @@ const A = {
       b.textContent = ed ? "Salvando…" : "Publicando…";
       const dados = {titulo:tit, texto:txt, tema:$("#rtema").value, cidade:$("#rcid").value.trim() || null, imagem_url, extra};
       const {error} = ed ? await SB.from("publicacoes").update(dados).eq("id", ed).eq("autor", ME.user.id)
-        : await SB.from("publicacoes").insert(Object.assign({tipo:k}, dados));
+        : await SB.from("publicacoes").insert(Object.assign({tipo:k}, dados, $("#rcomo") && $("#rcomo").value ? {pagina_id:$("#rcomo").value} : {}));
       if (error) throw error;
       /* a imagem antiga que saiu ou foi trocada é apagada do armazenamento (só as que a própria conta enviou) */
       if (velha && velha.imagem_url && velha.imagem_url !== imagem_url){ const m = velha.imagem_url.match(/\/midia\/(.+)$/);
@@ -7664,7 +7786,7 @@ const A = {
   saveto: b => { const id = b.dataset.uid, k = b.dataset.f; S.saved.add(id); S.savedIn[id] = k; persist("saved"); persist("savedIn"); closeSheet(); refresh(id); toast(`Salvo em ${folderName(k)}. Suas pastas ficam no Perfil.`); },
   like: b => { const id = b.dataset.uid; if (!S.liked.has(id)) lugarSinal(findItem(id), "like"); S.liked.has(id) ? S.liked.delete(id) : S.liked.add(id); persist("liked"); refresh(id); },
   share: b => { if (b.dataset.uid && !S.shared.has(b.dataset.uid)){ lugarSinal(findItem(b.dataset.uid), "share"); S.shared.add(b.dataset.uid); persist("shared"); }
-    const url = location.href.split("#")[0] + (b.dataset.uid ? "#pin-" + b.dataset.uid : b.dataset.perfil ? "#org-" + b.dataset.perfil : location.hash); try{ navigator.clipboard.writeText(url).then(()=>toast("Link copiado."), ()=>toast("Não foi possível copiar o link.")); }catch(e){ toast("Não foi possível copiar o link."); } },
+    const url = location.href.split("#")[0] + (b.dataset.uid ? "#pin-" + b.dataset.uid : b.dataset.perfil ? (/^pg-/.test(b.dataset.perfil) ? "#" : "#org-") + b.dataset.perfil : location.hash); try{ navigator.clipboard.writeText(url).then(()=>toast("Link copiado."), ()=>toast("Não foi possível copiar o link.")); }catch(e){ toast("Não foi possível copiar o link."); } },
   moretext: b => { const pin = b.closest(".pin"), t = pin.querySelector(".pintext"); const open = !t.classList.contains("open"); t.classList.toggle("open", open); S.textOpen[b.dataset.uid] = open;
     b.textContent = open ? "Mostrar menos" : "Mostrar mais"; b.setAttribute("aria-expanded", open); layoutPin(pin); },
   poll: b => { S.pollVote[b.dataset.uid] = +b.dataset.i; persist("pollVote"); refresh(b.dataset.uid); toast("Voto registrado na consulta."); },
@@ -7762,6 +7884,32 @@ const A = {
     S.support["c"+n] = true; closeSheet(); S.orgTab = "votacoes"; render(); toast("Proposta aberta. Seu apoio já conta."); },
   contest: () => toast("Contestação recebida: nova verificação automática, com registro público."),
   notifprefs: () => notifPrefs(),
+  cmnmodo: b => { S.cmnModo = b.dataset.m; render(); if (S.cmnModo === "paginas" && !PAGS.carregou) paginasCarrega(); },
+  pgfiltro: b => { S.pgFiltro = b.dataset.f; render(); },
+  pgtab: b => { S.pgTab = b.dataset.tab; const pid = route().slice(3), p = PAGS.lista.find(x=>x.id === pid); if (!p) return;
+    $$('[data-act="pgtab"]').forEach(t=>t.setAttribute("aria-selected", t.dataset.tab===S.pgTab)); $("#pgbody").innerHTML = paginaCorpoTab(ORG["pg-" + pid], p, S.pgTab); paginaPreenche(pid); },
+  paginova: () => sheetPaginaNova(),
+  paginaedita: b => sheetPaginaEdita(b.dataset.id),
+  paginacria: async b => { const tipo = ($('input[name="pgtipo"]:checked') || {}).value, nome = $("#pgnome").value.trim();
+    if (nome.length < 2) return formErro("Dê um nome à página.");
+    if (tipo === "empresa" && $("#pgcnpj").value.replace(/\D/g, "").length !== 14) return formErro("Confira o CNPJ: são 14 números.");
+    if (!$("#pgnaoel").checked) return formErro("Páginas não podem ser de candidato, partido ou campanha eleitoral. Marque a confirmação.");
+    if (!$("#pgdecl").checked) return formErro("Para criar a página, aceite a declaração de responsabilidade.");
+    formErro(""); ocupado(b, true, "Enviando…");
+    const {data, error} = await SB.rpc("pagina_cria", {p_tipo:tipo, p_nome:nome, p_descricao:$("#pgdesc").value, p_cidade:$("#pgcid").value, p_tema:$("#pgtema").value, p_site:$("#pgsite").value,
+      p_contato:$("#pgcont").value, p_cnpj:tipo === "empresa" ? $("#pgcnpj").value : null, p_nao_eleitoral:true, p_declaracao:DECL_PAGINA});
+    ocupado(b, false); if (error) return formErro(erroAuth(error));
+    closeSheet(); await paginasCarrega(); toast(data && data.status === "aprovada" ? "Página no ar." : "Página enviada. A curadoria avisa você no sino."); go("pg-" + data.id); },
+  paginasalva: async b => { ocupado(b, true, "Salvando…");
+    const {error} = await SB.rpc("pagina_edita", {p_id:b.dataset.id, p_descricao:$("#pgdesc").value, p_cidade:$("#pgcid").value, p_tema:$("#pgtema").value, p_site:$("#pgsite").value, p_contato:$("#pgcont").value});
+    ocupado(b, false); if (error) return formErro(erroAuth(error)); closeSheet(); await paginasCarrega(); toast("Página salva."); render(); },
+  vitnovo: b => sheetVitrineNovo(b.dataset.p),
+  vitsalva: async b => { const pid = b.dataset.p, nome = $("#vinome").value.trim(), link = $("#vilink").value.trim();
+    if (nome.length < 2) return formErro("Diga o nome do serviço ou produto."); if (link && !/^(https:\/\/|mailto:|tel:)/.test(link)) return formErro("O link precisa começar com https://, mailto: ou tel:.");
+    ocupado(b, true, "Salvando…"); const {error} = await SB.from("pagina_itens").insert({pagina_id:pid, nome, descricao:$("#videsc").value.trim() || null, preco:$("#vipreco").value.trim() || null, link:link || null, ordem:(PAGS.itens[pid] || []).length});
+    ocupado(b, false); if (error) return formErro(erroAuth(error)); closeSheet(); delete PAGS.itens[pid]; S.pgTab = "vitrine"; toast("Adicionado à vitrine."); render(); },
+  vitira: async b => { if (!b.dataset.ok){ b.dataset.ok = "1"; b.textContent = "Tirar mesmo?"; return; } const pid = b.dataset.p;
+    const {error} = await SB.from("pagina_itens").delete().eq("id", b.dataset.id); if (error) return toast("Não foi possível agora."); delete PAGS.itens[pid]; toast("Tirado da vitrine."); render(); },
   notifpref: async b => { const k = b.dataset.k, on = b.getAttribute("aria-checked") !== "true"; b.setAttribute("aria-checked", on);
     const {error} = await SB.from("notif_prefs").upsert({user_id:ME.user.id, tipo:k, quer:on}); if (error){ b.setAttribute("aria-checked", !on); return toast("Não foi possível salvar agora."); }
     NOTIF.prefs[k] = on; toast(on ? "Você vai receber esta notificação." : "Você não vai mais receber esta notificação."); },
@@ -7772,6 +7920,13 @@ const A = {
     NOTIF.n = 0; navConta(); const l = $("#nlist"); if (l) l.innerHTML = notifLista(); toast("Tudo marcado como lido."); },
   segprevia: () => toast("É assim que o botão aparece para outras pessoas. Você não segue a si mesma."),
   follow: async b => { const id = b.dataset.org;
+    if (/^pg-[0-9a-f-]{36}$/.test(id)){   /* seguir uma página: precisa de conta e vai para o servidor */
+      if (!ME.user || !SB){ toast("Entre na sua conta para seguir páginas."); return A.acessar(); }
+      const segue = !S.follow.has(id), pid = id.slice(3); b.disabled = true;
+      const r = segue ? await SB.from("pagina_seguidores").insert({pagina_id:pid}) : await SB.from("pagina_seguidores").delete().eq("seguidor", ME.user.id).eq("pagina_id", pid);
+      b.disabled = false; if (r.error && !/duplicate/i.test(r.error.message || "")) return toast("Não foi possível agora. Tente de novo.");
+      segue ? S.follow.add(id) : S.follow.delete(id); persist("follow"); const y = window.scrollY; render(); window.scrollTo(0,y);
+      return toast(segue ? "Agora você segue " + ((ORG[id] && ORG[id].nome) || "esta página") + "." : "Você deixou de seguir " + ((ORG[id] && ORG[id].nome) || "esta página") + "."); }
     if (ehPessoaReal(id)){   /* seguir uma conta da rede: precisa de conta e vai para o servidor */
       if (!ME.user || !SB){ toast("Entre na sua conta para seguir perfis."); return A.acessar(); }
       const segue = !S.follow.has(id), uuid = id.slice(2); b.disabled = true;
@@ -8018,7 +8173,7 @@ if (PREVIA){ addEventListener("message", e => { if (!PREVIA_ORIGEM.test(e.origin
     if (d.abrir === "marca") setTimeout(()=>A.sobre(), 80);
     else if (d.alvo) setTimeout(()=>{ const el = document.getElementById(d.alvo); el && el.scrollIntoView({block:"start"}); }, 120); });
   parent.postMessage({tipo:"arede-previa-pronta"}, "*"); }
-const VERSAO = "v1 registrada · 14/11 09:01";
+const VERSAO = "v1 registrada · 14/11 09:21";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
