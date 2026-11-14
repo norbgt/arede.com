@@ -7938,12 +7938,12 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
 if (PREVIA){ addEventListener("message", e => { if (!PREVIA_ORIGEM.test(e.origin)) return; const d = e.data; if (!d || d.tipo !== "arede-previa") return;
-    aplicaTextos(d.textos); MANIF_ON = true; manifAplica(); closeSheet();
+    aplicaTextos(d.textos); if (/^(manifesto|funciona)$/.test(d.rota || "")) MANIF_ON = true; manifAplica(); closeSheet();
     if (d.rota && route() !== d.rota) location.hash = d.rota; else render();
     if (d.abrir === "marca") setTimeout(()=>A.sobre(), 80);
     else if (d.alvo) setTimeout(()=>{ const el = document.getElementById(d.alvo); el && el.scrollIntoView({block:"start"}); }, 120); });
   parent.postMessage({tipo:"arede-previa-pronta"}, "*"); }
-const VERSAO = "v1 registrada · 14/11 08:40";
+const VERSAO = "v1 registrada · 14/11 08:45";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
