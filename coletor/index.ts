@@ -349,7 +349,10 @@ async function coleta(f: any, recentes: any[]) {
     const yt = f.feed_tipo === "youtube";
     const par = yt ? null : recentes.find((x) => x.fonte_id !== f.id && x.grupo && !x.yt && mesmaNoticia(eu, x));
     const grupo: string = par ? par.grupo : crypto.randomUUID();   // cada notícia tem um grupo; a mesma notícia em outra fonte entra no mesmo
-    const lg = idiomaDe(i.titulo + " " + (i.chamada || ""), lingua || (yt ? f.lingua : ""));   // o RSS do YouTube não diz o idioma: vale o do canal
+    // idioma (14 nov 2026): vale o que o feed declara quando é pt, en ou es; senão, o idioma cadastrado da fonte; só sem os dois, as palavras do texto.
+    // Antes, título curto de fonte em português caía em "outra" e ia para a fila, e francês era lido como espanhol.
+    const decl = (lingua || "").slice(0, 2).toLowerCase(), fl = (f.lingua || "").slice(0, 2).toLowerCase();
+    const lg = IDIOMAS.includes(decl) ? decl : /^[a-z]{2}$/.test(fl) && fl !== "ou" ? fl : idiomaDe(i.titulo + " " + (i.chamada || ""), "");
     const n = { fonte_id: f.id, url: i.url, titulo: i.titulo.slice(0, 300), chamada: i.chamada, resumo: i.resumo || "", lingua: lg, imagem_url: i.imagem_url, publicada_em: i.publicada_em && !isNaN(+i.publicada_em) ? i.publicada_em.toISOString() : new Date().toISOString(),
       impressao: imp, grupo, tema: temaDe(i.titulo, i.chamada), status: FORA.test(imp) ? "recusada" : f.nota >= NOTA_DIRETO && IDIOMAS.includes(lg) ? "publicada" : "fila" };
     novas.push(n); recentes.push({ id: null, fonte_id: f.id, impressao: imp, grupo, pw, en, et, yt });
