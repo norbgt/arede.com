@@ -18,3 +18,8 @@ A rotina `coletor-noticias` roda a cada minuto e chama `privado.coletor_dispara_
 os lotes 0 a 9 saem nos minutos 0 a 9 de cada janela de 15 minutos; cada fonte segue lida a cada 15 minutos.
 `privado.coletor_dispara(modo)` (as 10 de uma vez) fica para usos manuais e para a busca semanal de feeds.
 A limpeza diária (`coletor-limpa-respostas`) também apaga o histórico do agendador com mais de 7 dias.
+
+## Publicação e idioma (14 nov 2026)
+A função publicada no Supabase tem uma linha só: ela carrega `coletor/index.ts` deste repositório, fixado num commit.
+O que roda é exatamente o que está aqui. Para publicar uma mudança: enviar ao repositório e trocar o commit na função.
+Idioma de cada notícia: vale o que o feed declara quando é pt, en ou es; senão, o idioma cadastrado da fonte; só sem os dois, as palavras do texto.
