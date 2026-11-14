@@ -967,6 +967,8 @@ a.setting{color:var(--ink);text-decoration:none}
 .pubhead{display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px 0 4px;text-align:center}
 .pubhead .av{width:76px;height:76px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:22px}
 .pubhead h2{font-size:24px}
+.segnum{font-size:13.5px;color:var(--muted)}.segnum b{color:var(--ink);font-weight:700}
+.segrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:4px 0 2px}.segrow .btn{min-width:132px}
 .pubhead p{font-size:13.5px;color:var(--muted)}
 /* ao vivo, denúncia, mandatos, rodapé e manifesto */
 .live{display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:#E0245E;vertical-align:1px;animation:pulse 1.6s ease-in-out infinite}
@@ -4295,7 +4297,7 @@ function tagsDe(it){ if (TAGS_CACHE.has(it.id)) return TAGS_CACHE.get(it.id);
    das relações mais fortes para as mais fracas, e de onde vem a sua região (localização, escolhida por você ou a cidade do perfil). */
 const regiaoOrigem = () => S.regiao ? (S.localAuto ? "localizacao" : "escolhida") : (ME.perfil && ME.perfil.cidade) ? "perfil" : "";
 const REG_ORIGEM = {localizacao:"pela sua localização", escolhida:"escolhida por você", perfil:"cidade do seu perfil"};
-const segueOrg = it => { const o = ORG[it.org] || {}; return S.follow.has(it.org) && (o.fonte || S.usarOrgs); };
+const segueOrg = it => { const o = ORG[it.org] || {}; return S.follow.has(it.org) && (o.fonte || o.pessoa || S.usarOrgs); };
 function relacoes(it){ if (!S.algo || it.daArte || it.anuncio) return [];
   const o = ORG[it.org] || {}, R = minhaRegiao(), out = [], pr = S.perto && R.txt ? prox(it) : 0;
   if (segueOrg(it)) out.push({f:3, tag:"Você segue", chip:"Você segue", ic:"check", frase:`você segue ${esc(o.nome)}`});
@@ -4515,7 +4517,7 @@ const F = {items:[], cursor:0, vistos:0, gate:null, paused:false, ended:false, k
 const tabTypes = () => (FTABS.find(t=>t[0]===S.tab)||FTABS[0])[2];
 const feedMode = () => S.algo ? "algo" : "amplo";
 const feedKey = () => [nivel(), S.rapido, S.algo, S.perto, S.regiao, S.tab, S.usarOrgs, S.temas.join(","), S.created.length, [...S.follow].join(","), JSON.stringify(S.filt), S.ord].join("|");
-const scoreAlgo = it => ((S.follow.has(it.org)&&S.usarOrgs)?1:0)*(S.mix/100) + (S.temas.includes(it.tema)?1:0)*(1-S.mix/100) - it.min/20000;
+const scoreAlgo = it => ((S.follow.has(it.org)&&(S.usarOrgs||(ORG[it.org]||{}).pessoa))?1:0)*(S.mix/100) + (S.temas.includes(it.tema)?1:0)*(1-S.mix/100) - it.min/20000;
 /* algoritmo desligado: critérios amplos e iguais para todos (rodízio de temas e cidades, mais novo primeiro) */
 function amplo(list){
   const by = {}; list.slice().sort((a,b)=>a.min-b.min).forEach(it=>{ (by[it.tema]=by[it.tema]||[]).push(it); });
@@ -5449,7 +5451,8 @@ function screenOrg(id){
       : o.pessoa ? `<div class="note" style="margin:10px 0 12px">${ic("check")}<span>Conta real da rede. Tudo abaixo foi publicado por ${esc(o.nome)}.</span></div>`
       : o.real ? `<div class="note" style="margin:10px 0 12px">${ic("info")}<span>${esc(o.nome)} ainda não está na rede. Os conteúdos abaixo vêm dos canais públicos dela, resumidos pela curadoria, sempre com link para a fonte original.${o.site?` <a href="${o.site}" target="_blank" rel="noopener">Site oficial ↗</a>`:""}</span></div>`
         : `<div class="note" style="margin:10px 0 12px">${ic("info")}<span>Organização fictícia, de exemplo. Os conteúdos dela mostram como a rede funciona e ainda vão ser trocados por conteúdo real.</span></div>`}
-      <div class="row" style="max-width:440px"><button class="btn ${f?"ghost":"primary"}" type="button" data-act="follow" data-org="${id}">${f?ic("check","sm")+(o.real?" Seguindo":" Participando"):(o.real?"Seguir":"Participar")}</button>${o.real ? "" : `<button class="btn ghost" type="button" data-act="msgs">${ic("message","sm")} Mensagem</button>`}</div>
+      ${ehPessoaReal(id) ? `<p class="segnum" data-segnum="${id.slice(2)}" hidden></p>` : ""}
+      <div class="row" style="max-width:440px">${ehPessoaReal(id) && ME.user && id === "u-" + ME.user.id ? `<button class="btn ghost" type="button" data-act="share" data-perfil="${id}">${ic("share","sm")} Compartilhar</button>` : `<button class="btn ${f?"ghost":"primary"}" type="button" data-act="follow" data-org="${id}">${f?ic("check","sm")+(o.real?" Seguindo":" Participando"):(o.real?"Seguir":"Participar")}</button>${o.pessoa ? `<button class="btn ghost" type="button" data-act="share" data-perfil="${id}">${ic("share","sm")} Compartilhar</button>` : ""}`}${o.real ? "" : `<button class="btn ghost" type="button" data-act="msgs">${ic("message","sm")} Mensagem</button>`}</div>
       <div class="tabs" role="tablist" aria-label="Seções da organização" style="margin-top:8px">${tabs.map(([k,n])=>`<button class="tab" type="button" role="tab" data-act="otab" data-tab="${k}" aria-selected="${S.orgTab===k}">${n}</button>`).join("")}</div></div>
       <div id="orgbody" style="padding-top:var(--gap)">${orgTabBody(o)}</div></div>`;
 }
@@ -5659,8 +5662,8 @@ function fillPublic(){ const box = $("#pfeed"); if (!box) return;
   const g = new TileGrid("pfeed", box, "none"); items.forEach(it=>g.add(it)); g.flush(true); g.render(); }
 function pubShow(){ $$('[data-act="pubtab"]').forEach(t=>t.setAttribute("aria-selected", t.dataset.tab===S.pubTab)); { const ps = pubStatus(), pe = $("#pubstatus"); pe.innerHTML = ps; pe.hidden = !ps; } $("#pubbody").innerHTML = pubBody(); fillPublic(); }
 function visBox(){ const m = S.redes.filter(c=>c.tipo==="minha"), li = t => `<li>${t}</li>`;
-  const sim = ["Nome, iniciais e cidade", "Até " + MAX_INT + " interesses que você escolhe", "Suas publicações", ...m.map(c=>(c.destino==="link" ? "O link do seu " : "O link e a prévia do seu ") + REDES[c.rede].nome), S.publico ? "Pastas que não são secretas" : "", S.orgsVisiveis ? "Organizações de que você participa" : ""].filter(Boolean);
-  const nao = ["Algoritmo, temas e tudo o que alimenta o seu feed", "Curtidas e compartilhadas", "Agenda: eventos e chamados", "Pastas secretas" + (S.publico ? "" : " (e, com o perfil privado, todas as pastas)"), "Perfis que você acompanha em outras redes", "Seu e-mail", S.orgsVisiveis ? "" : "Organizações de que você participa (você escolheu ocultar)"].filter(Boolean);
+  const sim = ["Nome, iniciais e cidade", "Até " + MAX_INT + " interesses que você escolhe", "Suas publicações", ...m.map(c=>(c.destino==="link" ? "O link do seu " : "O link e a prévia do seu ") + REDES[c.rede].nome), S.publico ? "Pastas que não são secretas" : "", S.orgsVisiveis ? "Organizações de que você participa" : "", "Quantas pessoas seguem você e quantas você segue"].filter(Boolean);
+  const nao = ["Algoritmo, temas e tudo o que alimenta o seu feed", "Curtidas e compartilhadas", "Agenda: eventos e chamados", "Pastas secretas" + (S.publico ? "" : " (e, com o perfil privado, todas as pastas)"), "Perfis que você acompanha em outras redes", "Quem você segue e quem segue você", "Seu e-mail", S.orgsVisiveis ? "" : "Organizações de que você participa (você escolheu ocultar)"].filter(Boolean);
   /* 12 nov 2026: o detalhe saiu da página e abre numa janela própria, pelo selo "Perfil privado/público" */
   return `<div class="visbox"><div class="vcol pub"><h3>${ic("globe","sm")} Aparece</h3><ul>${sim.map(li).join("")}</ul></div>
     <div class="vcol priv"><h3>${ic("lock","sm")} Nunca aparece</h3><ul>${nao.map(li).join("")}</ul></div></div>
@@ -5670,9 +5673,11 @@ function sheetVis(){ const t = "Perfil " + (S.publico ? "público" : "privado");
 function screenPublic(){
   const orgs = ORGS.filter(o=>S.follow.has(o.id));
   return header(`<div class="toprow"><button class="iconbtn" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button><h1 class="pagehead" style="font-size:19px">Como outras pessoas veem</h1><div class="spacer"></div>
-    <button class="iconbtn" type="button" data-act="share" aria-label="Compartilhar perfil">${ic("share")}</button></div>`)
+    <button class="iconbtn" type="button" data-act="share" data-perfil="${ME.user ? "u-" + ME.user.id : ""}" aria-label="Compartilhar perfil">${ic("share")}</button></div>`)
   + `<div class="container">
-    <div class="pubhead">${(()=>{ const pf = ME.user && ME.perfil; return pf ? `<span class="av" aria-hidden="true">${siglaDe(pf.nome)}</span><h2>${esc(pf.nome)}${verifBtn(pf.verificado)}</h2>${pf.cidade ? `<p>${esc(pf.cidade)}</p>` : ""}${pf.bio ? `<p class="pubbio">${esc(pf.bio)}</p>` : ""}` : `<span class="av" aria-hidden="true">VC</span><h2>Você</h2>`; })()}${S.interesses.length ? intChips(false, true) : ""}
+    <div class="pubhead">${(()=>{ const pf = ME.user && ME.perfil; return pf ? `<span class="av" aria-hidden="true">${siglaDe(pf.nome)}</span><h2>${esc(pf.nome)}${verifBtn(pf.verificado)}</h2>${pf.cidade ? `<p>${esc(pf.cidade)}</p>` : ""}${pf.bio ? `<p class="pubbio">${esc(pf.bio)}</p>` : ""}
+      <p class="segnum" data-segnum="${pf.id}" hidden></p>
+      <div class="segrow"><button class="btn primary" type="button" aria-disabled="true" data-act="segprevia">Seguir</button><button class="btn ghost" type="button" data-act="share" data-perfil="u-${pf.id}">${ic("share","sm")} Compartilhar</button></div>` : `<span class="av" aria-hidden="true">VC</span><h2>Você</h2>`; })()}${S.interesses.length ? intChips(false, true) : ""}
       <button class="vischip" type="button" data-act="visdet" aria-haspopup="dialog">${ic(S.publico ? "globe" : "lock","sm")}<span>Perfil ${S.publico ? "público" : "privado"}</span>${ic("back","sm flip")}</button>
       ${S.orgsVisiveis ? `<p>Participa de ${orgs.length} organizações</p>` : ""}
       ${S.orgsVisiveis ? `<div class="chips tags" style="justify-content:center">${orgs.map(o=>`<span class="chip static">${o.nome}</span>`).join("")}</div>` : ""}</div>
@@ -6032,7 +6037,7 @@ const go = r => { if (route()===r) render(); else location.hash = r; };
 function goBack(){ NAV.pop(); location.hash = NAV.pop() || "inicio"; }
 /* sair do ambiente do manifesto: volta para a última tela do app (pula as páginas do próprio ambiente) */
 function envExit(){ let h; do { h = NAV.pop(); } while (h && /^(manifesto|funciona)$/.test(h)); location.hash = h || "inicio"; }
-function render(){
+function render(){ setTimeout(()=>$$("[data-segnum]").forEach(el=>segNumeros(el.dataset.segnum, el)), 0);
   const r = route(), main = $("#main"), logoVelho = main.querySelector(".logo");
   if (r!=="inicio"){ document.documentElement.classList.remove("snapvid"); LV_ON = null; }
   const pr = r.split("/")[0];
@@ -6140,9 +6145,20 @@ async function contaInicia(){
 function vistaDaConta(){ const v = ME.perfil && ME.perfil.vista;
   if (v && v!==S.vista && (v==="blocos" || v==="soltos")){ S.vista = v; store.set("vista", v); if (route()==="inicio" && F.grid){ const st = $("#status"); if (st) st.innerHTML = statusLine(); resetFeed(); } }
   else if (ME.perfil && !v && store.get("vista", null) && SB) SB.rpc("vista_registra", {p_vista:S.vista, p_anterior:S.vista}).then(()=>{}, ()=>{}); }
+/* SEGUIR PERFIS (14 nov 2026): seguir outra conta da rede fica no servidor (tabela seguidores). Todo mundo vê só os números
+   (seguidores e seguindo); quem segue quem fica só com cada pessoa. Publicações de quem você segue sobem no feed ("Você segue"). */
+const ehPessoaReal = id => /^u-[0-9a-f-]{36}$/.test(id || "");
+async function seguindoCarrega(){ if (!SB || !ME.user) return;
+  try{ const {data} = await SB.from("seguidores").select("seguido"); if (!data) return; let mudou = false;
+    for (const r of data){ const id = "u-" + r.seguido; if (!S.follow.has(id)){ S.follow.add(id); mudou = true; } }
+    for (const id of [...S.follow]) if (ehPessoaReal(id) && !data.some(r=>"u-" + r.seguido === id)){ S.follow.delete(id); mudou = true; }
+    if (mudou){ persist("follow"); } }catch(e){} }
+const segTexto = n => n.seguidores + (n.seguidores === 1 ? " seguidor" : " seguidores") + " · segue " + n.seguindo;
+async function segNumeros(uuid, el){ if (!SB || !el || !uuid) return; try{ const {data} = await SB.rpc("perfil_seguidores", {p_id:uuid}); if (data && el.isConnected){
+  el.innerHTML = `<b>${data.seguidores}</b> ${data.seguidores === 1 ? "seguidor" : "seguidores"} · segue <b>${data.seguindo}</b>`; el.hidden = false; } }catch(e){} }
 async function perfilCarrega(){ if (!SB || !ME.user){ ME.perfil = null; return; }
   const {data} = await SB.from("perfis").select("id,nome,usuario,cidade,bio,criado_em,verificado,verificado_em,vista").eq("id", ME.user.id).maybeSingle(); ME.perfil = data || null;
-  vistaDaConta();
+  vistaDaConta(); seguindoCarrega();
   /* papel e nível vêm do servidor, por uma função que só responde sobre a própria conta (o papel saiu da leitura pública) */
   try{ const a = await SB.rpc("meu_acesso"); if (!a.error && a.data){ ME.acesso = a.data; if (ME.perfil) ME.perfil.papel = a.data.papel || "membro"; } }catch(e){}
   contaDadosCarrega(); }
@@ -7440,11 +7456,11 @@ const A = {
     try{ await SB.auth.signOut({scope:"others"}); }catch(e){} ocupado(b, false); closeSheet(); toast("Senha trocada. Os outros aparelhos saíram da conta."); },
   sairtodos: async () => { try{ await SB.auth.signOut({scope:"global"}); }catch(e){} ME.user = null; ME.perfil = null; ME.acesso = null; toast("Você saiu da conta em todos os aparelhos."); go("conta"); },
   baixadados: async b => { ocupado(b, true); const uid = ME.user.id, q = (t, c, col="user_id") => SB.from(t).select(c).eq(col, uid).then(r=>r.data || []).catch(()=>[]);
-    const [perfil, publicacoes, contas, orgs, aceites, verif, comentarios, guardados] = await Promise.all([q("perfis","id,nome,usuario,cidade,bio,criado_em,verificado,verificado_em,colaborador","id"), q("publicacoes","*","autor"), q("contas_externas","*"), q("org_pedidos","*"), q("aceites","*"), q("verificacao_pedidos","*"), q("comentarios","id,noticia_id,publicacao_id,texto,marca,fonte_url,uteis,status,criado_em","autor"), q("conta_dados","chave,valor,atualizada_em")]);
+    const [perfil, publicacoes, contas, orgs, aceites, verif, comentarios, guardados, sigo] = await Promise.all([q("perfis","id,nome,usuario,cidade,bio,criado_em,verificado,verificado_em,colaborador","id"), q("publicacoes","*","autor"), q("contas_externas","*"), q("org_pedidos","*"), q("aceites","*"), q("verificacao_pedidos","*"), q("comentarios","id,noticia_id,publicacao_id,texto,marca,fonte_url,uteis,status,criado_em","autor"), q("conta_dados","chave,valor,atualizada_em"), q("seguidores","seguido,criado_em","seguidor")]);
     const local = {}; try{ for (let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if (k.startsWith("arede-")) local[k] = store.get(k.slice(6), null); } }catch(e){}
     const doc = {arquivo:"Dados da sua conta na rede.online", gerado_em:new Date().toISOString(),
       conta:{id:uid, email:ME.user.email, criada_em:ME.user.created_at, email_confirmado_em:ME.user.email_confirmed_at || null, ultimo_acesso:ME.user.last_sign_in_at || null, nivel:nivel()},
-      perfil:perfil[0] || null, publicacoes, comentarios, contas_de_outras_redes:contas, pedidos_de_organizacao:orgs, aceites, pedido_de_verificacao:verif[0] || null, curtidas_pastas_e_votos:guardados,
+      perfil:perfil[0] || null, publicacoes, comentarios, contas_de_outras_redes:contas, pedidos_de_organizacao:orgs, aceites, pedido_de_verificacao:verif[0] || null, curtidas_pastas_e_votos:guardados, contas_que_voce_segue:sigo,
       guardado_so_neste_aparelho:local, nota:"A senha não está aqui: o servidor guarda só uma versão embaralhada, que ninguém consegue ler."};
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(doc, null, 2)], {type:"application/json"})); a.download = "arede.online-meus-dados.json";
     document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 2000); ocupado(b, false); toast("Arquivo baixado."); },
@@ -7607,7 +7623,7 @@ const A = {
   saveto: b => { const id = b.dataset.uid, k = b.dataset.f; S.saved.add(id); S.savedIn[id] = k; persist("saved"); persist("savedIn"); closeSheet(); refresh(id); toast(`Salvo em ${folderName(k)}. Suas pastas ficam no Perfil.`); },
   like: b => { const id = b.dataset.uid; if (!S.liked.has(id)) lugarSinal(findItem(id), "like"); S.liked.has(id) ? S.liked.delete(id) : S.liked.add(id); persist("liked"); refresh(id); },
   share: b => { if (b.dataset.uid && !S.shared.has(b.dataset.uid)){ lugarSinal(findItem(b.dataset.uid), "share"); S.shared.add(b.dataset.uid); persist("shared"); }
-    const url = location.href.split("#")[0] + (b.dataset.uid ? "#pin-" + b.dataset.uid : location.hash); try{ navigator.clipboard.writeText(url).then(()=>toast("Link copiado."), ()=>toast("Não foi possível copiar o link.")); }catch(e){ toast("Não foi possível copiar o link."); } },
+    const url = location.href.split("#")[0] + (b.dataset.uid ? "#pin-" + b.dataset.uid : b.dataset.perfil ? "#org-" + b.dataset.perfil : location.hash); try{ navigator.clipboard.writeText(url).then(()=>toast("Link copiado."), ()=>toast("Não foi possível copiar o link.")); }catch(e){ toast("Não foi possível copiar o link."); } },
   moretext: b => { const pin = b.closest(".pin"), t = pin.querySelector(".pintext"); const open = !t.classList.contains("open"); t.classList.toggle("open", open); S.textOpen[b.dataset.uid] = open;
     b.textContent = open ? "Mostrar menos" : "Mostrar mais"; b.setAttribute("aria-expanded", open); layoutPin(pin); },
   poll: b => { S.pollVote[b.dataset.uid] = +b.dataset.i; persist("pollVote"); refresh(b.dataset.uid); toast("Voto registrado na consulta."); },
@@ -7704,7 +7720,16 @@ const A = {
     S.created.push({id:950+n, uid:"c"+n, tipo:"votacao", fase:"apoios", org:o.id, tema:o.tema, min:0, titulo:tit, texto:$("#ptxt").value.trim() || "Proposta aberta para apoios.", quorum:Math.ceil(vt/2), votantes:vt, votaram:0, apoios:0, prazo:"—", opcoes:["Aprovar a proposta","Rejeitar","Abster-se"], critico:false, autor:"você"});
     S.support["c"+n] = true; closeSheet(); S.orgTab = "votacoes"; render(); toast("Proposta aberta. Seu apoio já conta."); },
   contest: () => toast("Contestação recebida: nova verificação automática, com registro público."),
-  follow: b => { const id = b.dataset.org; if (!S.follow.has(id) && ORG[id] && !ORG[id].fonte && /,\s*[A-Z]{2}$/.test(ORG[id].cidade || "")) lugarSinal(ORG[id].cidade, "follow");
+  segprevia: () => toast("É assim que o botão aparece para outras pessoas. Você não segue a si mesma."),
+  follow: async b => { const id = b.dataset.org;
+    if (ehPessoaReal(id)){   /* seguir uma conta da rede: precisa de conta e vai para o servidor */
+      if (!ME.user || !SB){ toast("Entre na sua conta para seguir perfis."); return A.acessar(); }
+      const segue = !S.follow.has(id), uuid = id.slice(2); b.disabled = true;
+      const r = segue ? await SB.from("seguidores").insert({seguido:uuid}) : await SB.from("seguidores").delete().eq("seguidor", ME.user.id).eq("seguido", uuid);
+      b.disabled = false; if (r.error && !/duplicate/i.test(r.error.message || "")) return toast("Não foi possível agora. Tente de novo.");
+      segue ? S.follow.add(id) : S.follow.delete(id); persist("follow"); const y = window.scrollY; render(); window.scrollTo(0,y);
+      return toast(segue ? "Agora você segue " + ((ORG[id] && ORG[id].nome) || "este perfil") + "." : "Você deixou de seguir " + ((ORG[id] && ORG[id].nome) || "este perfil") + "."); }
+    if (!S.follow.has(id) && ORG[id] && !ORG[id].fonte && /,\s*[A-Z]{2}$/.test(ORG[id].cidade || "")) lugarSinal(ORG[id].cidade, "follow");
     S.follow.has(id) ? S.follow.delete(id) : S.follow.add(id); persist("follow");
     const r = route(), x = b.closest(".xcard");
     if (x) refresh(x.dataset.x); else if (r.startsWith("pin-")) refresh(r.slice(4)); else { const y = window.scrollY; render(); window.scrollTo(0,y); }
@@ -7943,7 +7968,7 @@ if (PREVIA){ addEventListener("message", e => { if (!PREVIA_ORIGEM.test(e.origin
     if (d.abrir === "marca") setTimeout(()=>A.sobre(), 80);
     else if (d.alvo) setTimeout(()=>{ const el = document.getElementById(d.alvo); el && el.scrollIntoView({block:"start"}); }, 120); });
   parent.postMessage({tipo:"arede-previa-pronta"}, "*"); }
-const VERSAO = "v1 registrada · 14/11 08:45";
+const VERSAO = "v1 registrada · 14/11 08:51";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
