@@ -17,7 +17,7 @@ import { temaDe } from "./temas.ts";
 
 const SB = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 const UA = "Mozilla/5.0 (compatible; arede-coletor/1.0; +https://arede.online/)";
-const LOTES = 10, DIAS = 4, NOTA_DIRETO = 80, IDIOMAS = ["pt", "en", "es"], POR_PAGINA = 4;
+const LOTES = 10, DIAS = 4, NOTA_DIRETO = 80, IDIOMAS = ["pt", "en", "es"], POR_PAGINA = 6;
 
 type Res = { ok: boolean; status: number; url: string; ct: string; txt: string; err?: string };
 // baixa em partes e para no limite (páginas e mapas grandes não estouram a memória da função)
@@ -314,19 +314,24 @@ function idiomaDe(t: string, lingua: string): string {
   for (const [k, re] of Object.entries(MARCAS)) { const c = (n.match(re) || []).length; if (c > max){ max = c; melhor = k; } }
   return melhor;
 }
-// chamada pelo resumo de compartilhamento da própria página (og:description, twitter:description ou description)
-async function chamadaDaPagina(url: string): Promise<string | null> {
-  const r = await get(url, 7000, 250_000, "</head>"); if (!r.ok || !r.txt) return null;
+// prévia pela própria página da matéria (14 nov 2026): chamada (og:description) e imagem de capa (og:image), o que o site oferece para compartilhamento.
+// Só o começo da página é lido. Chamada cortada com reticências não serve: a regra da rede é texto sempre completo.
+async function previaDaPagina(url: string): Promise<{ ch: string | null; img: string | null }> {
+  const r = await get(url, 7000, 250_000, "</head>"); if (!r.ok || !r.txt) return { ch: null, img: null };
   const h = r.txt;
-  for (const k of ["og:description", "twitter:description", "description"]) {
-    const tag = h.match(new RegExp("<meta[^>]+(?:property|name)=[\"']" + k + "[\"'][^>]*>", "i")); if (!tag) continue;
-    const c = tag[0].match(/content=["']([^"']*)["']/i) || tag[0].match(/content=([^\s>]+)/i); if (!c) continue;
-    const t = chamada(limpa(c[1])); if (t) return t;
-  }
-  return null;
+  const meta = (k: string) => { const tag = h.match(new RegExp("<meta[^>]+(?:property|name)=[\"']" + k + "[\"'][^>]*>", "i")); if (!tag) return "";
+    const c = tag[0].match(/content="([^"]*)"/i) || tag[0].match(/content='([^']*)'/i) || tag[0].match(/content=([^\s>]+)/i); return c ? c[1] : ""; };
+  let ch: string | null = null;
+  for (const k of ["og:description", "twitter:description", "description"]) { const bruto = limpa(meta(k)); if (!bruto) continue;
+    ch = chamada(bruto) || (bruto.length >= 40 && bruto.length <= 300 && !/(…|\.\.\.)$/.test(bruto) ? bruto : null); if (ch) break; }
+  let img: string | null = null;
+  for (const k of ["og:image:secure_url", "og:image", "twitter:image"]) { const u = absoluto(limpa(meta(k)), r.url);
+    if (u.startsWith("https://") && !/logo|default|placeholder|avatar|favicon/i.test(u)) { img = u; break; } }
+  return { ch, img };
 }
 const limpaUrl = (u: string) => { try { const x = new URL(u); x.hash = ""; for (const k of [...x.searchParams.keys()]) if (/^(utm_|fbclid|gclid|ref$|cmpid|origin)/i.test(k)) x.searchParams.delete(k); return x.href; } catch { return u; } };
 
+const ehYt = (x: any) => /youtube\.com\/watch/.test(x.url || "");
 async function coleta(f: any, recentes: any[]) {
   const r = await get(f.feed_url, 12000);
   if (!r.ok || !pareceFeed(r.txt)) return { erro: r.ok ? "O feed não está mais no formato esperado" : "Feed não respondeu (" + (r.status || r.err) + ")", novas: 0 };
@@ -334,7 +339,7 @@ async function coleta(f: any, recentes: any[]) {
   const limite = Date.now() - DIAS * 864e5;
   const frescos = itens.filter((i: any) => !i.publicada_em || isNaN(+i.publicada_em) || +i.publicada_em >= limite).map((i: any) => ({ ...i, url: limpaUrl(i.url) }));
   if (!frescos.length) return { erro: null, novas: 0, itens: itens.length, frescos: 0 };
-  const { data: ja } = await SB.from("noticias").select("url,resumo,chamada,titulo").in("url", frescos.map((i: any) => i.url));
+  const { data: ja } = await SB.from("noticias").select("url,resumo,chamada,titulo,imagem_url,previa_em").in("url", frescos.map((i: any) => i.url));
   const temUrl = new Set((ja || []).map((x: any) => x.url));
   // resumo nulo = ainda não revisado com o divisor de frases atual; "" = revisado, o feed não tem mais texto
   const semResumo = new Set((ja || []).filter((x: any) => x.resumo === null).map((x: any) => x.url));
@@ -353,17 +358,24 @@ async function coleta(f: any, recentes: any[]) {
     // Antes, título curto de fonte em português caía em "outra" e ia para a fila, e francês era lido como espanhol.
     const decl = (lingua || "").slice(0, 2).toLowerCase(), fl = (f.lingua || "").slice(0, 2).toLowerCase();
     const lg = IDIOMAS.includes(decl) ? decl : /^[a-z]{2}$/.test(fl) && fl !== "ou" ? fl : idiomaDe(i.titulo + " " + (i.chamada || ""), "");
-    const n = { fonte_id: f.id, url: i.url, titulo: i.titulo.slice(0, 300), chamada: i.chamada, resumo: i.resumo || "", lingua: lg, imagem_url: i.imagem_url, publicada_em: i.publicada_em && !isNaN(+i.publicada_em) ? i.publicada_em.toISOString() : new Date().toISOString(),
+    const n = { previa_em: null as string | null, fonte_id: f.id, url: i.url, titulo: i.titulo.slice(0, 300), chamada: i.chamada, resumo: i.resumo || "", lingua: lg, imagem_url: i.imagem_url, publicada_em: i.publicada_em && !isNaN(+i.publicada_em) ? i.publicada_em.toISOString() : new Date().toISOString(),
       impressao: imp, grupo, tema: temaDe(i.titulo, i.chamada), status: FORA.test(imp) ? "recusada" : f.nota >= NOTA_DIRETO && IDIOMAS.includes(lg) ? "publicada" : "fila" };
     novas.push(n); recentes.push({ id: null, fonte_id: f.id, impressao: imp, grupo, pw, en, et, yt });
   }
-  // sem chamada: busca na página da matéria (novas primeiro, depois as que já entraram sem chamada)
-  const semCh = [...novas.filter((n: any) => !n.chamada), ...(ja || []).filter((x: any) => !x.chamada)].slice(0, POR_PAGINA);
-  let pags = 0;
-  for (let k = 0; k < semCh.length; k += 4) await Promise.all(semCh.slice(k, k + 4).map(async (n: any) => {
-    const ch = await chamadaDaPagina(n.url); if (!ch) return; pags++;
-    if (novas.includes(n)) { n.chamada = ch; n.tema = temaDe(n.titulo, ch); }
-    else await SB.from("noticias").update({ chamada: ch, tema: temaDe(n.titulo, ch) }).eq("url", n.url);
+  // sem chamada ou sem imagem: completa pela página da matéria (novas primeiro, depois as que já entraram e ainda não foram consultadas).
+  // Cada notícia é consultada uma vez só (previa_em), para a vez seguinte ir para as que faltam.
+  const falta = (x: any) => !x.chamada || !x.imagem_url;
+  const semPv = [...novas.filter((n: any) => falta(n) && !ehYt(n)), ...(ja || []).filter((x: any) => falta(x) && !x.previa_em && !ehYt(x))].slice(0, POR_PAGINA);
+  let pags = 0; const achadas: any[] = [];
+  await Promise.all(semPv.map(async (n: any) => { const pv = await previaDaPagina(n.url); achadas.push({ n, pv }); }));
+  // imagem igual em mais de uma matéria da mesma leva é imagem genérica do site (logo, capa padrão): não serve
+  const vezes = new Map<string, number>(); for (const a of achadas) if (a.pv.img) vezes.set(a.pv.img, (vezes.get(a.pv.img) || 0) + 1);
+  const agoraPv = new Date().toISOString();
+  await Promise.all(achadas.map(async ({ n, pv }) => {
+    const ch = n.chamada || pv.ch, img = n.imagem_url || (pv.img && vezes.get(pv.img) === 1 ? pv.img : null);
+    if (ch !== (n.chamada || null) || img !== (n.imagem_url || null)) pags++;
+    if (novas.includes(n)) { if (ch && !n.chamada) n.tema = temaDe(n.titulo, ch); n.chamada = ch; n.imagem_url = img; n.previa_em = agoraPv; }
+    else await SB.from("noticias").update({ chamada: ch, imagem_url: img, previa_em: agoraPv, ...(ch && !n.chamada ? { tema: temaDe(n.titulo, ch) } : {}) }).eq("url", n.url);
   }));
   if (novas.length) { const { error } = await SB.from("noticias").upsert(novas, { onConflict: "url", ignoreDuplicates: true }); if (error) return { erro: "Banco: " + error.message, novas: 0 }; }
   return { erro: null, novas: novas.length, itens: itens.length, frescos: frescos.length, chamadas: pags };
