@@ -140,7 +140,7 @@ img,svg{max-width:100%}
 @media (max-width:429px){ .top .toprow{gap:4px} .logo{font-size:21px} }
 @media (max-width:359px){ .logo{font-size:20px} .lchev{width:14px;height:14px;margin-left:2px} }
 .semsobre .navfoot[href="#manifesto"]{display:none}
-.semsobre .logo{cursor:default}
+.marcape{margin:14px 0 2px;text-align:center;font-size:12.5px;line-height:1.5;color:var(--muted)}.marcape p{margin:6px 0}.marcape a{color:inherit;text-decoration:underline;text-underline-offset:2px}.marcape .rterc{font-size:11.5px;opacity:.85;max-width:46ch;margin-left:auto;margin-right:auto}.marcape .ver{margin:10px 0 0}
 .lchev{align-self:center;width:14px;height:14px;margin-left:2px;fill:none;stroke:var(--muted);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 /* o ponto se move: parado, fica entre "a" e "rede" ("a.rede", a rede, ligada ao manifesto); ao passar o mouse, corre para
    entre "rede" e "online" e a marca se completa: "arede.online". Duas posições-fantasma (.lg) marcam onde ele pousa;
@@ -1733,7 +1733,6 @@ button.setting{width:100%;border:0;text-align:left;font:inherit;color:inherit;cu
     <a class="navfoot" href="#manifesto">Manifesto</a>
     <a class="navbtn" href="#perfil" data-nav="perfil" aria-label="Perfil"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20.5c.8-4 3.7-6 7.5-6s6.7 2 7.5 6"/></svg><span class="navme" aria-hidden="true" hidden></span><span class="lbl">Entrar</span></a>
   </nav>
-  <footer class="cfix" id="cfix" hidden><nav aria-label="Contato e regras"><a href="mailto:contato@arede.online">Contato</a><a href="#termos">Termos</a><a href="#privacidade">Privacidade</a></nav><p id="cfixdir"></p></footer>
   <main class="main" id="main"></main>
 </div>
 <div id="layer"></div>
@@ -3940,7 +3939,7 @@ function saidaConta(e){ const t = e.target, lk = t && t.closest && t.closest("a[
 document.addEventListener("click", saidaConta, true);
 /* ABERTURAS (14 nov 2026): quando alguém abre um conteúdo, o servidor soma 1 para o tema e a fonte daquela notícia naquele dia.
    Não vai quem abriu e não fica guardado qual notícia. Contagem permanente, separada da medição de uso. A administração não conta. */
-function aberturaConta(e){ const b = e.target && e.target.closest && e.target.closest('[data-act="open"],[data-act="topen"]'); if (!b || !b.dataset.uid || !SB) return;
+function aberturaConta(e){ if (PREVIA) return; const b = e.target && e.target.closest && e.target.closest('[data-act="open"],[data-act="topen"]'); if (!b || !b.dataset.uid || !SB) return;
   const it = findItem(b.dataset.uid); if (!it || it.anuncio) return; let nid = null, tipo = "noticia";
   if (it.coletada && /^n[0-9a-f]{32}$/.test(it.id || "")){ const h = it.id.slice(1); nid = `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`; }
   else if (it.daArte) tipo = "arte"; else if (it.conta) tipo = "publicacao"; else return;
@@ -4730,6 +4729,10 @@ function sheetAdSemPagamento(){ const v = adPreco(adDraft());
    A visita leva dois códigos aleatórios (visitante e sessão) e, se veio por link de convite, o código do convite.
    Só roda em arede.online, para sozinha no fim do teste, respeita o pedido de não rastrear do navegador e marca o uso da administração.
    ===================================================================== */
+/* PRÉVIA (14 nov 2026): o backoffice abre o próprio site dentro de um quadro (?previa=1) e manda o rascunho dos textos.
+   Só aceita mensagens do painel; nada é gravado, a medição de uso fica desligada e o rascunho some ao fechar. */
+const PREVIA = /[?&]previa=1/.test(location.search) && window.parent !== window;
+const PREVIA_ORIGEM = /^(https:\/\/painel\.arede\.online|http:\/\/(localhost|127\.0\.0\.1)(:\d+)?)$/;
 const USO_FIM = Date.parse("2026-11-23T02:59:59Z");   /* domingo, 22 nov 2026, 23:59 em Brasília (prorrogada por uma semana em 14 nov, decisão #44) */
 const USO_ATRIB = [["navegacao","Facilidade de navegar"],["conteudo","Relevância do conteúdo"],["confianca","Confiança nas informações"],["aparencia","Aparência e leitura"]];
 const USO = {on:false, fila:[], n:0, max:600, t0:Date.now(), ativo:0, tela:null, telaT:0, rol:0, cliques:[], mortos:0, csatVisto:false, csat:null, s:"", v:"", c:""};
@@ -4739,7 +4742,7 @@ function usoInicia(){
   try{ const q = new URLSearchParams(location.search), c = (q.get("c") || "").replace(/[^a-zA-Z0-9]/g, "").slice(0, 12);
     if (c){ store.set("convite", c); q.delete("c"); history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "") + location.hash); } }catch(e){}
   const naoRastrear = navigator.globalPrivacyControl === true || navigator.doNotTrack === "1";
-  USO.on = (location.hostname === "arede.online" || /[?&]uso=1/.test(location.search)) && Date.now() < USO_FIM && !naoRastrear;
+  USO.on = !PREVIA && (location.hostname === "arede.online" || /[?&]uso=1/.test(location.search)) && Date.now() < USO_FIM && !naoRastrear;
   if (!USO.on) return;
   USO.v = store.get("visitante", ""); if (!USO.v){ USO.v = usoId(); store.set("visitante", USO.v); }
   try{ USO.s = sessionStorage.getItem("arede-sessao") || ""; if (!USO.s){ USO.s = usoId(); sessionStorage.setItem("arede-sessao", USO.s); } }catch(e){ USO.s = usoId(); }
@@ -5001,11 +5004,13 @@ window.addEventListener("message", e=>{ const d = e.data; if (!d) return;
     try{ history.replaceState(null, "", "#" + h); }catch(err){} lastRoute = route(); } });
 const painelRow = () => LOCAL ? `<button class="setting painel" type="button" data-nav-to="painel"><span class="t"><b>Painel de controle <span class="plock" title="Só no seu computador: não está online nem é público" aria-label="Só no seu computador, não está online nem é público">${ic("lock","sm")}</span></b></span>${ic("back","sm flip")}</button>` : "";
 /* o logo da barra superior abre "Sobre arede.online": Manifesto e Como arede.online funciona */
-/* 12 nov 2026: no site aberto, por enquanto sem Manifesto nem Como funciona: a marca não abre nada e fica sem a setinha; o movimento continua.
-   Na cópia da administradora (com o painel) tudo segue como antes. */
-const SOBRE_ON = LOCAL;
-if (!SOBRE_ON) document.body.classList.add("semsobre");
-const LOGO = `<button class="logo" type="button" ${SOBRE_ON ? 'data-act="sobre" aria-haspopup="dialog" aria-label="a rede.online: manifesto e como funciona"' : 'data-act="logover" aria-label="a rede.online"'}><span class="lw" aria-hidden="true">a<i class="ldot lg lga"></i>rede<span class="ext"><i class="ldot lg lgb"></i><span class="com">online</span></span><i class="ldot lmove"></i></span>${SOBRE_ON ? `<svg class="lchev" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>` : ""}</button>`;
+/* 14 nov 2026 (pedido da Amanda): a marca volta a abrir o menu, com a setinha, em todo lugar. Nele ficam Contato, Termos de uso,
+   Privacidade e o que antes era rodapé (contato, direitos, terceiros e versão). Manifesto e Como funciona só aparecem quando o
+   Manifesto está online (backoffice › Textos do site); na cópia da administradora, sempre. O movimento da marca continua igual. */
+let MANIF_ON = LOCAL;
+const manifAplica = () => document.body.classList.toggle("semsobre", !MANIF_ON);
+manifAplica();
+const LOGO = `<button class="logo" type="button" data-act="sobre" aria-haspopup="dialog" aria-label="a rede.online: contato, termos e privacidade"><span class="lw" aria-hidden="true">a<i class="ldot lg lga"></i>rede<span class="ext"><i class="ldot lg lgb"></i><span class="com">online</span></span><i class="ldot lmove"></i></span><svg class="lchev" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>`;
 const header = (inner) => `<header class="top" id="top"><div class="topin container">${inner}</div></header>`;
 const avatar = (o, cls="av") => o.daRedeConta ? `<span class="${cls} rede" aria-hidden="true"><span class="amark">a<i></i></span></span>` : `<span class="${cls}" style="background:${o.cor}" aria-hidden="true">${o.sigla}</span>`;
 function statusLine(){
@@ -5622,13 +5627,13 @@ function screenConfig(){
       <a class="setting l1" href="#privacidade"><span class="t"><b>Privacidade</b><small>O que guardamos e os seus direitos</small></span>${ic("back","sm flip")}</a>
       <a class="setting l1" href="mailto:contato@arede.online"><span class="t"><b>Falar com a rede</b><small>contato@arede.online · pedidos sobre os seus dados, denúncias e correções</small></span>${ic("back","sm flip")}</a>
     </div>
-    ${SOBRE_ON ? `<h2 class="sectitle">Sobre a rede.online</h2>
+    ${MANIF_ON ? `<h2 class="sectitle">Sobre a rede.online</h2>
     <div class="list">
       <a class="setting l1" href="#manifesto"><span class="t"><b>Manifesto</b></span>${ic("back","sm flip")}</a>
       <a class="setting l1" href="#funciona"><span class="t"><b>Como a rede.online funciona</b></span>${ic("back","sm flip")}</a>
       ${painelRow()}
     </div>` : ""}
-    ${rodape()}</div>`;
+    </div>`;
 }
 /* VISUALIZAR PERFIL — o que as outras pessoas veem, conforme as escolhas de privacidade */
 /* VISUALIZAR PERFIL: o que os outros veem. Mesma estrutura do Perfil: abas + status + grade.
@@ -5949,7 +5954,7 @@ const ENV = {"inaug": ["Tudo o que criamos aqui é bem intencionado. Nosso códi
 const envBar = r => `<header class="ebar"><button class="ebtn" type="button" data-act="envexit" aria-label="Voltar para a rede">${ic("back")}<span class="emark">arede<i class="ldot"></i><span class="com">online</span></span></button>
   <nav class="elinks" aria-label="Sobre a rede.online"><a href="#manifesto" ${r==="manifesto"?'aria-current="page"':""}>Manifesto</a><a href="#funciona" ${r==="funciona"?'aria-current="page"':""}>Como funciona</a></nav></header>`;
 const envFoot = () => `<footer class="efoot"><span class="emark big">arede<i class="ldot"></i><span class="com">online</span></span>
-  <nav aria-label="Rodapé"><a href="#manifesto">Manifesto</a><a href="#funciona">Como a rede.online funciona</a><a href="#inicio">Entrar na rede</a><a href="mailto:contato@arede.online">Contato</a><a href="#termos">Termos de uso</a><a href="#privacidade">Privacidade</a></nav><small>${DIREITOS()} ${TERCEIROS}</small><small>versão ${VERSAO}</small></footer>`;
+  <nav aria-label="Rodapé"><a href="#manifesto">Manifesto</a><a href="#funciona">Como a rede.online funciona</a><a href="#inicio">Entrar na rede</a><a href="mailto:contato@arede.online">Contato</a><a href="#termos">Termos de uso</a><a href="#privacidade">Privacidade</a></nav><small>${DIREITOS()} ${TERCEIROS()}</small><small>versão ${VERSAO}</small></footer>`;
 /* parágrafos curtos do Interlude viram "batidas": linhas grandes, como respiros do texto */
 const beat = p => p.length===1 && p[0].replace(/<[^>]+>/g,"").length <= 34;
 /* abertura do manifesto: frase definida pela Amanda (8 nov), a partir do Interlude */
@@ -6035,7 +6040,7 @@ function render(){
   if (!["ate-depois","conta","nova-senha"].includes(r)) store.set("ultima", r);   /* reabre onde parou */
   document.body.classList.toggle("envmode", r==="manifesto" || r==="funciona");
   document.body.classList.toggle("pmode", pr==="painel");
-  { const cf = document.getElementById("cfix"); if (cf){ cf.hidden = r!=="inicio"; const d = document.getElementById("cfixdir"); if (d && !d.textContent) d.textContent = DIREITOS(); } }
+  if (!MANIF_ON && (r==="manifesto" || r==="funciona")){ location.replace("#inicio"); return; }
   if (lastRoute !== null) SCROLL[lastRoute] = window.scrollY;
   const same = lastRoute === r; lastRoute = r;
   if (NAV[NAV.length-1] !== r){ NAV.push(r); if (NAV.length > 40) NAV.shift(); }
@@ -6128,7 +6133,7 @@ async function contaInicia(){
     if (erroUrl) toast("O link do e-mail expirou ou já foi usado. Entre com e-mail e senha ou peça outro link.");
     else if (ME.user) toast("E-mail confirmado. Sua conta está ativa.");
   }
-  cfgCarrega(); regrasCarrega(); adPrecosCarrega(); adNoArCarrega(); setInterval(()=>{ if (document.visibilityState==="visible") adNoArCarrega(); }, 15 * 60000); usoInicia(); await perfilCarrega(); ME.pronto = true; adVolta(); apoioVolta(); if (route()==="anunciar") adPedidosCarrega(); const _mk = marcasCarrega(); await publicacoesCarrega(); await _mk; await noticiasCarrega(); contaAtualiza(); logoInicio(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
+  textosCarrega(); cfgCarrega(); regrasCarrega(); adPrecosCarrega(); adNoArCarrega(); setInterval(()=>{ if (document.visibilityState==="visible") adNoArCarrega(); }, 15 * 60000); usoInicia(); await perfilCarrega(); ME.pronto = true; adVolta(); apoioVolta(); if (route()==="anunciar") adPedidosCarrega(); const _mk = marcasCarrega(); await publicacoesCarrega(); await _mk; await noticiasCarrega(); contaAtualiza(); logoInicio(); redesSync().then(redesAtualizaTodas); orgsAprovadasCarrega(); acessoMudou(true);
   setInterval(()=>{ if (document.visibilityState==="visible") noticiasCarrega(); }, 15 * 60000);
 }
 /* a escolha guardada na conta vale em qualquer aparelho; se a conta ainda não tem, guarda a deste aparelho (quando a pessoa já escolheu) */
@@ -6908,7 +6913,7 @@ function screenConta(){
     <p class="ferr" role="alert" hidden></p>
     <button class="btn primary block" type="button" data-act="entrar">Entrar</button>
     <button class="linkbtn" type="button" data-act="esqueci">Esqueci a senha</button>`}
-    ${ME.pend ? `<div class="note okn pend">${ic(/ntit">Para publicar/.test(ME.pend) ? "info" : "mail")}<span>${ME.pend}</span></div>` : ""}${rodape()}</div>`;
+    ${ME.pend ? `<div class="note okn pend">${ic(/ntit">Para publicar/.test(ME.pend) ? "info" : "mail")}<span>${ME.pend}</span></div>` : ""}</div>`;
 }
 /* CADASTRO EM 3 PASSOS (10 nov 2026): seus dados → confirme o e-mail → conta ativa. Simples, e dizendo o que acontece com os dados. */
 const passosConta = n => `<ol class="csteps" aria-label="Passos do cadastro">${["Seus dados","Confirme o e-mail","Conta ativa"].map((t,i)=>`<li class="${i+1<n ? "feito" : i+1===n ? "on" : ""}"${i+1===n ? ' aria-current="step"' : ""}><span class="nb">${i+1<n ? ic("check","sm") : i+1}</span>${t}</li>`).join("")}</ol>`;
@@ -7016,7 +7021,7 @@ function apoioSituacao(e, r){ const v = r && r.valor ? adBRL(+r.valor) : "", tes
 
 /* TERMOS DE USO E PRIVACIDADE (12 nov 2026): textos em linguagem simples, descrevem o que o site faz hoje.
    Versão inicial, escrita pelo Claude a pedido da Amanda; ainda sem revisão de advogado. O aceite do cadastro guarda DOCS_VERSAO. */
-const DOCS_VERSAO = "14 de novembro de 2026";
+let DOCS_VERSAO = "14 de novembro de 2026";
 const DOCS = {
  privacidade:{t:"Privacidade", intro:"A rede.online guarda o mínimo para a sua conta funcionar. Seu e-mail não aparece para ninguém. Você pode baixar o que guardamos sobre você e apagar a sua conta quando quiser, direto na conta.", s:[
   ["Para quem é", ["A rede.online é para pessoas com 18 anos ou mais. Não criamos contas para menores de idade."]],
@@ -7048,15 +7053,37 @@ const DOCS = {
   ["Mudanças nestes Termos", ["Quando estes Termos mudarem, a data no alto muda, e mudanças importantes são avisadas no site."]]]}};
 /* RODAPÉ (13 nov 2026): contato e direitos reservados sempre à mão — no fim das telas de conta, ajustes e documentos,
    e num canto fixo no feed em telas largas. Notícias e imagens de terceiros continuam dos seus veículos e autores. */
-const DIREITOS = () => `© ${new Date().getFullYear()} a rede.online. Todos os direitos reservados.`;
-const TERCEIROS = "Notícias, imagens e vídeos de terceiros pertencem aos seus veículos e autores, sempre com link para a fonte original.";
-const rodapeLinks = () => `<nav class="rlinks" aria-label="Contato e regras"><a href="mailto:contato@arede.online">Contato</a><a href="#termos">Termos de uso</a><a href="#privacidade">Privacidade</a>${SOBRE_ON ? '<a href="#manifesto">Manifesto</a>' : ""}</nav>`;
-const rodape = () => `<footer class="rodape">${rodapeLinks()}<p class="rcontato">Fale com a rede: <a href="mailto:contato@arede.online">contato@arede.online</a></p><p>${DIREITOS()}</p><p class="rterc">${TERCEIROS}</p><p class="ver">versão ${VERSAO}</p></footer>`;
+const DIREITOS = () => String(MARCA.direitos || "").replace("{ano}", new Date().getFullYear());
+/* TEXTOS DO SITE (14 nov 2026): Termos, Privacidade, o menu da marca e o Manifesto ficam no servidor (tabela textos) e a Amanda
+   edita no backoffice › Textos do site. O que está escrito aqui é a cópia de segurança, usada se o servidor não responder.
+   Só passam negrito, itálico, riscado, quebra de linha e links; o resto vira texto. */
+const MARCA = {titulo:"a rede.online", links:{contato:"Contato", termos:"Termos de uso", privacidade:"Privacidade", manifesto:"Manifesto", funciona:"Como a rede.online funciona"},
+  fale:"Fale com a rede:", email:"contato@arede.online", direitos:"© {ano} a rede.online. Todos os direitos reservados.",
+  terceiros:"Notícias, imagens e vídeos de terceiros pertencem aos seus veículos e autores, sempre com link para a fonte original."};
+const TERCEIROS = () => MARCA.terceiros;
+const limpaTx = v => typeof v === "string" ? esc(v).replace(/&lt;(\/?)(s|b|i|em|strong)&gt;/g, "<$1$2>").replace(/&lt;br\s*\/?&gt;/g, "<br>")
+    .replace(/&lt;a href=&quot;((?:https?:\/\/|mailto:|#)[^&<>]*)&quot;&gt;(.*?)&lt;\/a&gt;/g, '<a href="$1">$2</a>')
+  : Array.isArray(v) ? v.map(limpaTx) : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, limpaTx(x)])) : v;
+const dataLonga = d => new Date(d).toLocaleDateString("pt-BR", {day:"numeric", month:"long", year:"numeric", timeZone:"America/Sao_Paulo"});
+function aplicaTextos(T){ let docData = 0;
+  for (const [k, row] of Object.entries(T || {})){ if (!row || !row.conteudo || typeof row.conteudo !== "object") continue; const c = limpaTx(row.conteudo);
+    if (k === "marca"){ const L = Object.assign({}, MARCA.links, c.links || {}); Object.assign(MARCA, c, {links:L});
+      if (!/^[^\s@<>"]+@[^\s@<>"]+\.[a-z]{2,}$/i.test(MARCA.email || "")) MARCA.email = "contato@arede.online"; }
+    else if ((k === "termos" || k === "privacidade") && Array.isArray(c.s)){ DOCS[k] = {t:c.t || DOCS[k].t, intro:c.intro || "", s:c.s.filter(x=>Array.isArray(x) && Array.isArray(x[1]))};
+      if (row.publicado_em) docData = Math.max(docData, Date.parse(row.publicado_em) || 0); }
+    else if (k === "manifesto"){ for (const [kk, vv] of Object.entries(c)) if (kk in ENV) ENV[kk] = vv; if (!LOCAL && typeof row.online === "boolean") MANIF_ON = row.online; } }
+  if (docData) DOCS_VERSAO = dataLonga(docData);
+  manifAplica(); }
+async function textosCarrega(){ if (!SB || PREVIA) return;
+  try{ const {data, error} = await SB.from("textos").select("chave,conteudo,online,publicado_em"); if (error || !data) return;
+    aplicaTextos(Object.fromEntries(data.map(r=>[r.chave, r]))); if (/^(termos|privacidade|manifesto|funciona|conta|ajustes)$/.test(route())) render(); }catch(e){} }
+const rodapeLinks = () => `<nav class="rlinks" aria-label="Contato e regras"><a href="mailto:contato@arede.online">Contato</a><a href="#termos">Termos de uso</a><a href="#privacidade">Privacidade</a>${MANIF_ON ? '<a href="#manifesto">Manifesto</a>' : ""}</nav>`;
+const rodape = () => `<footer class="rodape">${rodapeLinks()}<p class="rcontato">Fale com a rede: <a href="mailto:contato@arede.online">contato@arede.online</a></p><p>${DIREITOS()}</p><p class="rterc">${TERCEIROS()}</p><p class="ver">versão ${VERSAO}</p></footer>`;
 function screenDoc(k){ const d = DOCS[k], outro = k==="termos" ? ["privacidade","Privacidade"] : ["termos","Termos de uso"];
   return header(`<div class="toprow"><button class="iconbtn" type="button" data-act="back" aria-label="Voltar">${ic("back")}</button><h1 class="pagehead" style="font-size:19px">${d.t}</h1><div class="spacer"></div></div>`)
   + `<div class="container"><article class="docleg"><p class="docdata">Versão de ${DOCS_VERSAO}</p><p class="docintro">${d.intro}</p>
     ${d.s.map(([h, ps])=>`<h2>${h}</h2>${ps.length > 1 ? `<ul>${ps.map(p=>`<li>${p}</li>`).join("")}</ul>` : `<p>${ps[0]}</p>`}`).join("")}
-    <p class="docfim">Leia também: <a href="#${outro[0]}">${outro[1]}</a>. Dúvidas: <a href="mailto:contato@arede.online">contato@arede.online</a></p></article>${rodape()}</div>`; }
+    <p class="docfim">Leia também: <a href="#${outro[0]}">${outro[1]}</a>. Dúvidas: <a href="mailto:${MARCA.email}">${MARCA.email}</a></p></article></div>`; }
 function contaSeguranca(){ const u = ME.user, ult = u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString("pt-BR", {day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"}) : "";
   const chev = ic("back","sm flip");
   return `<section class="acard" aria-labelledby="hseg"><h2 id="hseg">Segurança da conta</h2><div class="list">
@@ -7642,10 +7669,14 @@ const A = {
   contestar: b => sheetContesta(b.dataset.uid),
   assinar: () => { S.assinou = !S.assinou; persist("assinou"); const y = window.scrollY; render(); window.scrollTo(0,y); if (S.assinou) toast("Obrigada por assinar o manifesto."); },
   toid: (b, e) => { e.preventDefault(); const el = document.getElementById(b.dataset.id); el && scrollToEl(el); },
-  sobre: () => openSheet(shead("a rede.online") + `<div class="list">
-      <button class="setting" type="button" data-nav-to="manifesto"><span class="t"><b>Manifesto</b></span>${ic("back","sm flip")}</button>
-      <button class="setting" type="button" data-nav-to="funciona"><span class="t"><b>Como a rede.online funciona</b></span>${ic("back","sm flip")}</button>${painelRow()}</div>
-      <p class="ver" style="margin:4px 0 0">versão ${VERSAO}</p>`, "a rede.online"),
+  sobre: () => { const M = MARCA, L = M.links, seta = ic("back","sm flip");
+    openSheet(shead(M.titulo) + `<div class="list">
+      <a class="setting" href="mailto:${M.email}"><span class="t"><b>${L.contato}</b></span>${seta}</a>
+      <button class="setting" type="button" data-nav-to="termos"><span class="t"><b>${L.termos}</b></span>${seta}</button>
+      <button class="setting" type="button" data-nav-to="privacidade"><span class="t"><b>${L.privacidade}</b></span>${seta}</button>
+      ${MANIF_ON ? `<button class="setting" type="button" data-nav-to="manifesto"><span class="t"><b>${L.manifesto}</b></span>${seta}</button>
+      <button class="setting" type="button" data-nav-to="funciona"><span class="t"><b>${L.funciona}</b></span>${seta}</button>` : ""}${painelRow()}</div>
+      <div class="marcape"><p class="rcontato">${M.fale} <a href="mailto:${M.email}">${M.email}</a></p><p>${DIREITOS()}</p><p class="rterc">${TERCEIROS()}</p><p class="ver">versão ${VERSAO}</p></div>`, M.titulo); },
   pubtab: b => { S.pubTab = b.dataset.tab; S.pubFolder = null; pubShow(); },
   pubfolder: b => { S.pubFolder = b.dataset.f || null; pubShow(); },
   interesses: sheetInteresses,
@@ -7906,7 +7937,13 @@ setInterval(()=>{ if (document.hidden || $("#layer .scrim")) return;
   if (it.tipo==="enquete"){ const i = Math.floor(Math.random()*it.opcoes.length); L.v[i] = (L.v[i]||0) + 1; } else L.n++;
   uids.filter(u=>{ const x = findItem(u); return x && x.id===it.id; }).forEach(u=>refresh(u, true));
 }, 3500);
-const VERSAO = "v1 registrada · 14/11 08:23";
+if (PREVIA){ addEventListener("message", e => { if (!PREVIA_ORIGEM.test(e.origin)) return; const d = e.data; if (!d || d.tipo !== "arede-previa") return;
+    aplicaTextos(d.textos); MANIF_ON = true; manifAplica(); closeSheet();
+    if (d.rota && route() !== d.rota) location.hash = d.rota; else render();
+    if (d.abrir === "marca") setTimeout(()=>A.sobre(), 80);
+    else if (d.alvo) setTimeout(()=>{ const el = document.getElementById(d.alvo); el && el.scrollIntoView({block:"start"}); }, 120); });
+  parent.postMessage({tipo:"arede-previa-pronta"}, "*"); }
+const VERSAO = "v1 registrada · 14/11 08:40";
 console.info("arede.online · versão " + VERSAO);
 render();
 })();
